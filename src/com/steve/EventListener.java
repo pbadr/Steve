@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.util.Vector;
 
 public class EventListener implements Listener {
 
@@ -59,8 +60,11 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerWalkOnBlock(PlayerMoveEvent e){
-        Location pos = e.getTo().clone();
-        Block b = pos.subtract(0,1,0).getBlock();
+        Location pos = e.getTo();
+
+        if(pos == null) return;
+
+        Block b = pos.clone().subtract(0,1,0).getBlock();
         e.getPlayer().sendMessage("Block = " + b.getBlockData().getAsString());
     }
 
