@@ -5,12 +5,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.util.Vector;
 
 public class EventListener implements Listener {
@@ -65,6 +67,10 @@ public class EventListener implements Listener {
         if(pos == null) return;
 
         Block b = pos.clone().subtract(0,1,0).getBlock();
+        BlockData bData = b.getBlockData();
+
+
+
         e.getPlayer().sendMessage("Block = " + b.getBlockData().getAsString());
     }
 
