@@ -8,6 +8,8 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         System.out.println("Enabling...");
+        Cv.loadData();
+        new EventListener(this);
         getCommand("steve").setExecutor(new Steve());
         System.out.println("Enabled");
     }

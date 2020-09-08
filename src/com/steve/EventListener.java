@@ -19,14 +19,20 @@ public class EventListener implements Listener {
         Player p = e.getPlayer();
         String n = p.getName();
         String m = e.getMessage();
+        GameMode gm = p.getGameMode();
         e.setCancelled(true);
 
-        if (p.getGameMode() == GameMode.SPECTATOR) {
-            Bukkit.getLogger().info(String.format("[S] %s > %s", n, m));
+        String statusPrefix;
+        if (gm == GameMode.SPECTATOR) {
+            statusPrefix = ChatColor.DARK_GRAY + "[S]";
+        } else {
+            statusPrefix = ChatColor.GRAY + "";
+        }
 
-            for (Player r : e.getRecipients()) {
-                r.sendMessage(ChatColor.AQUA + String.format("[S] %s > %s", n, m));
-            }
+        Bukkit.getLogger().info(String.format("%s%s > %s", statusPrefix, n, m));
+
+        for (Player r : e.getRecipients()) {
+            r.sendMessage( String.format("%s%s > %s", statusPrefix, n, m));
         }
     }
 
