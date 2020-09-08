@@ -19,7 +19,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Documents/Minecraft/Steve/BuildTools/spigot-api-1.16.2-R0.1-SNAPSHOT.jar!/" />
+          <root url="jar://$USER_HOME$/Downloads/spigot-api-1.16.2-R0.1-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -28,7 +28,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Documents/Minecraft/Steve/BuildTools/json-simple-1.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/Downloads/json-simple-1.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

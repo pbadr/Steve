@@ -6,6 +6,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class EventListener implements Listener {
@@ -33,6 +34,19 @@ public class EventListener implements Listener {
 
         for (Player r : e.getRecipients()) {
             r.sendMessage( String.format("%s%s > %s", statusPrefix, n, m));
+        }
+    }
+
+    @EventHandler
+    public void onPlayerHit(EntityDamageByEntityEvent e){
+
+        if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
+            Player pHit = (Player) e.getEntity();
+            Player pDamager = (Player) e.getDamager();
+            String nHit = pHit.getName();
+            String nDamager = pDamager.getName();
+
+            Bukkit.getLogger().info(String.format("%s got hit by %s", nHit, nDamager));
         }
     }
 
