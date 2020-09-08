@@ -2,21 +2,23 @@ package com.steve;
 
 import com.steve.Commands.PlatformCommand;
 import com.steve.Commands.Steve;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Const.loadData();
+        Const.readData();
         new EventListener(this);
         getCommand("steve").setExecutor(new Steve());
         getCommand("spawnplatform").setExecutor(new PlatformCommand());
-        System.out.println("Enabled");
+        Bukkit.getLogger().info("Enabled");
     }
 
     @Override
     public void onDisable() {
-        System.out.println("Disabled");
+        Const.writeData();
+        Bukkit.getLogger().info("Disabled");
     }
 }

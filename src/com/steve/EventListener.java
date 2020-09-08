@@ -10,7 +10,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
@@ -48,6 +50,17 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        String n = p.getName();
+        if (!Const.playerData.containsKey(n)) { // new player
+            e.setJoinMessage(ChatColor.GREEN + n + " joined for the first time!");
+            Const.resetPlayerData(n);
+        }
+
+    }
+
+    @EventHandler
     public void onPlayerHit(EntityDamageByEntityEvent e){
 
         if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
@@ -74,6 +87,11 @@ public class EventListener implements Listener {
         Block b = pos.clone().subtract(0,1,0).getBlock();
         e.getPlayer().sendMessage("Block = " + b.getBlockData().getAsString());
 
+    }
+
+    @EventHandler
+    public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
+        e.setCancelled(true);
     }
 
 }

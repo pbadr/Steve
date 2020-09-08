@@ -6,3 +6,6 @@ commands:
   steve:
     description: steve
     usage: /<command>
+  spawnplatform:
+    description: ok
+    usage: /<command>
