@@ -1,5 +1,6 @@
 package com.steve;
 
+import com.steve.Commands.PlatformCommand;
 import com.steve.Commands.Steve;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -10,6 +11,7 @@ public class Main extends JavaPlugin {
         Const.loadData();
         new EventListener(this);
         getCommand("steve").setExecutor(new Steve());
+        getCommand("spawnplatform").setExecutor(new PlatformCommand());
         System.out.println("Enabled");
     }
 
