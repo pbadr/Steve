@@ -9,10 +9,12 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         System.out.println("Enabling...");
         getCommand("steve").setExecutor(new Steve());
+        System.out.println("Enabled");
     }
 
     @Override
     public void onDisable() {
         System.out.println("Disabling...");
+        System.out.println("Disabled");
     }
 }
