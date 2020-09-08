@@ -7,7 +7,6 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        System.out.println("Enabling...");
         Const.loadData();
         new EventListener(this);
         getCommand("steve").setExecutor(new Steve());
@@ -16,7 +15,6 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        System.out.println("Disabling...");
         System.out.println("Disabled");
     }
 }

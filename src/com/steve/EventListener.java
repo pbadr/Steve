@@ -3,6 +3,7 @@ package com.steve;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,7 +28,7 @@ public class EventListener implements Listener {
 
         String statusPrefix;
         if (gm == GameMode.SPECTATOR) {
-            statusPrefix = ChatColor.DARK_GRAY + "[S]";
+            statusPrefix = ChatColor.DARK_GRAY + "[S] ";
         } else {
             statusPrefix = ChatColor.GRAY + "";
         }
@@ -49,12 +50,17 @@ public class EventListener implements Listener {
             String nDamager = pDamager.getName();
 
             Bukkit.getLogger().info(String.format("%s got hit by %s", nHit, nDamager));
+
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                p.sendMessage(String.format("%s got hit by %s", nHit, nDamager));
+            }
         }
     }
 
     @EventHandler
     public void onPlayerWalkOnBlock(PlayerMoveEvent e){
-        Block b = e.getTo().subtract(0,-1,0).getBlock();
+        Location pos = e.getTo().clone();
+        Block b = pos.subtract(0,1,0).getBlock();
         e.getPlayer().sendMessage("Block = " + b.getBlockData().getAsString());
     }
 
