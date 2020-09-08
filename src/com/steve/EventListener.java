@@ -3,11 +3,13 @@ package com.steve;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 public class EventListener implements Listener {
 
@@ -48,6 +50,12 @@ public class EventListener implements Listener {
 
             Bukkit.getLogger().info(String.format("%s got hit by %s", nHit, nDamager));
         }
+    }
+
+    @EventHandler
+    public void onPlayerWalkOnBlock(PlayerMoveEvent e){
+        Block b = e.getTo().subtract(0,-1,0).getBlock();
+        e.getPlayer().sendMessage("Block = " + b.getBlockData().getAsString());
     }
 
 }
