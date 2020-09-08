@@ -1,0 +1,8 @@
+name: Steve
+version: "1.0"
+author: "lord steve"
+main: com.steve.Main
+commands:
+  steve:
+    description: steve
+    usage: /<command>
