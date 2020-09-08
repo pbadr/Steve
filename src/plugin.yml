@@ -9,3 +9,6 @@ commands:
   spawnplatform:
     description: ok
     usage: /<command>
+  generatemaze:
+    description: ok
+    usage: /<command>
