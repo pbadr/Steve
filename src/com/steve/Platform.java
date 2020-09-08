@@ -28,9 +28,9 @@ public class Platform {
 
     public void placeBlocks(){
         World w = position.getWorld();
-        for (int x = position.getBlockX(); x < position.getBlockX()+width; x++) {
-            for (int z = position.getBlockZ(); z < position.getBlockZ()+length; z++) {
-                Location l = new Location(w,x,position.getBlockY(),z);
+        for (int x = 0; x < width; x++) {
+            for (int z = 0; z < length; z++) {
+                Location l = new Location(w,position.getBlockX()+x,position.getBlockY(),position.getBlockZ()+z);
                 l.getBlock().setType(material);
             }
         }
