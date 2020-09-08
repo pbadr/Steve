@@ -18,7 +18,7 @@ public class PlatformCommand implements CommandExecutor {
             Player player = (Player) commandSender;
 
             if (player.isOp()) {
-                new Platform(4,4,player.getLocation(), Material.SAND, false);
+                new Platform(10,10,player.getLocation(), Material.GOLD_BLOCK, false).placeBlocks();
             }
         }
 
