@@ -24,25 +24,24 @@ public class GenerateMazeCommand implements CommandExecutor {
                 Maze maze = new Maze(20,20, 6, 2, 2, 1);
                 maze.generateMaze();
                 String message = "";
-
                 for (ArrayList<Maze.TILEROLE> i: maze.getMaze())
                 {
                     for (Maze.TILEROLE j: i)
                     {
                         switch (j){
                             case EMPTY:
-                                message += "0";
+                                message += "O ";
                                 break;
 
                             case ENTRANCE:
-                                message += "#";
+                                message += "# ";
                                 break;
 
                             default:
                                 break;
                         }
                     }
-                    message += "\n";
+                    message += "\n\n";
                 }
 
                 player.sendMessage(message);

@@ -30,6 +30,7 @@ public class Maze {
         this.waypoints = waypoints;
         this.deadends = deadends;
         this.entrances = entrances;
+        this.exits = exits;
 
         generatedMaze = new ArrayList<>();
 
@@ -44,14 +45,32 @@ public class Maze {
     }
 
     public void generateMaze(){
+
+        //Set entrances
         ArrayList<TILEROLE> list = generatedMaze.get(0);
         for(int i = 0; i < entrances;i++){
-            int randomInt = ThreadLocalRandom.current().nextInt(1,width);
+            int randomInt = ThreadLocalRandom.current().nextInt(1,width)-1;
             if(list.get(randomInt) != TILEROLE.ENTRANCE){
                 list.set(randomInt, TILEROLE.ENTRANCE);
             }else{
                 list.set((randomInt+(width-1)/2)%width-1, TILEROLE.ENTRANCE);
             }
+        }
+
+        //Set exits
+        list = generatedMaze.get(width-1);
+        for(int i = 0; i < exits; i++){
+            int randomInt = ThreadLocalRandom.current().nextInt(1,width)-1;
+            if(list.get(randomInt) != TILEROLE.EXIT){
+                list.set(randomInt, TILEROLE.EXIT);
+            }else{
+                list.set((randomInt+(width-1)/2)%width-1, TILEROLE.EXIT);
+            }
+        }
+
+        //Set waypoints
+        for(int i = 0; i < waypoints; i++){
+
         }
     }
 

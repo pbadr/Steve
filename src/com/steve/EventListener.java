@@ -88,7 +88,7 @@ public class EventListener implements Listener {
         if(pos == null) return;
 
         Block b = pos.clone().subtract(0,1,0).getBlock();
-        p.sendMessage("Block = " + b.getBlockData().getAsString());
+        //p.sendMessage("Block = " + b.getBlockData().getAsString());
     }
 
 }
