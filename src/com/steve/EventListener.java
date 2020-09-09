@@ -1,9 +1,6 @@
 package com.steve;
 
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,7 +10,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -63,7 +59,7 @@ public class EventListener implements Listener {
             e.setJoinMessage(ChatColor.GREEN + n + " joined");
             PlayerData.get(uuid).lastOnlineTimestamp = currentTime;
         } else {
-            Const.allPlayerData.add(new PlayerData(n, uuid, currentTime));
+            PlayerData.addNew(n, uuid, currentTime);
             e.setJoinMessage(ChatColor.GREEN + n + " joined for the first time!");
         }
     }
@@ -83,14 +79,13 @@ public class EventListener implements Listener {
 
         if(e.getEntity() instanceof Player) {
             Player p = (Player) e.getEntity();
-            ItemStack tntBlock = new ItemStack(Material.TNT);
+            ItemStack itemTnt = new ItemStack(Material.TNT);
 
-            if(Objects.equals(p.getInventory().getHelmet(), tntBlock)) {
+            if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
                 p.getInventory().setHelmet(new ItemStack(Material.AIR));
             } else {
-                p.getInventory().setHelmet(tntBlock);
+                p.getInventory().setHelmet(itemTnt);
             }
-
 
         }
 
@@ -110,12 +105,12 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerWalkOnBlock(PlayerMoveEvent e) {
-        Location pos = e.getTo();
-        Player p = e.getPlayer();
+        // Location pos = e.getTo();
+        // Player p = e.getPlayer();
 
-        if(pos == null) return;
+        // if(pos == null) return;
 
-        Block b = pos.clone().subtract(0,1,0).getBlock();
+        // Block b = pos.clone().subtract(0,1,0).getBlock();
         //p.sendMessage("Block = " + b.getBlockData().getAsString());
     }
 

@@ -9,7 +9,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Const.readData();
+        PlayerData.readDisk();
         new EventListener(this);
 
         // >spawnplatform
@@ -22,7 +22,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Const.writeData();
+        PlayerData.writeDisk();
         Bukkit.getLogger().info("Disabled");
     }
 }
