@@ -26,15 +26,13 @@ public class Platform {
         this.isFake = isFake;
     }
 
-    public void placeBlocks(){
-        World w = position.getWorld();
+    public void placeBlocks() {
+        World world = position.getWorld();
         for (int x = 0; x < width; x++) {
             for (int z = 0; z < length; z++) {
-                Location l = new Location(w,position.getBlockX()+x,position.getBlockY(),position.getBlockZ()+z);
-                l.getBlock().setType(material);
+                Location location = new Location(world, position.getBlockX() + x ,position.getBlockY(), position.getBlockZ() + z);
+                location.getBlock().setType(material);
             }
         }
     }
-
-
 }
