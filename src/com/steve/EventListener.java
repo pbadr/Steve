@@ -27,7 +27,6 @@ public class EventListener implements Listener {
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-        Server server = p.getServer();
         UUID uuid = p.getUniqueId();
         String n = p.getName();
         String m = e.getMessage();
@@ -43,8 +42,7 @@ public class EventListener implements Listener {
             prefix = String.format(ChatColor.GRAY + "[%s] ", gamesWon);
         }
 
-        Bukkit.getLogger().info(String.format("%s%s > %s", prefix, n, m));
-        server.broadcastMessage(String.format("%s%s > %s", prefix, n, m));
+        Bukkit.broadcastMessage(String.format("%s%s > %s", prefix, n, m));
 
     }
 
@@ -92,13 +90,11 @@ public class EventListener implements Listener {
         if(e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
             Player pHit = (Player) e.getEntity();
             Player pDamage = (Player) e.getDamager();
-            Server server = pHit.getServer();
 
             String pHitName = pHit.getName();
             String pDamageName = pDamage.getName();
 
-            Bukkit.getLogger().info(String.format("%s was hit by %s", pHitName, pDamageName));
-            server.broadcastMessage(String.format("%s got hit by %s", pHitName, pDamageName));
+            Bukkit.broadcastMessage(String.format("%s got hit by %s", pHitName, pDamageName));
 
         }
     }
