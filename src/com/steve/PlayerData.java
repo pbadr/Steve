@@ -94,6 +94,7 @@ public class PlayerData {
             }
         }
 
+        Bukkit.getLogger().warning("Invalid UUID");
         return new PlayerData("ERROR", UUID.fromString(""), 0); // @todo cleanup
     }
 
