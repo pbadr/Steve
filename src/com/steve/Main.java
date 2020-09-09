@@ -11,7 +11,11 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         Const.readData();
         new EventListener(this);
+
+        // >spawnplatform
         getCommand("spawnplatform").setExecutor(new PlatformCommand());
+
+        // >generatemaze
         getCommand("generatemaze").setExecutor(new GenerateMazeCommand());
         Bukkit.getLogger().info("Enabled");
     }
