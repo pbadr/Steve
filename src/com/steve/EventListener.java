@@ -11,6 +11,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.UUID;
+
 public class EventListener implements Listener {
 
     JavaPlugin main;
@@ -23,18 +25,19 @@ public class EventListener implements Listener {
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
+        UUID uuid = p.getUniqueId();
         String n = p.getName();
         String m = e.getMessage();
         GameMode gm = p.getGameMode();
         e.setCancelled(true);
 
-        long wins = (long) Const.playerData.get(n).get("wins");
+        int gamesWon = PlayerData.get(uuid).gamesWon;
 
         String prefix;
         if (gm == GameMode.SPECTATOR) {
-            prefix = String.format(ChatColor.DARK_GRAY + "[S]" + ChatColor.UNDERLINE +"[%s]", wins);
+            prefix = String.format(ChatColor.DARK_GRAY + "[S]" + ChatColor.UNDERLINE +"[%s]", gamesWon);
         } else {
-            prefix = String.format(ChatColor.GRAY + "[%s] ", wins);
+            prefix = String.format(ChatColor.GRAY + "[%s] ", gamesWon);
         }
 
         Bukkit.getLogger().info(String.format("%s%s > %s", prefix, n, m));
@@ -47,10 +50,16 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
+        UUID uuid = p.getUniqueId();
         String n = p.getName();
-        if (!Const.playerData.containsKey(n)) { // new player
+        long currentTime = System.currentTimeMillis();
+
+        if (PlayerData.exists(uuid)) {
+            e.setJoinMessage(ChatColor.GREEN + n + " joined");
+            PlayerData.get(uuid).lastLoginTimestamp = currentTime;
+        } else {
+            Const.allPlayerData.add(new PlayerData(n, uuid, currentTime));
             e.setJoinMessage(ChatColor.GREEN + n + " joined for the first time!");
-            Const.resetPlayerData(n);
         }
     }
 
@@ -79,7 +88,7 @@ public class EventListener implements Listener {
         if(pos == null) return;
 
         Block b = pos.clone().subtract(0,1,0).getBlock();
-        e.getPlayer().sendMessage("Block = " + b.getBlockData().getAsString());
+        p.sendMessage("Block = " + b.getBlockData().getAsString());
     }
 
 }
