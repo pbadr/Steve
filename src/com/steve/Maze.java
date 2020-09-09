@@ -17,15 +17,15 @@ public class Maze {
         this.waypoints = waypoints;
         this.deadends = deadends;
 
-        generatedMaze = new ArrayList<>(width);
+        generatedMaze = new ArrayList<>();
 
         for (int i = 0; i < width; i++) {
-            generatedMaze.set(i, new ArrayList<>(length));
+            ArrayList<Boolean> list = new ArrayList<>();
             for (int j = 0; j < length; j++) {
-                ArrayList<Boolean> bools = generatedMaze.get(i);
-                bools.set(j, false);
-                generatedMaze.set(i, bools);
+                list.add(false);
             }
+
+            generatedMaze.add(list);
         }
     }
 
