@@ -13,23 +13,19 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
 public class EventListener implements Listener {
 
-    JavaPlugin main;
-
     public EventListener(Main main) {
-        this.main = main;
-        main.getServer().getPluginManager().registerEvents(this, main);
+        Bukkit.getServer().getPluginManager().registerEvents(this, main);
     }
 
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-        Server server = p.getServer();
         UUID uuid = p.getUniqueId();
         String n = p.getName();
         String m = e.getMessage();
@@ -38,15 +34,15 @@ public class EventListener implements Listener {
 
         int gamesWon = PlayerData.get(uuid).gamesWon;
 
-        String prefix;
+        String userSegment;
         if (gm == GameMode.SPECTATOR) {
-            prefix = String.format(ChatColor.DARK_GRAY + "[S]" + ChatColor.UNDERLINE +"[%s]", gamesWon);
+            userSegment = String.format(ChatColor.GRAY + "[DEAD] " + ChatColor.AQUA + "[%s] %s ", gamesWon, n);
         } else {
-            prefix = String.format(ChatColor.GRAY + "[%s] ", gamesWon);
+            userSegment = String.format(ChatColor.AQUA + "[%s] %s ", gamesWon, n);
         }
 
-        Bukkit.getLogger().info(String.format("%s%s > %s", prefix, n, m));
-        server.broadcastMessage(String.format("%s%s > %s", prefix, n, m));
+        Bukkit.getLogger().info(n + " > " + m);
+        Bukkit.broadcastMessage(userSegment + ChatColor.GRAY + "> " + m);
 
     }
 
@@ -59,7 +55,7 @@ public class EventListener implements Listener {
 
         if (PlayerData.exists(uuid)) {
             e.setJoinMessage(ChatColor.GREEN + n + " joined");
-            PlayerData.get(uuid).lastLoginTimestamp = currentTime;
+            PlayerData.get(uuid).lastOnlineTimestamp = currentTime;
         } else {
             Const.allPlayerData.add(new PlayerData(n, uuid, currentTime));
             e.setJoinMessage(ChatColor.GREEN + n + " joined for the first time!");
@@ -67,7 +63,16 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerHit(EntityDamageByEntityEvent e) {
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        Player p = e.getPlayer();
+        UUID uuid = p.getUniqueId();
+        String n = p.getName();
+        PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
+        e.setQuitMessage(ChatColor.GREEN + n + " left");
+    }
+
+    @EventHandler
+    public void onPlayerDamageByPlayer(EntityDamageByEntityEvent e) {
         
         if(e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
             Player pHit = (Player) e.getEntity();
@@ -84,14 +89,14 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerWalkOnBlock(PlayerMoveEvent e) {
+    public void onPlayerMove(PlayerMoveEvent e) {
         Location pos = e.getTo();
         Player p = e.getPlayer();
 
         if(pos == null) return;
 
         Block b = pos.clone().subtract(0,1,0).getBlock();
-        p.sendMessage("Block = " + b.getBlockData().getAsString());
+        // p.sendMessage("Block = " + b.getBlockData().getAsString());
     }
 
 }
