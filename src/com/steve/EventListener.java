@@ -10,18 +10,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public class EventListener implements Listener {
-
-    JavaPlugin main;
-
     public EventListener(Main main) {
-        this.main = main;
-        main.getServer().getPluginManager().registerEvents(this, main);
+        Bukkit.getServer().getPluginManager().registerEvents(this, main);
     }
 
     @EventHandler
@@ -43,7 +38,6 @@ public class EventListener implements Listener {
         }
 
         Bukkit.broadcastMessage(String.format("%s%s > %s", prefix, n, m));
-
     }
 
     @EventHandler
@@ -54,8 +48,8 @@ public class EventListener implements Listener {
         long currentTime = System.currentTimeMillis();
 
         if (PlayerData.exists(uuid)) {
-            e.setJoinMessage(ChatColor.GREEN + n + " joined");
             PlayerData.get(uuid).lastOnlineTimestamp = currentTime;
+            e.setJoinMessage(ChatColor.GREEN + n + " joined");
         } else {
             PlayerData.addNew(n, uuid, currentTime);
             e.setJoinMessage(ChatColor.GREEN + n + " joined for the first time!");
@@ -67,13 +61,14 @@ public class EventListener implements Listener {
         Player p = e.getPlayer();
         UUID uuid = p.getUniqueId();
         String n = p.getName();
+
         PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
         e.setQuitMessage(ChatColor.GREEN + n + " left");
     }
 
 
     @EventHandler
-    public void onPlayerHit(EntityDamageByEntityEvent e) {
+    public void onPlayerHitByEntity(EntityDamageByEntityEvent e) {
 
         if(e.getEntity() instanceof Player) {
             Player p = (Player) e.getEntity();
@@ -87,7 +82,7 @@ public class EventListener implements Listener {
 
         }
 
-        if(e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
+        if(e.getDamager() instanceof Player) {
             Player pHit = (Player) e.getEntity();
             Player pDamage = (Player) e.getDamager();
 
@@ -100,7 +95,7 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerWalkOnBlock(PlayerMoveEvent e) {
+    public void onPlayerMove(PlayerMoveEvent e) {
         // Location pos = e.getTo();
         // Player p = e.getPlayer();
 
