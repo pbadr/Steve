@@ -16,19 +16,31 @@ public class GenerateMazeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
 
+
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
 
             if (player.isOp()) {
-                Maze maze = new Maze(20,20, 6, 2);
+                Maze maze = new Maze(20,20, 6, 2, 2, 1);
 
                 String message = "";
 
-                for (ArrayList<Boolean> i: maze.getMaze()
-                     ) {
-                    for (Boolean j: i
-                         ) {
-                        message += j?"X ":"O ";
+                for (ArrayList<Maze.TILEROLE> i: maze.getMaze())
+                {
+                    for (Maze.TILEROLE j: i)
+                    {
+                        switch (j){
+                            case EMPTY:
+                                message += "0";
+                                break;
+
+                            case ENTRANCE:
+                                message += "#";
+                                break;
+
+                            default:
+                                break;
+                        }
                     }
                     message += "\n";
                 }
