@@ -9,3 +9,6 @@ commands:
   generatemaze:
     description: ok
     usage: /<command>
+  friend:
+    description: friend parent command
+    usage: /<command>
