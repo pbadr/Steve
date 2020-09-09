@@ -1,13 +1,11 @@
-package com.steve.Commands;
+package com.steve.commands;
 
 import com.steve.Platform;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerEvent;
 
 public class PlatformCommand implements CommandExecutor {
 

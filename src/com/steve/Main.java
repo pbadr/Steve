@@ -1,8 +1,8 @@
 package com.steve;
 
-import com.steve.Commands.GenerateMazeCommand;
-import com.steve.Commands.PlatformCommand;
-import com.steve.Commands.Social.AddFriend;
+import com.steve.commands.GenerateMazeCommand;
+import com.steve.commands.PlatformCommand;
+import com.steve.commands.social.AddFriend;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 

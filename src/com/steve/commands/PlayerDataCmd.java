@@ -1,4 +1,4 @@
-package com.steve.Commands;
+package com.steve.commands;
 
 public class PlayerDataCmd {
 }
