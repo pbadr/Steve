@@ -29,6 +29,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
+        Server server = p.getServer();
         UUID uuid = p.getUniqueId();
         String n = p.getName();
         String m = e.getMessage();
@@ -45,10 +46,8 @@ public class EventListener implements Listener {
         }
 
         Bukkit.getLogger().info(String.format("%s%s > %s", prefix, n, m));
+        server.broadcastMessage(String.format("%s%s > %s", prefix, n, m));
 
-        for (Player r : e.getRecipients()) {
-            r.sendMessage(String.format("%s%s > %s", prefix, n, m));
-        }
     }
 
     @EventHandler
