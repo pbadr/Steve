@@ -10,7 +10,7 @@ public class PlayerData {
     String uuid;
     int serverJoins;
     long firstJoinTimestamp;
-    long lastLoginTimestamp;
+    long lastOnlineTimestamp;
     int kills;
     int deaths;
     int gamesWon;
@@ -27,7 +27,7 @@ public class PlayerData {
         this.uuid = uuid.toString();
         this.serverJoins = 0;
         this.firstJoinTimestamp = currentTime;
-        this.lastLoginTimestamp = currentTime;
+        this.lastOnlineTimestamp = currentTime;
         this.kills = 0;
         this.deaths = 0;
         this.gamesWon = 0;
