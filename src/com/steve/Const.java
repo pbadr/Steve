@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 public class Const {
     static final String dataPath = "data.json";
+    static final String envPath = "env.json";
     static HashMap<String, HashMap<String, Object>> playerData = new HashMap<>();
     static final String worldsPath = "worlds/";
 
@@ -94,4 +95,21 @@ public class Const {
         data.put("gameTypesLost", new HashMap<String, Integer>());
         playerData.put(username, data);
     }
+
+    static String getEnv(String key) {
+
+        JSONParser parser = new JSONParser();
+
+        try {
+            FileReader fileReader = new FileReader(envPath);
+            JSONObject dataObject = (JSONObject) parser.parse(fileReader);
+            fileReader.close();
+
+            return (String) dataObject.get(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
