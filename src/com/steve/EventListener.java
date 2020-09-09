@@ -11,21 +11,27 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class EventListener implements Listener {
 
+    JavaPlugin main;
+
     public EventListener(Main main) {
-        Bukkit.getServer().getPluginManager().registerEvents(this, main);
+        this.main = main;
+        main.getServer().getPluginManager().registerEvents(this, main);
     }
 
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
+        Server server = p.getServer();
         UUID uuid = p.getUniqueId();
         String n = p.getName();
         String m = e.getMessage();
@@ -34,15 +40,15 @@ public class EventListener implements Listener {
 
         int gamesWon = PlayerData.get(uuid).gamesWon;
 
-        String userSegment;
+        String prefix;
         if (gm == GameMode.SPECTATOR) {
-            userSegment = String.format(ChatColor.GRAY + "[DEAD] " + ChatColor.AQUA + "[%s] %s ", gamesWon, n);
+            prefix = String.format(ChatColor.DARK_GRAY + "[S]" + ChatColor.UNDERLINE +"[%s]", gamesWon);
         } else {
-            userSegment = String.format(ChatColor.AQUA + "[%s] %s ", gamesWon, n);
+            prefix = String.format(ChatColor.GRAY + "[%s] ", gamesWon);
         }
 
-        Bukkit.getLogger().info(n + " > " + m);
-        Bukkit.broadcastMessage(userSegment + ChatColor.GRAY + "> " + m);
+        Bukkit.getLogger().info(String.format("%s%s > %s", prefix, n, m));
+        server.broadcastMessage(String.format("%s%s > %s", prefix, n, m));
 
     }
 
@@ -71,9 +77,23 @@ public class EventListener implements Listener {
         e.setQuitMessage(ChatColor.GREEN + n + " left");
     }
 
+
     @EventHandler
-    public void onPlayerDamageByPlayer(EntityDamageByEntityEvent e) {
-        
+    public void onPlayerHit(EntityDamageByEntityEvent e) {
+
+        if(e.getEntity() instanceof Player) {
+            Player p = (Player) e.getEntity();
+            ItemStack tntBlock = new ItemStack(Material.TNT);
+
+            if(Objects.equals(p.getInventory().getHelmet(), tntBlock)) {
+                p.getInventory().setHelmet(new ItemStack(Material.AIR));
+            } else {
+                p.getInventory().setHelmet(tntBlock);
+            }
+
+
+        }
+
         if(e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
             Player pHit = (Player) e.getEntity();
             Player pDamage = (Player) e.getDamager();
@@ -89,14 +109,14 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e) {
+    public void onPlayerWalkOnBlock(PlayerMoveEvent e) {
         Location pos = e.getTo();
         Player p = e.getPlayer();
 
         if(pos == null) return;
 
         Block b = pos.clone().subtract(0,1,0).getBlock();
-        // p.sendMessage("Block = " + b.getBlockData().getAsString());
+        p.sendMessage("Block = " + b.getBlockData().getAsString());
     }
 
 }
