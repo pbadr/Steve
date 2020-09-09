@@ -22,7 +22,7 @@ public class GenerateMazeCommand implements CommandExecutor {
 
             if (player.isOp()) {
                 Maze maze = new Maze(20,20, 6, 2, 2, 1);
-
+                maze.generateMaze();
                 String message = "";
 
                 for (ArrayList<Maze.TILEROLE> i: maze.getMaze())
