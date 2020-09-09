@@ -17,10 +17,12 @@ public class Steve implements CommandExecutor {
 
             if (player.isOp()) {
                 player.sendMessage(ChatColor.AQUA + "Steve says hello");
+
+                return true;
             }
         }
 
 
-        return true;
+        return false;
     }
 }

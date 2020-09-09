@@ -57,28 +57,10 @@ public class EventListener implements Listener {
             e.setJoinMessage(ChatColor.GREEN + n + " joined for the first time!");
             Const.resetPlayerData(n);
         }
-
     }
 
     @EventHandler
-    public void onPlayerHit(EntityDamageByEntityEvent e){
-
-        if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
-            Player pHit = (Player) e.getEntity();
-            Player pDamager = (Player) e.getDamager();
-            String nHit = pHit.getName();
-            String nDamager = pDamager.getName();
-
-            Bukkit.getLogger().info(String.format("%s got hit by %s", nHit, nDamager));
-
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                p.sendMessage(String.format("%s got hit by %s", nHit, nDamager));
-            }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerWalkOnBlock(PlayerMoveEvent e){
+    public void onPlayerWalkOnBlock(PlayerMoveEvent e) {
         Location pos = e.getTo();
         Player p = e.getPlayer();
 
@@ -86,12 +68,6 @@ public class EventListener implements Listener {
 
         Block b = pos.clone().subtract(0,1,0).getBlock();
         e.getPlayer().sendMessage("Block = " + b.getBlockData().getAsString());
-
-    }
-
-    @EventHandler
-    public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
-        e.setCancelled(true);
     }
 
 }
