@@ -1,6 +1,5 @@
 .idea/
-/.idea/
-/.idea
-.idea/modules.xml
+
+out/
 
 Steve.iml
