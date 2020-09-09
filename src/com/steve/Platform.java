@@ -2,11 +2,9 @@ package com.steve;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
@@ -30,8 +28,11 @@ public class Platform {
         World world = position.getWorld();
         for (int x = 0; x < width; x++) {
             for (int z = 0; z < length; z++) {
-                Location location = new Location(world, position.getBlockX() + x ,position.getBlockY(), position.getBlockZ() + z);
+                Location location = new Location(world, position.getBlockX() + x ,position.getBlockY() - 1, position.getBlockZ() + z);
                 location.getBlock().setType(material);
+
+                assert world != null;
+                world.spawnParticle(Particle.EXPLOSION_NORMAL, location.getX(), location.getY(), location.getZ(), 10);
             }
         }
     }
