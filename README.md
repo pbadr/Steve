@@ -1,5 +1,5 @@
 # Steve
-Minecraft Plugin like Wipeout
+Minecraft all-in-one plugin
 
 # Dependencies
 - [Spigot-API](https://www.spigotmc.org/wiki/buildtools/)
