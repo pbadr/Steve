@@ -20,21 +20,21 @@ public class PlayerData {
     private static final String PATH = "playerdata/";
     private static final ArrayList<PlayerData> ALL_DATA = new ArrayList<>();
 
-    String name;
-    String uuid;
-    int serverJoins;
-    long firstJoinTimestamp;
-    long lastOnlineTimestamp;
-    int kills;
-    int deaths;
-    int gamesWon;
-    int gamesLost;
-    int gamesPlayed;
-    List<String> friendsAdded;
-    List<String> playersBlocked;
-    HashMap<String, Integer> gameTypesWon;
-    HashMap<String, Integer> gameTypesLost;
-    HashMap<String, Integer> gameTypesPlayed;
+    public String name;
+    public String uuid;
+    public int serverJoins;
+    public long firstJoinTimestamp;
+    public long lastOnlineTimestamp;
+    public int kills;
+    public int deaths;
+    public int gamesWon;
+    public int gamesLost;
+    public int gamesPlayed;
+    public List<String> friendsAdded;
+    public List<String> playersBlocked;
+    public HashMap<String, Integer> gameTypesWon;
+    public HashMap<String, Integer> gameTypesLost;
+    public HashMap<String, Integer> gameTypesPlayed;
 
     public PlayerData(String name, UUID uuid, long currentTime) {
         this.name = name;
