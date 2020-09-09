@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -50,6 +51,23 @@ public class EventListener implements Listener {
         if (!Const.playerData.containsKey(n)) { // new player
             e.setJoinMessage(ChatColor.GREEN + n + " joined for the first time!");
             Const.resetPlayerData(n);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerHit(EntityDamageByEntityEvent e) {
+
+        if(e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
+            Player playerHit = (Player) e.getEntity();
+            Player playerDamager = (Player) e.getDamager();
+            Server server = playerHit.getServer();
+
+            String playerHitName = playerHit.getName();
+            String playerDamagerName = playerDamager.getName();
+
+            Bukkit.getLogger().info(String.format("%s was hit by %s", playerHitName, playerDamagerName));
+            server.broadcastMessage(String.format("%s got hit by %s", playerHitName, playerDamagerName));
+
         }
     }
 
