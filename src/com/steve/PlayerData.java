@@ -54,7 +54,7 @@ public class PlayerData {
         this.gameTypesPlayed = new HashMap<>();
     }
 
-    static void readDisk() {
+    public static void readDisk() {
         try (Stream<Path> walk = Files.walk(Paths.get(PATH))) {
             List<String> result = walk.filter(Files::isRegularFile)
                     .map(Path::toString).collect(Collectors.toList());
@@ -73,7 +73,7 @@ public class PlayerData {
         Bukkit.getLogger().info("Read from playerdata");
     }
 
-    static void writeDisk() {
+    public static void writeDisk() {
         for (PlayerData pd : ALL_DATA) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -87,7 +87,7 @@ public class PlayerData {
         Bukkit.getLogger().info("Wrote to playerdata");
     }
 
-    static PlayerData get(UUID uuid) {
+    public static PlayerData get(UUID uuid) {
         for (PlayerData pd : ALL_DATA) {
             if (pd.uuid.equals(uuid.toString())) {
                 return pd;
@@ -97,11 +97,11 @@ public class PlayerData {
         return new PlayerData("ERROR", UUID.fromString(""), 0); // @todo cleanup
     }
 
-    static void addNew(String name, UUID uuid, long currentTime) {
+    public static void addNew(String name, UUID uuid, long currentTime) {
         ALL_DATA.add(new PlayerData(name, uuid, currentTime));
     }
 
-    static boolean exists(UUID uuid) {
+    public static boolean exists(UUID uuid) {
         for (PlayerData pd : ALL_DATA) {
             if (pd.uuid.equals(uuid.toString())) {
                 return true;
