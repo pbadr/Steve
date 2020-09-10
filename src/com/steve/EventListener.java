@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class EventListener implements Listener {
     public EventListener(Main main) {
@@ -29,15 +30,15 @@ public class EventListener implements Listener {
         e.setCancelled(true);
 
         int gamesWon = PlayerData.get(uuid).gamesWon;
+        ChatColor winsColor = Util.getWinsColor(ThreadLocalRandom.current().nextInt(0, 101)); // Util.getWinsColor(gamesWon);
 
-        String prefix;
+        String formatted = "";
         if (gm == GameMode.SPECTATOR) {
-            prefix = String.format(ChatColor.DARK_GRAY + "[S]" + ChatColor.UNDERLINE +"[%s]", gamesWon);
-        } else {
-            prefix = String.format(ChatColor.GRAY + "[%s] ", gamesWon);
+            formatted += ChatColor.GRAY + "[DEAD]";
         }
 
-        Bukkit.broadcastMessage(String.format("%s%s > %s", prefix, n, m));
+        formatted += String.format("%s[%s] %s %s> %s", winsColor, gamesWon, n, ChatColor.GRAY, ChatColor.WHITE + m);
+        Bukkit.broadcastMessage(formatted);
     }
 
     @EventHandler

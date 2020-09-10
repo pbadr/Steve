@@ -51,7 +51,7 @@ public class Maze {
             if(list.get(randomInt) != TILEROLE.ENTRANCE){
                 list.set(randomInt, TILEROLE.ENTRANCE);
             }else{
-                list.set((randomInt+(width-1)/2)%width-1, TILEROLE.ENTRANCE);
+                list.set((randomInt+(width-1)/2)%width, TILEROLE.ENTRANCE);
             }
         }
 
