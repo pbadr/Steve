@@ -1,5 +1,6 @@
 package com.steve.commands.social;
 
+import com.steve.Main;
 import com.steve.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -8,7 +9,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.UUID;
+
 public class AddFriend implements CommandExecutor {
+
+    static Main plugin;
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
@@ -22,25 +29,18 @@ public class AddFriend implements CommandExecutor {
 
                 // Getting friend list
 
-//                if(args[0].toLowerCase().equals("list")) {
-//                    ArrayList<String> friends = new ArrayList<>();
-//
-//                    new Thread(() -> {
-//
-//                        for(String friend :  PlayerData.get(p.getUniqueId()).friendsAdded) {
-//                            System.out.println(friend);
-//                            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(friend));
-//                            friends.add(offlinePlayer.getName());
-//                        }
-//
-//
-//
-//
-//                    }).start();
-//
-//
-//                    p.sendMessage(String.format("Total friends (%s)\n" + Arrays.toString(friends.toArray()) + "", friends.size()));
-//                }
+                ArrayList<String> friends = new ArrayList<>();
+
+                if(args[0].toLowerCase().equals("list")) {
+
+                    for(String friend :  PlayerData.get(p.getUniqueId()).friendsAdded) {
+                        System.out.println(friend);
+                        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(friend));
+                        friends.add(offlinePlayer.getName());
+                    }
+
+                    p.sendMessage(String.format("Total friends (%s)\n" + Arrays.toString(friends.toArray()) + "", friends.size()));
+                }
 
 
                 // Adding a friend
@@ -51,7 +51,11 @@ public class AddFriend implements CommandExecutor {
                             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
                             System.out.println(offlinePlayer.getUniqueId());
 
-                            PlayerData.get(p.getUniqueId()).friendsAdded.add(offlinePlayer.getUniqueId().toString());
+                            if(PlayerData.get(p.getUniqueId()).friendsAdded.contains(offlinePlayer.getUniqueId().toString())) {
+                                PlayerData.get(p.getUniqueId()).friendsAdded.add(offlinePlayer.getUniqueId().toString());
+                            } else {
+                                p.sendMessage("PLayer has never played before!");
+                            }
 
                             p.sendMessage(String.format("%s added %s as friend!", n, args[1]));
                         } else {
