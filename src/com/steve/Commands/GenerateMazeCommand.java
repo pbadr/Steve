@@ -37,6 +37,9 @@ public class GenerateMazeCommand implements CommandExecutor {
                                 message += "# ";
                                 break;
 
+                            case EXIT:
+                                message += "E ";
+
                             default:
                                 break;
                         }

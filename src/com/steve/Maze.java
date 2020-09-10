@@ -9,7 +9,7 @@ public class Maze {
 
     public enum TILEROLE{
         ENTRANCE,
-        WAYPOINTS,
+        WAYPOINT,
         DEADEND,
         EXIT,
         EMPTY
@@ -60,7 +60,7 @@ public class Maze {
         //Set exits
         list = generatedMaze.get(width-1);
         for(int i = 0; i < exits; i++){
-            int randomInt = ThreadLocalRandom.current().nextInt(1,width)-1;
+            int randomInt = ThreadLocalRandom.current().nextInt(0,width-1);
             if(list.get(randomInt) != TILEROLE.EXIT){
                 list.set(randomInt, TILEROLE.EXIT);
             }else{
@@ -69,8 +69,18 @@ public class Maze {
         }
 
         //Set waypoints
-        for(int i = 0; i < waypoints; i++){
+        for(int i = 1; i < Math.min(waypoints, (length-2)/2); i++){
+            RecurseRandom(list, i);
+        }
+    }
 
+    private void RecurseRandom(ArrayList<TILEROLE> list, int i){
+        int randomIntLength = ThreadLocalRandom.current().nextInt(1, length-2);
+        list = generatedMaze.get(randomIntLength);
+        if(list.get(i) != TILEROLE.WAYPOINT){
+            list.set(i, TILEROLE.WAYPOINT);
+        }else{
+            RecurseRandom(list, i);
         }
     }
 
