@@ -20,31 +20,36 @@ public class GenerateMazeCommand implements CommandExecutor {
             if (player.isOp()) {
                 Maze maze = new Maze(20,20, 6, 2, 2, 1);
                 maze.generateMaze();
-                String message = "";
+                StringBuilder message = new StringBuilder();
                 for (ArrayList<Maze.TILEROLE> i: maze.getMaze())
                 {
                     for (Maze.TILEROLE j: i)
                     {
                         switch (j){
                             case EMPTY:
-                                message += "O ";
+                                message.append("O ");
                                 break;
 
                             case ENTRANCE:
-                                message += "# ";
+                                message.append("# ");
                                 break;
 
                             case EXIT:
-                                message += "E ";
+                                message.append("E ");
+                                break;
+
+                            case WAYPOINT:
+                                message.append("P ");
+                                break;
 
                             default:
                                 break;
                         }
                     }
-                    message += "\n\n";
+                    message.append("\n\n");
                 }
 
-                player.sendMessage(message);
+                player.sendMessage(message.toString());
             }
         }
 
