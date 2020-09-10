@@ -69,7 +69,7 @@ public class Maze {
         }
         //test
         //Set waypoints
-        for(int i = 1; i < Math.min(waypoints, (length-2)/2); i++){
+        for(int i = 1; i < Math.max(3,Math.min(waypoints, (length-2)/2)); i++){
             RecurseRandom(list, i);
         }
     }
@@ -77,7 +77,7 @@ public class Maze {
     private void RecurseRandom(ArrayList<TILEROLE> list, int i){
         int randomIntLength = ThreadLocalRandom.current().nextInt(1, length-2);
         list = generatedMaze.get(randomIntLength);
-        if(list.get(i) != TILEROLE.WAYPOINT){
+        if(!list.contains(TILEROLE.WAYPOINT)){
             list.set(i, TILEROLE.WAYPOINT);
         }else{
             RecurseRandom(list, i);
