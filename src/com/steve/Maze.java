@@ -109,18 +109,18 @@ public class Maze {
         }
 
         //Astar PathFinding
-        ArrayList<ArrayList<Integer>> pathfindGrid = new ArrayList<>();
-
-        //Initialising
-        for (int i = 0; i < width; i++) {
-            ArrayList<Integer> list = new ArrayList<>();
-
-            for (int j = 0; j < length; j++) {
-                list.add(0);
-            }
-
-            pathfindGrid.add(list);
-        }
+//        ArrayList<ArrayList<Integer>> pathfindGrid = new ArrayList<>();
+//
+//        //Initialising
+//        for (int i = 0; i < width; i++) {
+//            ArrayList<Integer> list = new ArrayList<>();
+//
+//            for (int j = 0; j < length; j++) {
+//                list.add(0);
+//            }
+//
+//            pathfindGrid.add(list);
+//        }
 
         Vector destination;
         ArrayList<Vector> usedWaypoints = new ArrayList<>();
@@ -151,7 +151,7 @@ public class Maze {
             }
         }
 
-        return v;
+        return closestVector;
     }
 
     private void routePathFinding(Vector a, Vector b){

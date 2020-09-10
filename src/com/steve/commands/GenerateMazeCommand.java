@@ -47,6 +47,7 @@ public class GenerateMazeCommand implements CommandExecutor {
                                 message.append("@ ");
                                 Bukkit.getLogger().info("PAth");
                                 break;
+
                             default:
                                 break;
                         }
