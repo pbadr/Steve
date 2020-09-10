@@ -10,6 +10,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -75,9 +78,21 @@ public class EventListener implements Listener {
             Player p = (Player) e.getEntity();
             ItemStack itemTnt = new ItemStack(Material.TNT);
 
+            BukkitScheduler scheduler = p.getServer().getScheduler();
+
             if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
                 p.getInventory().setHelmet(new ItemStack(Material.AIR));
+
             } else {
+
+                scheduler.scheduleSyncDelayedTask(Main.main, () -> {
+                    if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
+                        p.setHealth(0);
+
+                        p.getWorld().createExplosion(p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 4F);
+                    }
+                }, 100);
+
                 p.getInventory().setHelmet(itemTnt);
             }
 
