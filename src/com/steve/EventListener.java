@@ -1,9 +1,6 @@
 package com.steve;
 
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,25 +10,18 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public class EventListener implements Listener {
-
-    JavaPlugin main;
-
     public EventListener(Main main) {
-        this.main = main;
-        main.getServer().getPluginManager().registerEvents(this, main);
+        Bukkit.getServer().getPluginManager().registerEvents(this, main);
     }
 
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-        Server server = p.getServer();
         UUID uuid = p.getUniqueId();
         String n = p.getName();
         String m = e.getMessage();
@@ -47,9 +37,7 @@ public class EventListener implements Listener {
             prefix = String.format(ChatColor.GRAY + "[%s] ", gamesWon);
         }
 
-        Bukkit.getLogger().info(String.format("%s%s > %s", prefix, n, m));
-        server.broadcastMessage(String.format("%s%s > %s", prefix, n, m));
-
+        Bukkit.broadcastMessage(String.format("%s%s > %s", prefix, n, m));
     }
 
     @EventHandler
@@ -60,10 +48,10 @@ public class EventListener implements Listener {
         long currentTime = System.currentTimeMillis();
 
         if (PlayerData.exists(uuid)) {
-            e.setJoinMessage(ChatColor.GREEN + n + " joined");
             PlayerData.get(uuid).lastOnlineTimestamp = currentTime;
+            e.setJoinMessage(ChatColor.GREEN + n + " joined");
         } else {
-            Const.allPlayerData.add(new PlayerData(n, uuid, currentTime));
+            PlayerData.addNew(n, uuid, currentTime);
             e.setJoinMessage(ChatColor.GREEN + n + " joined for the first time!");
         }
     }
@@ -73,49 +61,47 @@ public class EventListener implements Listener {
         Player p = e.getPlayer();
         UUID uuid = p.getUniqueId();
         String n = p.getName();
+
         PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
         e.setQuitMessage(ChatColor.GREEN + n + " left");
     }
 
 
     @EventHandler
-    public void onPlayerHit(EntityDamageByEntityEvent e) {
+    public void onPlayerHitByEntity(EntityDamageByEntityEvent e) {
 
         if(e.getEntity() instanceof Player) {
             Player p = (Player) e.getEntity();
-            ItemStack tntBlock = new ItemStack(Material.TNT);
+            ItemStack itemTnt = new ItemStack(Material.TNT);
 
-            if(Objects.equals(p.getInventory().getHelmet(), tntBlock)) {
+            if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
                 p.getInventory().setHelmet(new ItemStack(Material.AIR));
             } else {
-                p.getInventory().setHelmet(tntBlock);
+                p.getInventory().setHelmet(itemTnt);
             }
-
 
         }
 
-        if(e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
+        if(e.getDamager() instanceof Player) {
             Player pHit = (Player) e.getEntity();
             Player pDamage = (Player) e.getDamager();
-            Server server = pHit.getServer();
 
             String pHitName = pHit.getName();
             String pDamageName = pDamage.getName();
 
-            Bukkit.getLogger().info(String.format("%s was hit by %s", pHitName, pDamageName));
-            server.broadcastMessage(String.format("%s got hit by %s", pHitName, pDamageName));
+            Bukkit.broadcastMessage(String.format("%s got hit by %s", pHitName, pDamageName));
 
         }
     }
 
     @EventHandler
-    public void onPlayerWalkOnBlock(PlayerMoveEvent e) {
-        Location pos = e.getTo();
-        Player p = e.getPlayer();
+    public void onPlayerMove(PlayerMoveEvent e) {
+        // Location pos = e.getTo();
+        // Player p = e.getPlayer();
 
-        if(pos == null) return;
+        // if(pos == null) return;
 
-        Block b = pos.clone().subtract(0,1,0).getBlock();
+        // Block b = pos.clone().subtract(0,1,0).getBlock();
         //p.sendMessage("Block = " + b.getBlockData().getAsString());
     }
 

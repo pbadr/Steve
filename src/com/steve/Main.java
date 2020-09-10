@@ -1,7 +1,9 @@
 package com.steve;
 
-import com.steve.Commands.GenerateMazeCommand;
-import com.steve.Commands.PlatformCommand;
+import com.steve.commands.GenerateMazeCommand;
+import com.steve.commands.PlatformCommand;
+import com.steve.commands.PlayerDataCmd;
+import com.steve.commands.social.AddFriend;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -9,20 +11,20 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Const.readData();
+        PlayerData.readDisk();
         new EventListener(this);
 
-        // >spawnplatform
+        getCommand("friend").setExecutor((new AddFriend()));
+        getCommand("generatemaze").setExecutor(new GenerateMazeCommand());
+        getCommand("playerdata").setExecutor(new PlayerDataCmd());
         getCommand("spawnplatform").setExecutor(new PlatformCommand());
 
-        // >generatemaze
-        getCommand("generatemaze").setExecutor(new GenerateMazeCommand());
         Bukkit.getLogger().info("Enabled");
     }
 
     @Override
     public void onDisable() {
-        Const.writeData();
+        PlayerData.writeDisk();
         Bukkit.getLogger().info("Disabled");
     }
 }

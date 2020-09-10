@@ -3,9 +3,15 @@ version: "1.0"
 author: "lord steve"
 main: com.steve.Main
 commands:
+  playerdata:
+    description: modify playerdata manually
+    usage: /<command>
   spawnplatform:
     description: ok
     usage: /<command>
   generatemaze:
     description: ok
+    usage: /<command>
+  friend:
+    description: friend parent command
     usage: /<command>
