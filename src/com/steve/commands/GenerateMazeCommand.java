@@ -1,6 +1,7 @@
-package com.steve.Commands;
+package com.steve.commands;
 
 import com.steve.Maze;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -44,6 +45,7 @@ public class GenerateMazeCommand implements CommandExecutor {
                                 
                             case PATH:
                                 message.append("@ ");
+                                Bukkit.getLogger().info("PAth");
                                 break;
                             default:
                                 break;
@@ -52,7 +54,7 @@ public class GenerateMazeCommand implements CommandExecutor {
                     message.append("\n\n");
                 }
 
-                player.sendMessage(message.toString());
+                Bukkit.getLogger().info("\n" + message.toString());
             }
         }
 

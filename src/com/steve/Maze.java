@@ -1,5 +1,6 @@
 package com.steve;
 
+import org.bukkit.Bukkit;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -126,6 +127,7 @@ public class Maze {
         for (int i = 0; i < entrances; i++) {
             //Get closest waypoint to route it towards
             destination = nearestVector(entranceList.get(i),waypointList);
+            Bukkit.getLogger().info("" + (int) destination.getX() + " , " + (int) destination.getY());
             //Insert pathfinding function
             routePathFinding(entranceList.get(i), destination);
             usedWaypoints.add(destination);
