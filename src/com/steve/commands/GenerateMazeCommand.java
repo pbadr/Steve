@@ -1,4 +1,4 @@
-package com.steve.commands;
+package com.steve.Commands;
 
 import com.steve.Maze;
 import org.bukkit.command.Command;
@@ -41,7 +41,10 @@ public class GenerateMazeCommand implements CommandExecutor {
                             case WAYPOINT:
                                 message.append("P ");
                                 break;
-
+                                
+                            case PATH:
+                                message.append("@ ");
+                                break;
                             default:
                                 break;
                         }

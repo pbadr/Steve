@@ -66,7 +66,7 @@ public class Maze {
                 row.set(randomInt, TILEROLE.ENTRANCE);
                 entranceList.add(new Vector().setX(0).setY(randomInt));
             }else{
-                row.set((randomInt+(width-1)/2)%width-1, TILEROLE.ENTRANCE);
+                row.set((randomInt+width/2)%width, TILEROLE.ENTRANCE);
                 entranceList.add(new Vector().setX(0).setY((randomInt+(width-1)/2)%width-1));
             }
         }
@@ -81,10 +81,10 @@ public class Maze {
 
             if(row.get(randomInt) != TILEROLE.EXIT){
                 row.set(randomInt, TILEROLE.EXIT);
-                exitList.add(new Vector().setX(width-1).setY(randomInt));
+                exitList.add(new Vector().setX(width).setY(randomInt));
             }else{
-                row.set((randomInt+(width-1)/2)%width-1, TILEROLE.EXIT);
-                exitList.add(new Vector().setX(width-1).setY((randomInt+(width-1)/2)%width-1));
+                row.set((randomInt+width/2)%width, TILEROLE.EXIT);
+                exitList.add(new Vector().setX(width).setY((randomInt+(width-1)/2)%width-1));
             }
         }
 
