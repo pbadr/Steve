@@ -52,12 +52,18 @@ public class AddFriend implements CommandExecutor {
                             System.out.println(offlinePlayer.getUniqueId());
 
                             if(PlayerData.get(p.getUniqueId()).friendsAdded.contains(offlinePlayer.getUniqueId().toString())) {
-                                PlayerData.get(p.getUniqueId()).friendsAdded.add(offlinePlayer.getUniqueId().toString());
+                                p.sendMessage("Player already added!");
+
                             } else {
-                                p.sendMessage("PLayer has never played before!");
+                                if(offlinePlayer == null) {
+                                    p.sendMessage("Player has not played before!");
+                                } else {
+                                    PlayerData.get(p.getUniqueId()).friendsAdded.add(offlinePlayer.getUniqueId().toString());
+                                    p.sendMessage(String.format("%s added %s as friend!", n, args[1]));
+                                }
                             }
 
-                            p.sendMessage(String.format("%s added %s as friend!", n, args[1]));
+
                         } else {
                             p.sendMessage("You cannot add yourself as a friend");
                         }
