@@ -55,7 +55,7 @@ public class AddFriend implements CommandExecutor {
                                 p.sendMessage("Player already added!");
 
                             } else {
-                                if(offlinePlayer == null) {
+                                if(offlinePlayer.getName() == null) {
                                     p.sendMessage("Player has not played before!");
                                 } else {
                                     PlayerData.get(p.getUniqueId()).friendsAdded.add(offlinePlayer.getUniqueId().toString());
