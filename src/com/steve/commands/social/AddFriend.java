@@ -39,7 +39,8 @@ public class AddFriend implements CommandExecutor {
                         friends.add(offlinePlayer.getName());
                     }
 
-                    p.sendMessage(String.format("Total friends (%s)\n" + Arrays.toString(friends.toArray()) + "", friends.size()));
+                    p.sendMessage(String.format("Total friends (%s)\n" + Arrays.toString(friends.toArray()) + ""
+                            , friends.size()));
                 }
 
 
@@ -48,22 +49,20 @@ public class AddFriend implements CommandExecutor {
                 if(args[0].toLowerCase().equals("add")) {
                     if(args.length > 1) {
                         if(!args[1].equals(n)) {
+
                             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
                             System.out.println(offlinePlayer.getUniqueId());
 
                             if(PlayerData.get(p.getUniqueId()).friendsAdded.contains(offlinePlayer.getUniqueId().toString())) {
                                 p.sendMessage("Player already added!");
-
                             } else {
-                                if(offlinePlayer.getName() == null) {
-                                    p.sendMessage("Player has not played before!");
-                                } else {
+                                if(offlinePlayer.hasPlayedBefore()) {
                                     PlayerData.get(p.getUniqueId()).friendsAdded.add(offlinePlayer.getUniqueId().toString());
                                     p.sendMessage(String.format("%s added %s as friend!", n, args[1]));
+                                } else {
+                                    p.sendMessage("Player has never played before!");
                                 }
                             }
-
-
                         } else {
                             p.sendMessage("You cannot add yourself as a friend");
                         }
@@ -95,7 +94,8 @@ public class AddFriend implements CommandExecutor {
             } catch(Exception e) {
                 System.out.println(e);
                 p.sendMessage("Add a friend with /friend add <username>\n" +
-                                "Remove a friend with /friend remove <username>");
+                                "Remove a friend with /friend remove <username>\n" +
+                                "Check friend list with /friend list");
             }
         }
 
