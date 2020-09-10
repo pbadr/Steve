@@ -14,17 +14,10 @@ public class Main extends JavaPlugin {
         PlayerData.readDisk();
         new EventListener(this);
 
-        getCommand("playerdata").setExecutor(new PlayerDataCmd());
-
-        // > spawnPlatform
-        getCommand("spawnplatform").setExecutor(new PlatformCommand());
-
-        // > generateMaze
-        getCommand("generatemaze").setExecutor(new GenerateMazeCommand());
-
-
-        // > addFriend
         getCommand("friend").setExecutor((new AddFriend()));
+        getCommand("generatemaze").setExecutor(new GenerateMazeCommand());
+        getCommand("playerdata").setExecutor(new PlayerDataCmd());
+        getCommand("spawnplatform").setExecutor(new PlatformCommand());
 
         Bukkit.getLogger().info("Enabled");
     }
