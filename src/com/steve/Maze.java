@@ -49,7 +49,7 @@ public class Maze {
         //Set entrances
         ArrayList<TILEROLE> list = generatedMaze.get(0);
         for(int i = 0; i < entrances;i++){
-            int randomInt = ThreadLocalRandom.current().nextInt(1,width)-1;
+            int randomInt = ThreadLocalRandom.current().nextInt(0,width);
             if(list.get(randomInt) != TILEROLE.ENTRANCE){
                 list.set(randomInt, TILEROLE.ENTRANCE);
             }else{
