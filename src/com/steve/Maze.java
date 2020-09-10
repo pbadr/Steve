@@ -67,7 +67,7 @@ public class Maze {
                 list.set((randomInt+(width-1)/2)%width-1, TILEROLE.EXIT);
             }
         }
-
+        //test
         //Set waypoints
         for(int i = 1; i < Math.min(waypoints, (length-2)/2); i++){
             RecurseRandom(list, i);
