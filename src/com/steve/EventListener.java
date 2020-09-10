@@ -10,9 +10,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class EventListener implements Listener {
     public EventListener(Main main) {
@@ -29,15 +33,15 @@ public class EventListener implements Listener {
         e.setCancelled(true);
 
         int gamesWon = PlayerData.get(uuid).gamesWon;
+        ChatColor winsColor = Util.getWinsColor(gamesWon);
 
-        String prefix;
+        String msg = "";
         if (gm == GameMode.SPECTATOR) {
-            prefix = String.format(ChatColor.DARK_GRAY + "[S]" + ChatColor.UNDERLINE +"[%s]", gamesWon);
-        } else {
-            prefix = String.format(ChatColor.GRAY + "[%s] ", gamesWon);
+            msg += "&o[DEAD]";
         }
 
-        Bukkit.broadcastMessage(String.format("%s%s > %s", prefix, n, m));
+        msg += String.format("%s[%s] %s &o> &w%s", winsColor, gamesWon, n, m);
+        Util.broadcast(msg);
     }
 
     @EventHandler
@@ -49,10 +53,10 @@ public class EventListener implements Listener {
 
         if (PlayerData.exists(uuid)) {
             PlayerData.get(uuid).lastOnlineTimestamp = currentTime;
-            e.setJoinMessage(ChatColor.GREEN + n + " joined");
+            e.setJoinMessage(Util.format("&g" + n + " joined"));
         } else {
             PlayerData.addNew(n, uuid, currentTime);
-            e.setJoinMessage(ChatColor.GREEN + n + " joined for the first time!");
+            e.setJoinMessage(Util.format("&g" + n + " joined for the first time!"));
         }
     }
 
@@ -63,7 +67,7 @@ public class EventListener implements Listener {
         String n = p.getName();
 
         PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
-        e.setQuitMessage(ChatColor.GREEN + n + " left");
+        e.setQuitMessage(Util.format("&r" + n + " left"));
     }
 
 
@@ -74,9 +78,23 @@ public class EventListener implements Listener {
             Player p = (Player) e.getEntity();
             ItemStack itemTnt = new ItemStack(Material.TNT);
 
+            BukkitScheduler scheduler = p.getServer().getScheduler();
+
             if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
                 p.getInventory().setHelmet(new ItemStack(Material.AIR));
+
             } else {
+
+                scheduler.scheduleSyncDelayedTask(Main.main, () -> {
+                    if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
+
+                        p.damage(p.getHealth());
+
+                        p.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 50);
+                        p.getWorld().createExplosion(p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 4F);
+                    }
+                }, 100);
+
                 p.getInventory().setHelmet(itemTnt);
             }
 
@@ -89,7 +107,7 @@ public class EventListener implements Listener {
             String pHitName = pHit.getName();
             String pDamageName = pDamage.getName();
 
-            Bukkit.broadcastMessage(String.format("%s got hit by %s", pHitName, pDamageName));
+            Util.broadcast(String.format("&r%s&t got hit by %s", pHitName, pDamageName));
 
         }
     }
