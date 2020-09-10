@@ -89,6 +89,7 @@ public class EventListener implements Listener {
                     if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
                         p.setHealth(0);
 
+                        p.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 50);
                         p.getWorld().createExplosion(p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 4F);
                     }
                 }, 100);
