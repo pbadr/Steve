@@ -79,7 +79,7 @@ public class Maze {
         int randomIntWidth = ThreadLocalRandom.current().nextInt(0, width-1);
         list = generatedMaze.get(randomIntLength);
         if(!list.contains(TILEROLE.WAYPOINT)){
-            list.set(i, TILEROLE.WAYPOINT);
+            list.set(randomIntWidth, TILEROLE.WAYPOINT);
         }else{
             RecurseRandom(list, i);
         }
