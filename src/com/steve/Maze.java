@@ -1,8 +1,6 @@
 package com.steve;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Maze {

@@ -1,7 +1,6 @@
 package com.steve.commands.social;
-
-import com.steve.Main;
 import com.steve.PlayerData;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -14,8 +13,6 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class AddFriend implements CommandExecutor {
-
-    static Main plugin;
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
@@ -98,7 +95,6 @@ public class AddFriend implements CommandExecutor {
                                 "Check friend list with /friend list");
             }
         }
-
 
         return true;
     }
