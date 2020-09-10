@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
 
 import java.io.FileWriter;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -110,6 +111,26 @@ public class PlayerData {
         }
 
         return false;
+    }
+
+    public static Object reflectSet(Object object, String fieldName, Object fieldValue) {
+        // by sp00m, source: https://stackoverflow.com/a/14374995/13216113
+
+        Class<?> clazz = object.getClass();
+        while (clazz != null) {
+            try {
+                Field field = clazz.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                field.set(object, fieldValue);
+                return fieldValue;
+            } catch (NoSuchFieldException e) {
+                clazz = clazz.getSuperclass();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        return null;
     }
 
 }

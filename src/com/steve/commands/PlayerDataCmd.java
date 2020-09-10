@@ -41,8 +41,11 @@ public class PlayerDataCmd implements CommandExecutor {
 
                 for (String modifiableInt : modifiableInts) {
                     if (property.equals(modifiableInt)) {
-                        Util.reflectSet(target, property, value);
-                        commandSender.sendMessage(ChatColor.GREEN + "Success!"); // @todo add nice message
+                        Object newValue = PlayerData.reflectSet(target, property, value);
+                        commandSender.sendMessage(Util.format(String.format(
+                                "&gSet %s to %s of %s", property, newValue, target.name
+                        )));
+
                         return true;
                     }
                 }

@@ -30,15 +30,15 @@ public class EventListener implements Listener {
         e.setCancelled(true);
 
         int gamesWon = PlayerData.get(uuid).gamesWon;
-        ChatColor winsColor = Util.getWinsColor(ThreadLocalRandom.current().nextInt(0, 101)); // Util.getWinsColor(gamesWon);
+        ChatColor winsColor = Util.getWinsColor(gamesWon);
 
-        String formatted = "";
+        String msg = "";
         if (gm == GameMode.SPECTATOR) {
-            formatted += ChatColor.GRAY + "[DEAD]";
+            msg += "&o[DEAD]";
         }
 
-        formatted += String.format("%s[%s] %s %s> %s", winsColor, gamesWon, n, ChatColor.GRAY, ChatColor.WHITE + m);
-        Bukkit.broadcastMessage(formatted);
+        msg += String.format("%s[%s] %s &o> &w%s", winsColor, gamesWon, n, m);
+        Util.broadcast(msg);
     }
 
     @EventHandler
@@ -50,10 +50,10 @@ public class EventListener implements Listener {
 
         if (PlayerData.exists(uuid)) {
             PlayerData.get(uuid).lastOnlineTimestamp = currentTime;
-            e.setJoinMessage(ChatColor.GREEN + n + " joined");
+            e.setJoinMessage(Util.format("&g" + n + " joined"));
         } else {
             PlayerData.addNew(n, uuid, currentTime);
-            e.setJoinMessage(ChatColor.GREEN + n + " joined for the first time!");
+            e.setJoinMessage(Util.format("&g" + n + " joined for the first time!"));
         }
     }
 
@@ -64,7 +64,7 @@ public class EventListener implements Listener {
         String n = p.getName();
 
         PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
-        e.setQuitMessage(ChatColor.GREEN + n + " left");
+        e.setQuitMessage(Util.format("&r" + n + " left"));
     }
 
 
@@ -90,7 +90,7 @@ public class EventListener implements Listener {
             String pHitName = pHit.getName();
             String pDamageName = pDamage.getName();
 
-            Bukkit.broadcastMessage(String.format("%s got hit by %s", pHitName, pDamageName));
+            Util.broadcast(String.format("&r%s&t got hit by %s", pHitName, pDamageName));
 
         }
     }
