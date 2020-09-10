@@ -87,7 +87,8 @@ public class EventListener implements Listener {
 
                 scheduler.scheduleSyncDelayedTask(Main.main, () -> {
                     if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
-                        p.setHealth(0);
+
+                        p.damage(p.getHealth());
 
                         p.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 50);
                         p.getWorld().createExplosion(p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 4F);
