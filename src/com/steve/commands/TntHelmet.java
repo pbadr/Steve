@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class TntHelmetCmd implements CommandExecutor {
+public class TntHelmet implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         int index = ThreadLocalRandom.current().nextInt(Bukkit.getOnlinePlayers().size());
         Object[] players = Bukkit.getOnlinePlayers().toArray();
