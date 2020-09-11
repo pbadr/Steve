@@ -3,6 +3,7 @@ package com.steve;
 import com.steve.commands.GenerateMazeCommand;
 import com.steve.commands.PlatformCommand;
 import com.steve.commands.PlayerDataCmd;
+import com.steve.commands.TntHelmetCmd;
 import com.steve.commands.social.AddFriend;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,7 +27,8 @@ public class Main extends JavaPlugin {
 
         new EventListener(main);
 
-        getCommand("friend").setExecutor((new AddFriend()));
+        getCommand("tnthelmet").setExecutor(new TntHelmetCmd());
+        getCommand("friend").setExecutor(new AddFriend());
         getCommand("generatemaze").setExecutor(new GenerateMazeCommand());
         getCommand("playerdata").setExecutor(new PlayerDataCmd());
         getCommand("spawnplatform").setExecutor(new PlatformCommand());

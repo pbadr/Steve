@@ -10,13 +10,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class EventListener implements Listener {
     public EventListener(Main main) {
@@ -72,49 +66,33 @@ public class EventListener implements Listener {
 
 
     @EventHandler
-    public void onPlayerHitByEntity(EntityDamageByEntityEvent e) {
+    public void onPlayerHitByPlayer(EntityDamageByEntityEvent e) {
 
-        if(e.getEntity() instanceof Player) {
+        if(e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
+            System.out.println("test1");
             Player p = (Player) e.getEntity();
-            ItemStack itemTnt = new ItemStack(Material.TNT);
+            Player pDamager = (Player) e.getDamager();
 
-            if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
-                p.getInventory().setHelmet(new ItemStack(Material.AIR));
+            if (!Util.playerTntTask.containsKey(p.getName()) && Util.playerTntTask.containsKey(pDamager.getName()) &&
+                    Bukkit.getScheduler().isCurrentlyRunning(Util.playerTntTask.get(pDamager.getName()))) {
+                System.out.println("test2");
+                // player hit by tnt bearer
 
-            } else {
+                Bukkit.getScheduler().cancelTask(Util.playerTntTask.get(pDamager.getName()));
+                Util.createTntTask(p);
+                Util.playerTntTask.remove(pDamager.getName());
 
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.main, () -> {
-                    if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
-
-                        p.damage(p.getHealth());
-
-                        World w = p.getWorld();
-                        Location pos = p.getLocation();
-
-                        w.spawnParticle(Particle.EXPLOSION_HUGE, pos, 50);
-                        w.createExplosion(pos, 4f);
-                    }
-                }, 100);
-
-                p.getInventory().setHelmet(itemTnt);
+                p.getInventory().setHelmet(new ItemStack(Material.TNT));
+                pDamager.getInventory().setHelmet(new ItemStack(Material.AIR));
+                Util.broadcast(String.format("&r%s&t got hit by %s", p.getName(), pDamager.getName()));
             }
-
-        }
-
-        if(e.getDamager() instanceof Player) {
-            Player pHit = (Player) e.getEntity();
-            Player pDamage = (Player) e.getDamager();
-
-            String pHitName = pHit.getName();
-            String pDamageName = pDamage.getName();
-
-            Util.broadcast(String.format("&r%s&t got hit by %s", pHitName, pDamageName));
-
         }
     }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
+
+
         // Location pos = e.getTo();
         // Player p = e.getPlayer();
 
