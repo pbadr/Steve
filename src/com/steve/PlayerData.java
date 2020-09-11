@@ -99,7 +99,7 @@ public class PlayerData {
         return new PlayerData("ERROR", UUID.fromString(""), 0); // @todo cleanup
     }
 
-    public static void addNew(String name, UUID uuid, long currentTime) {
+    public static void register(String name, UUID uuid, long currentTime) {
         ALL_DATA.add(new PlayerData(name, uuid, currentTime));
     }
 
