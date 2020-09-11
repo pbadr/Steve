@@ -2,6 +2,9 @@ package com.steve;
 
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -13,22 +16,26 @@ public class Util {
     static final String PLUGINS_PATH = "plugins/Steve.jar";
     // static final String worldsPath = "worlds/";
 
-    static final HashMap<String, Integer> playerTntTask = new HashMap<>();
+    static final HashMap<Player, Integer> playerExplodeTask = new HashMap<>();
 
-    public static void createTntTask(Player p) {
-        System.out.println("test3");
+    public static void explodePlayerTask(Player p) {
         int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.main, () -> {
+            playerExplodeTask.remove(p);
             p.damage(p.getHealth());
 
             World w = p.getWorld();
             Location pos = p.getLocation();
 
             w.spawnParticle(Particle.CLOUD, pos, 10);
-            w.createExplosion(pos, 4f);
+            // w.createExplosion(pos, 4f);
 
         }, 100);
+        playerExplodeTask.put(p, task);
 
-        playerTntTask.put(p.getName(), task);
+        Util.steveBroadcast(p.getName() + " is about to explode!");
+        p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3));
+        p.getInventory().setHelmet(new ItemStack(Material.TNT));
+        System.out.println(playerExplodeTask.keySet().toString());
     }
 
     private static final LinkedHashMap<Integer, ChatColor> winsColors;

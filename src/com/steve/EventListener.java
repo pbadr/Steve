@@ -10,6 +10,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import java.util.UUID;
 
 public class EventListener implements Listener {
@@ -73,18 +76,18 @@ public class EventListener implements Listener {
             Player p = (Player) e.getEntity();
             Player pDamager = (Player) e.getDamager();
 
-            if (!Util.playerTntTask.containsKey(p.getName()) && Util.playerTntTask.containsKey(pDamager.getName()) &&
-                    Bukkit.getScheduler().isCurrentlyRunning(Util.playerTntTask.get(pDamager.getName()))) {
+            if (!Util.playerExplodeTask.containsKey(p) &&
+                    Util.playerExplodeTask.containsKey(pDamager)) {
                 System.out.println("test2");
                 // player hit by tnt bearer
 
-                Bukkit.getScheduler().cancelTask(Util.playerTntTask.get(pDamager.getName()));
-                Util.createTntTask(p);
-                Util.playerTntTask.remove(pDamager.getName());
+                Bukkit.getScheduler().cancelTask(Util.playerExplodeTask.get(pDamager));
+                Util.explodePlayerTask(p);
+                Util.playerExplodeTask.remove(pDamager);
 
-                p.getInventory().setHelmet(new ItemStack(Material.TNT));
+                pDamager.removePotionEffect(PotionEffectType.SPEED);
+                pDamager.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 0));
                 pDamager.getInventory().setHelmet(new ItemStack(Material.AIR));
-                Util.broadcast(String.format("&r%s&t got hit by %s", p.getName(), pDamager.getName()));
             }
         }
     }
