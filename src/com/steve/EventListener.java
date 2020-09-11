@@ -78,20 +78,21 @@ public class EventListener implements Listener {
             Player p = (Player) e.getEntity();
             ItemStack itemTnt = new ItemStack(Material.TNT);
 
-            BukkitScheduler scheduler = p.getServer().getScheduler();
-
             if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
                 p.getInventory().setHelmet(new ItemStack(Material.AIR));
 
             } else {
 
-                scheduler.scheduleSyncDelayedTask(Main.main, () -> {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.main, () -> {
                     if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
 
                         p.damage(p.getHealth());
 
-                        p.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 50);
-                        p.getWorld().createExplosion(p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 4F);
+                        World w = p.getWorld();
+                        Location pos = p.getLocation();
+
+                        w.spawnParticle(Particle.EXPLOSION_HUGE, pos, 50);
+                        w.createExplosion(pos, 4f);
                     }
                 }, 100);
 
