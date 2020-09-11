@@ -1,62 +1,82 @@
 package com.steve;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.bukkit.ChatColor.*;
+
 public class Util {
     static final String PLUGINS_PATH = "plugins/Steve.jar";
     // static final String worldsPath = "worlds/";
 
+    static final HashMap<String, Integer> playerTntTask = new HashMap<>();
+
+    public static void createTntTask(Player p) {
+        System.out.println("test3");
+        int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.main, () -> {
+            p.damage(p.getHealth());
+
+            World w = p.getWorld();
+            Location pos = p.getLocation();
+
+            w.spawnParticle(Particle.CLOUD, pos, 10);
+            w.createExplosion(pos, 4f);
+
+        }, 100);
+
+        playerTntTask.put(p.getName(), task);
+    }
+
     private static final LinkedHashMap<Integer, ChatColor> winsColors;
     static {
         winsColors = new LinkedHashMap<>();
-        winsColors.put(0, ChatColor.DARK_GRAY);
-        winsColors.put(5, ChatColor.GRAY);
-        winsColors.put(10, ChatColor.WHITE);
-        winsColors.put(15, ChatColor.YELLOW);
-        winsColors.put(20, ChatColor.GOLD);
-        winsColors.put(25, ChatColor.GREEN);
-        winsColors.put(30, ChatColor.DARK_GREEN);
-        winsColors.put(40, ChatColor.AQUA);
-        winsColors.put(50, ChatColor.DARK_AQUA);
-        winsColors.put(60, ChatColor.BLUE);
-        winsColors.put(70, ChatColor.LIGHT_PURPLE);
-        winsColors.put(80, ChatColor.DARK_PURPLE);
-        winsColors.put(90, ChatColor.RED);
-        winsColors.put(100, ChatColor.DARK_RED);
+        winsColors.put(0, DARK_GRAY);
+        winsColors.put(5, GRAY);
+        winsColors.put(10, WHITE);
+        winsColors.put(15, YELLOW);
+        winsColors.put(20, GOLD);
+        winsColors.put(25, GREEN);
+        winsColors.put(30, DARK_GREEN);
+        winsColors.put(40, AQUA);
+        winsColors.put(50, DARK_AQUA);
+        winsColors.put(60, BLUE);
+        winsColors.put(70, LIGHT_PURPLE);
+        winsColors.put(80, DARK_PURPLE);
+        winsColors.put(90, RED);
+        winsColors.put(100, DARK_RED);
     }
 
     private static final String formatChar = "&";
     private static final HashMap<String, ChatColor> formatColors;
     static {
         formatColors = new HashMap<>();
-        formatColors.put("R", ChatColor.DARK_RED);
-        formatColors.put("r", ChatColor.RED);
-        formatColors.put("Y", ChatColor.GOLD);
-        formatColors.put("y", ChatColor.YELLOW);
-        formatColors.put("G", ChatColor.DARK_GREEN);
-        formatColors.put("g", ChatColor.GREEN);
-        formatColors.put("a", ChatColor.AQUA);
-        formatColors.put("A", ChatColor.DARK_AQUA);
-        formatColors.put("B", ChatColor.DARK_BLUE);
-        formatColors.put("b", ChatColor.BLUE);
-        formatColors.put("P", ChatColor.LIGHT_PURPLE);
-        formatColors.put("p", ChatColor.DARK_PURPLE);
-        formatColors.put("w", ChatColor.WHITE);
-        formatColors.put("o", ChatColor.GRAY);
-        formatColors.put("O", ChatColor.DARK_GRAY);
-        formatColors.put("0", ChatColor.BLACK);
+        formatColors.put("R", DARK_RED);
+        formatColors.put("r", RED);
+        formatColors.put("Y", GOLD);
+        formatColors.put("y", YELLOW);
+        formatColors.put("G", DARK_GREEN);
+        formatColors.put("g", GREEN);
+        formatColors.put("a", AQUA);
+        formatColors.put("A", DARK_AQUA);
+        formatColors.put("B", DARK_BLUE);
+        formatColors.put("b", BLUE);
+        formatColors.put("P", LIGHT_PURPLE);
+        formatColors.put("p", DARK_PURPLE);
+        formatColors.put("w", WHITE);
+        formatColors.put("o", GRAY);
+        formatColors.put("O", DARK_GRAY);
+        formatColors.put("0", BLACK);
 
-        formatColors.put("d", ChatColor.BOLD);
-        formatColors.put("i", ChatColor.ITALIC);
-        formatColors.put("m", ChatColor.MAGIC);
-        formatColors.put("u", ChatColor.UNDERLINE);
-        formatColors.put("s", ChatColor.STRIKETHROUGH);
-        formatColors.put("t", ChatColor.RESET);
+        formatColors.put("d", BOLD);
+        formatColors.put("i", ITALIC);
+        formatColors.put("m", MAGIC);
+        formatColors.put("u", UNDERLINE);
+        formatColors.put("s", STRIKETHROUGH);
+        formatColors.put("t", RESET);
     }
 
     public static ChatColor getWinsColor(int gamesWon) {
@@ -70,16 +90,16 @@ public class Util {
         return highestColor;
     }
 
-    public static void serverBroadcast(String msg) {
-        broadcast("&r[Server]&t " + msg);
+    public static void steveBroadcast(Object msg) {
+        broadcast("&r[Steve]&t " + msg);
     }
 
-    public static void broadcast(String msg) {
-        Bukkit.broadcastMessage(format(msg));
+    public static void broadcast(Object msg) {
+        Bukkit.broadcastMessage(format(msg.toString()));
     }
 
     public static void pluginIsBuilt() {
-        serverBroadcast("&g&dPLUGIN REBUILT!");
+        steveBroadcast("&g&dPLUGIN REBUILT!");
     }
 
     public static String format(String msg) {
