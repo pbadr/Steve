@@ -1,6 +1,8 @@
 package com.steve;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -52,7 +54,7 @@ public class EventListener implements Listener {
             PlayerData.get(uuid).lastOnlineTimestamp = currentTime;
             e.setJoinMessage(Util.format("&g" + n + " joined"));
         } else {
-            PlayerData.addNew(n, uuid, currentTime);
+            PlayerData.register(n, uuid, currentTime);
             e.setJoinMessage(Util.format("&g" + n + " joined for the first time!"));
         }
     }
@@ -76,14 +78,14 @@ public class EventListener implements Listener {
             Player p = (Player) e.getEntity();
             Player pDamager = (Player) e.getDamager();
 
-            if (!Util.playerExplodeTask.containsKey(p) &&
-                    Util.playerExplodeTask.containsKey(pDamager)) {
+            if (!Util.playerExplodeTasks.containsKey(p) &&
+                    Util.playerExplodeTasks.containsKey(pDamager)) {
                 System.out.println("test2");
                 // player hit by tnt bearer
 
-                Bukkit.getScheduler().cancelTask(Util.playerExplodeTask.get(pDamager));
+                Bukkit.getScheduler().cancelTask(Util.playerExplodeTasks.get(pDamager));
                 Util.explodePlayerTask(p);
-                Util.playerExplodeTask.remove(pDamager);
+                Util.playerExplodeTasks.remove(pDamager);
 
                 pDamager.removePotionEffect(PotionEffectType.SPEED);
                 pDamager.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 0));
@@ -93,15 +95,23 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e) {
+    public void onPlayerMove(PlayerMoveEvent e) { // @todo test
+        Location pos = e.getTo();
+        if (pos == null) return; // avoid null warning
+        pos = pos.clone();
+        Block b = pos.subtract(0,1,0).getBlock();
 
+        if (b.getMetadata("isFake").get(0).asBoolean()) {
+            Material blockMaterial = b.getType();
+            b.setType(Material.AIR);
+            b.removeMetadata("isFake", Main.plugin);
+            Location blockPos = b.getLocation().clone(); // @todo clone required or not? see blockPos.add...
+            World w = b.getWorld();
+            FallingBlock fb = w.spawnFallingBlock(blockPos.add(.5, .5 ,.5),
+                    Bukkit.createBlockData(blockMaterial));
 
-        // Location pos = e.getTo();
-        // Player p = e.getPlayer();
-
-        // if(pos == null) return;
-
-        // Block b = pos.clone().subtract(0,1,0).getBlock();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, fb::remove, 20);
+        }
         //p.sendMessage("Block = " + b.getBlockData().getAsString());
     }
 

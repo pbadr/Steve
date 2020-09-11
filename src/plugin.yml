@@ -18,3 +18,12 @@ commands:
   tnthelmet:
     description: boom
     usage: /<command>
+  test1:
+    description: test
+    usage :/<command>
+  test2:
+    description: test
+    usage :/<command>
+  test3:
+    description: test
+    usage :/<command>

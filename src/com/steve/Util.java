@@ -1,8 +1,10 @@
 package com.steve;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -16,11 +18,10 @@ public class Util {
     static final String PLUGINS_PATH = "plugins/Steve.jar";
     // static final String worldsPath = "worlds/";
 
-    static final HashMap<Player, Integer> playerExplodeTask = new HashMap<>();
-
+    static final HashMap<Player, Integer> playerExplodeTasks = new HashMap<>();
     public static void explodePlayerTask(Player p) {
-        int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.main, () -> {
-            playerExplodeTask.remove(p);
+        int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
+            playerExplodeTasks.remove(p);
             p.damage(p.getHealth());
 
             World w = p.getWorld();
@@ -30,12 +31,24 @@ public class Util {
             // w.createExplosion(pos, 4f);
 
         }, 100);
-        playerExplodeTask.put(p, task);
+        playerExplodeTasks.put(p, task);
 
         Util.steveBroadcast(p.getName() + " is about to explode!");
         p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3));
         p.getInventory().setHelmet(new ItemStack(Material.TNT));
-        System.out.println(playerExplodeTask.keySet().toString());
+        System.out.println(playerExplodeTasks.keySet().toString());
+    }
+
+    public static void createFakePlatform(Location pos) {
+        int size = 5;
+
+        for (int xOffset = 0; xOffset < size; xOffset++) {
+            for (int zOffset = 0; zOffset < size; zOffset++) {
+                Block b = pos.getBlock().getRelative(xOffset, 0, zOffset);
+                b.setType(Material.GOLD_BLOCK);
+                b.setMetadata("isFake", new FixedMetadataValue(Main.plugin, true));
+            }
+        }
     }
 
     private static final LinkedHashMap<Integer, ChatColor> winsColors;
@@ -106,7 +119,7 @@ public class Util {
     }
 
     public static void pluginIsBuilt() {
-        steveBroadcast("&g&dPLUGIN REBUILT!");
+        steveBroadcast("&g&dPLUGIN REBUILT - do /reload :)");
     }
 
     public static String format(String msg) {

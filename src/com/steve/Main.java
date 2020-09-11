@@ -1,37 +1,34 @@
 package com.steve;
 
-import com.steve.commands.GenerateMazeCommand;
-import com.steve.commands.PlatformCommand;
-import com.steve.commands.PlayerDataCmd;
-import com.steve.commands.TntHelmetCmd;
+import com.steve.commands.*;
 import com.steve.commands.social.AddFriend;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main extends JavaPlugin {
 
-    static Main main;
+    static Main plugin;
     TimerTask pluginFileWatcherTask;
 
     @Override
     public void onEnable() {
-        main = this;
+        plugin = this;
         PlayerData.readDisk();
         pluginFileWatcherTask = new PluginBuildWatcher();
         new Timer().schedule(pluginFileWatcherTask, new Date(), 1000);
 
-        new EventListener(main);
+        new EventListener(plugin);
 
-        getCommand("tnthelmet").setExecutor(new TntHelmetCmd());
+        getCommand("tnthelmet").setExecutor(new TntHelmet());
         getCommand("friend").setExecutor(new AddFriend());
-        getCommand("generatemaze").setExecutor(new GenerateMazeCommand());
+        getCommand("generatemaze").setExecutor(new GenerateMaze());
         getCommand("playerdata").setExecutor(new PlayerDataCmd());
-        getCommand("spawnplatform").setExecutor(new PlatformCommand());
+        getCommand("spawnplatform").setExecutor(new SpawnPlatform());
+        getCommand("test1").setExecutor(new Test1Cmd());
 
         Bukkit.getLogger().info("Enabled");
     }
