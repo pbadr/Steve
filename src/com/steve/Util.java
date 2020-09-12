@@ -8,6 +8,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,6 +18,28 @@ import static org.bukkit.ChatColor.*;
 public class Util {
     static final String PLUGINS_PATH = "plugins/Steve.jar";
     // static final String worldsPath = "worlds/";
+
+    public static void attemptPrepare() {
+        if (Bukkit.getOnlinePlayers().size() >= 2) {
+            Integer t = 0;
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+
+                t += 1;
+
+            }, 0, 1);
+            starting();
+        }
+    }
+
+    public static void start() {
+        Main.gameState = GameState.STARTING;
+        Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+        steveBroadcast(GREEN + "Starting");
+        for (Player p : onlinePlayers) {
+            // add things
+            p.setGameMode(GameMode.ADVENTURE);
+        }
+    }
 
     static final HashMap<Player, Integer> playerExplodeTasks = new HashMap<>();
     public static void explodePlayerTask(Player p) {
@@ -70,35 +93,6 @@ public class Util {
         winsColors.put(100, DARK_RED);
     }
 
-    private static final String formatChar = "&";
-    private static final HashMap<String, ChatColor> formatColors;
-    static {
-        formatColors = new HashMap<>();
-        formatColors.put("R", DARK_RED);
-        formatColors.put("r", RED);
-        formatColors.put("Y", GOLD);
-        formatColors.put("y", YELLOW);
-        formatColors.put("G", DARK_GREEN);
-        formatColors.put("g", GREEN);
-        formatColors.put("a", AQUA);
-        formatColors.put("A", DARK_AQUA);
-        formatColors.put("B", DARK_BLUE);
-        formatColors.put("b", BLUE);
-        formatColors.put("P", LIGHT_PURPLE);
-        formatColors.put("p", DARK_PURPLE);
-        formatColors.put("w", WHITE);
-        formatColors.put("o", GRAY);
-        formatColors.put("O", DARK_GRAY);
-        formatColors.put("0", BLACK);
-
-        formatColors.put("d", BOLD);
-        formatColors.put("i", ITALIC);
-        formatColors.put("m", MAGIC);
-        formatColors.put("u", UNDERLINE);
-        formatColors.put("s", STRIKETHROUGH);
-        formatColors.put("t", RESET);
-    }
-
     public static ChatColor getWinsColor(int gamesWon) {
         ChatColor highestColor = winsColors.get(0);
 
@@ -111,22 +105,15 @@ public class Util {
     }
 
     public static void steveBroadcast(Object msg) {
-        broadcast("&r[Steve]&t " + msg);
+        broadcast(RED + "[Steve] " + RESET + msg);
     }
 
     public static void broadcast(Object msg) {
-        Bukkit.broadcastMessage(format(msg.toString()));
+        Bukkit.broadcastMessage(msg.toString());
     }
 
     public static void pluginIsBuilt() {
         steveBroadcast("&g&dPLUGIN REBUILT - do /reload :)");
     }
 
-    public static String format(String msg) {
-        for (Map.Entry<String, ChatColor> entry : formatColors.entrySet()) {
-            msg = msg.replaceAll(formatChar + entry.getKey(), "" + entry.getValue());
-        }
-
-        return msg;
-    }
 }

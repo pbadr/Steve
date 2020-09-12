@@ -17,6 +17,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.UUID;
 
+import static com.steve.GameState.*;
+import static org.bukkit.ChatColor.*;
+
 public class EventListener implements Listener {
     public EventListener(Main main) {
         Bukkit.getServer().getPluginManager().registerEvents(this, main);
@@ -29,18 +32,17 @@ public class EventListener implements Listener {
         String n = p.getName();
         String m = e.getMessage();
         GameMode gm = p.getGameMode();
-        e.setCancelled(true);
 
         int gamesWon = PlayerData.get(uuid).gamesWon;
         ChatColor winsColor = Util.getWinsColor(gamesWon);
 
         String msg = "";
         if (gm == GameMode.SPECTATOR) {
-            msg += "&o[DEAD]";
+            msg += GRAY + "[DEAD]";
         }
 
-        msg += String.format("%s[%s] %s &o> &w%s", winsColor, gamesWon, n, m);
-        Util.broadcast(msg);
+        msg += String.format("%s[%s] %s " + GRAY + "> " + WHITE + m, winsColor, gamesWon, n);
+        e.setMessage(msg);
     }
 
     @EventHandler
@@ -52,10 +54,17 @@ public class EventListener implements Listener {
 
         if (PlayerData.exists(uuid)) {
             PlayerData.get(uuid).lastOnlineTimestamp = currentTime;
-            e.setJoinMessage(Util.format("&g" + n + " joined"));
         } else {
             PlayerData.register(n, uuid, currentTime);
-            e.setJoinMessage(Util.format("&g" + n + " joined for the first time!"));
+        }
+
+        e.setJoinMessage(GREEN + n + " joined");
+
+        if (Main.gameState == WAITING) {
+            Util.attemptPrepare();
+        } else if (Main.gameState == RUNNING) {
+            p.setGameMode(GameMode.SPECTATOR);
+            p.sendMessage(RED + "Waiting for the next game to start");
         }
     }
 
@@ -66,7 +75,7 @@ public class EventListener implements Listener {
         String n = p.getName();
 
         PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
-        e.setQuitMessage(Util.format("&r" + n + " left"));
+        e.setQuitMessage(RED + n + " left");
     }
 
 
@@ -74,13 +83,11 @@ public class EventListener implements Listener {
     public void onPlayerHitByPlayer(EntityDamageByEntityEvent e) {
 
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
-            System.out.println("test1");
             Player p = (Player) e.getEntity();
             Player pDamager = (Player) e.getDamager();
 
             if (!Util.playerExplodeTasks.containsKey(p) &&
                     Util.playerExplodeTasks.containsKey(pDamager)) {
-                System.out.println("test2");
                 // player hit by tnt bearer
 
                 Bukkit.getScheduler().cancelTask(Util.playerExplodeTasks.get(pDamager));
