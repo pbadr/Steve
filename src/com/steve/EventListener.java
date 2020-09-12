@@ -61,7 +61,7 @@ public class EventListener implements Listener {
         e.setJoinMessage(GREEN + n + " joined");
 
         if (Main.gameState == WAITING) {
-            Util.attemptPrepare();
+            Util.attemptPreparingTimer();
         } else if (Main.gameState == RUNNING) {
             p.setGameMode(GameMode.SPECTATOR);
             p.sendMessage(RED + "Waiting for the next game to start");

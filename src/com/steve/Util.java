@@ -11,32 +11,70 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
+import static com.steve.GameState.*;
 import static org.bukkit.ChatColor.*;
 
 public class Util {
     static final String PLUGINS_PATH = "plugins/Steve.jar";
     // static final String worldsPath = "worlds/";
 
-    public static void attemptPrepare() {
+    static int preparingTaskInt;
+    public static void attemptPreparingTimer() {
         if (Bukkit.getOnlinePlayers().size() >= 2) {
-            Integer t = 0;
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+            Main.gameState = PREPARING;
 
-                t += 1;
+            preparingTaskInt = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+                int t = 3;
 
-            }, 0, 1);
-            starting();
+                @Override
+                public void run() {
+                    if (Bukkit.getOnlinePlayers().size() < 2) {
+                        Bukkit.getScheduler().cancelTask(preparingTaskInt);
+                        steveBroadcast(RED + "Not enough players!");
+                    } else if (t == 0) {
+                        Bukkit.getScheduler().cancelTask(preparingTaskInt);
+                        starting();
+                    } else {
+                        steveBroadcast(BLUE + "Preparing... " + t);
+                        t -= 1;
+                    }
+                }
+
+            }, 0, 20);
         }
     }
 
+    static int startingTaskInt;
+    public static void starting() {
+        Main.gameState = STARTING;
+
+        startingTaskInt = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+            int t = 3;
+
+            @Override
+            public void run() {
+                if (Bukkit.getOnlinePlayers().size() < 2) {
+                    Bukkit.getScheduler().cancelTask(startingTaskInt);
+                    steveBroadcast(RED + "Not enough players!");
+                } else if (t == 0) {
+                    Bukkit.getScheduler().cancelTask(startingTaskInt);
+                    start();
+                } else {
+                    steveBroadcast(AQUA + "Starting... " + t);
+                    t -= 1;
+                }
+            }
+
+        }, 0, 20);
+    }
+
     public static void start() {
-        Main.gameState = GameState.STARTING;
+        Main.gameState = RUNNING;
+        steveBroadcast(GREEN + "STARTED");
         Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-        steveBroadcast(GREEN + "Starting");
         for (Player p : onlinePlayers) {
-            // add things
+            // ..
             p.setGameMode(GameMode.ADVENTURE);
         }
     }
