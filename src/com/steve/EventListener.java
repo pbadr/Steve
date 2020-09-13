@@ -19,10 +19,11 @@ import java.util.UUID;
 
 import static com.steve.GameState.*;
 import static org.bukkit.ChatColor.*;
+import static org.bukkit.GameMode.*;
 
 public class EventListener implements Listener {
-    public EventListener(Main main) {
-        Bukkit.getServer().getPluginManager().registerEvents(this, main);
+    public EventListener(Main plugin) {
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
@@ -37,7 +38,7 @@ public class EventListener implements Listener {
         ChatColor winsColor = Util.getWinsColor(gamesWon);
 
         String msg = "";
-        if (gm == GameMode.SPECTATOR) {
+        if (gm == SPECTATOR) {
             msg += GRAY + "[DEAD]";
         }
 
@@ -60,10 +61,10 @@ public class EventListener implements Listener {
 
         e.setJoinMessage(GREEN + n + " joined");
 
-        if (Main.gameState == WAITING) {
-            Util.attemptPreparingTimer();
-        } else if (Main.gameState == RUNNING) {
-            p.setGameMode(GameMode.SPECTATOR);
+        if (Game.state == WAITING) {
+            Game.attemptPreparingTimer();
+        } else if (Game.state  == RUNNING) {
+            p.setGameMode(SPECTATOR);
             p.sendMessage(RED + "Waiting for the next game to start");
         }
     }

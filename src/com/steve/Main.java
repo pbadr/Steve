@@ -10,8 +10,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main extends JavaPlugin {
-
-    public static GameState gameState;
     static Main plugin;
     TimerTask pluginFileWatcherTask;
 
@@ -22,7 +20,7 @@ public class Main extends JavaPlugin {
         pluginFileWatcherTask = new PluginBuildWatcher();
         new Timer().schedule(pluginFileWatcherTask, new Date(), 1000);
 
-        gameState = GameState.WAITING;
+        Game.state = GameState.WAITING;
         new EventListener(plugin);
 
         getCommand("tnthelmet").setExecutor(new TntHelmet());

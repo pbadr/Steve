@@ -8,76 +8,14 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import static com.steve.GameState.*;
 import static org.bukkit.ChatColor.*;
 
 public class Util {
     static final String PLUGINS_PATH = "plugins/Steve.jar";
     // static final String worldsPath = "worlds/";
-
-    static int preparingTaskInt;
-    public static void attemptPreparingTimer() {
-        if (Bukkit.getOnlinePlayers().size() >= 2) {
-            Main.gameState = PREPARING;
-
-            preparingTaskInt = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
-                int t = 3;
-
-                @Override
-                public void run() {
-                    if (Bukkit.getOnlinePlayers().size() < 2) {
-                        Bukkit.getScheduler().cancelTask(preparingTaskInt);
-                        steveBroadcast(RED + "Not enough players!");
-                    } else if (t == 0) {
-                        Bukkit.getScheduler().cancelTask(preparingTaskInt);
-                        starting();
-                    } else {
-                        steveBroadcast(BLUE + "Preparing... " + t);
-                        t -= 1;
-                    }
-                }
-
-            }, 0, 20);
-        }
-    }
-
-    static int startingTaskInt;
-    public static void starting() {
-        Main.gameState = STARTING;
-
-        startingTaskInt = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
-            int t = 3;
-
-            @Override
-            public void run() {
-                if (Bukkit.getOnlinePlayers().size() < 2) {
-                    Bukkit.getScheduler().cancelTask(startingTaskInt);
-                    steveBroadcast(RED + "Not enough players!");
-                } else if (t == 0) {
-                    Bukkit.getScheduler().cancelTask(startingTaskInt);
-                    start();
-                } else {
-                    steveBroadcast(AQUA + "Starting... " + t);
-                    t -= 1;
-                }
-            }
-
-        }, 0, 20);
-    }
-
-    public static void start() {
-        Main.gameState = RUNNING;
-        steveBroadcast(GREEN + "STARTED");
-        Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-        for (Player p : onlinePlayers) {
-            // ..
-            p.setGameMode(GameMode.ADVENTURE);
-        }
-    }
 
     static final HashMap<Player, Integer> playerExplodeTasks = new HashMap<>();
     public static void explodePlayerTask(Player p) {
@@ -151,7 +89,7 @@ public class Util {
     }
 
     public static void pluginIsBuilt() {
-        steveBroadcast("&g&dPLUGIN REBUILT - do /reload :)");
+        steveBroadcast(GREEN +""+ BOLD + "PLUGIN REBUILT - do /reload :)");
     }
 
 }
