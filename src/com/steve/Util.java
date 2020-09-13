@@ -17,7 +17,7 @@ public class Util {
     static final String PLUGINS_PATH = "plugins/Steve.jar";
     // static final String worldsPath = "worlds/";
 
-    static final HashMap<Player, Integer> playerExplodeTasks = new HashMap<>();
+    public static final HashMap<Player, Integer> playerExplodeTasks = new HashMap<>();
     public static void explodePlayerTask(Player p) {
         int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
             playerExplodeTasks.remove(p);

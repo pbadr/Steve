@@ -1,23 +1,22 @@
 package com.steve;
 
+import com.steve.commands.TestGame2020;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
-import java.util.Collection;
 
 import static com.steve.GameState.*;
 import static org.bukkit.ChatColor.*;
 import static org.bukkit.GameMode.*;
 
-public class Game {
+public class GameManager {
+    public static BaseGame game;
     public static GameState state;
 
     static int preparingTaskInt;
     static int startingTaskInt;
 
-    public static void attemptPreparingTimer() {
+    public static void travellingTimer() {
         if (Bukkit.getOnlinePlayers().size() >= 2) {
-            state = PREPARING;
+            state = TRAVELLING;
 
             preparingTaskInt = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
                 int t = 3;
@@ -29,7 +28,9 @@ public class Game {
                         Util.broadcast(RED + "Not enough players!");
                     } else if (t == 0) {
                         Bukkit.getScheduler().cancelTask(preparingTaskInt);
-                        starting();
+                        Bukkit.getServer().getPluginManager().registerEvents(game.getEventListener(), Main.plugin);
+                        game.travelledTo();
+                        startingTimer();
                     } else {
                         Util.broadcast(BLUE + "Preparing... " + t);
                         t -= 1;
@@ -40,7 +41,7 @@ public class Game {
         }
     }
 
-    public static void starting() {
+    public static void startingTimer() {
         state = STARTING;
 
         startingTaskInt = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
@@ -53,7 +54,9 @@ public class Game {
                     Util.broadcast(RED + "Not enough players!");
                 } else if (t == 0) {
                     Bukkit.getScheduler().cancelTask(startingTaskInt);
-                    start();
+                    Util.broadcast(GREEN + "STARTED");
+                    state = RUNNING;
+                    game.start();
                 } else {
                     Util.broadcast(AQUA + "Starting... " + t);
                     t -= 1;
@@ -63,17 +66,11 @@ public class Game {
         }, 0, 20);
     }
 
-    public static void start() {
-        state = RUNNING;
-        Util.broadcast(GREEN + "STARTED");
-        Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-        for (Player p : onlinePlayers) {
-            // ..
-            p.setGameMode(ADVENTURE);
-        }
-    }
-
-    public static void end() {
-
+    public static void pluginEnabled() {
+        state = WAITING;
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            p.setGameMode(SURVIVAL);
+            // tp all players to lobby, etc
+        });
     }
 }

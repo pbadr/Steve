@@ -61,9 +61,9 @@ public class EventListener implements Listener {
 
         e.setJoinMessage(GREEN + n + " joined");
 
-        if (Game.state == WAITING) {
-            Game.attemptPreparingTimer();
-        } else if (Game.state  == RUNNING) {
+        if (GameManager.state == WAITING) {
+            GameManager.travellingTimer();
+        } else if (GameManager.state  == RUNNING) {
             p.setGameMode(SPECTATOR);
             p.sendMessage(RED + "Waiting for the next game to start");
         }
@@ -77,6 +77,11 @@ public class EventListener implements Listener {
 
         PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
         e.setQuitMessage(RED + n + " left");
+
+        if (GameManager.state == RUNNING && Bukkit.getOnlinePlayers().size() <= GameManager.game.getMinimumPlayers()) {
+            GameManager.game.end();
+            GameManager.state = ENDED;
+        }
     }
 
 

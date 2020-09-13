@@ -2,8 +2,8 @@ package com.steve;
 
 public enum GameState {
     WAITING,
-    PREPARING,
+    TRAVELLING,
     STARTING,
     RUNNING,
-    ENDING
+    ENDED
 }
