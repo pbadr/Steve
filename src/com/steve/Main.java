@@ -3,8 +3,6 @@ package com.steve;
 import com.steve.command.*;
 import com.steve.command.social.AddFriend;
 import com.steve.game.GameManager;
-import com.steve.game.tiptoe.SpawnPlatform;
-import com.steve.game.tiptoe.Test1Cmd;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
@@ -20,12 +18,8 @@ public class Main extends JavaPlugin {
     TimerTask pluginFileWatcherTask;
     static HashMap<String, Object> commandClasses = new HashMap<>();
     static { // add new commands here AND in plugin.yml
-        commandClasses.put("tnthelmet", new TntHelmet());
         commandClasses.put("friend", new AddFriend());
-        commandClasses.put("generatemaze", new GenerateMaze());
         commandClasses.put("playerdata", new PlayerDataCmd());
-        commandClasses.put("spawnplatform", new SpawnPlatform());
-        commandClasses.put("test1", new Test1Cmd());
     }
 
     @Override
