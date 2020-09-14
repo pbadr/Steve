@@ -55,6 +55,51 @@ public class PlayerData {
         this.gameTypesPlayed = new HashMap<>();
     }
 
+    public static PlayerData get(UUID uuid) {
+        for (PlayerData pd : ALL_DATA) {
+            if (pd.uuid.equals(uuid.toString())) {
+                return pd;
+            }
+        }
+
+        Bukkit.getLogger().warning("Invalid UUID");
+        return new PlayerData("ERROR", UUID.fromString(""), 0); // @todo cleanup
+    }
+
+    public static void register(String name, UUID uuid, long currentTime) {
+        ALL_DATA.add(new PlayerData(name, uuid, currentTime));
+    }
+
+    public static boolean exists(UUID uuid) {
+        for (PlayerData pd : ALL_DATA) {
+            if (pd.uuid.equals(uuid.toString())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static Object reflectSet(Object object, String fieldName, Object value) {
+        // by sp00m, source: https://stackoverflow.com/a/14374995/13216113
+
+        Class<?> clazz = object.getClass();
+        while (clazz != null) {
+            try {
+                Field field = clazz.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                field.set(object, value);
+                return value;
+            } catch (NoSuchFieldException e) {
+                clazz = clazz.getSuperclass();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        return null;
+    }
+
     public static void readDisk() {
         try (Stream<Path> walk = Files.walk(Paths.get(PATH))) {
             List<String> result = walk.filter(Files::isRegularFile)
@@ -86,51 +131,6 @@ public class PlayerData {
         }
 
         Bukkit.getLogger().info("Wrote to playerdata");
-    }
-
-    public static PlayerData get(UUID uuid) {
-        for (PlayerData pd : ALL_DATA) {
-            if (pd.uuid.equals(uuid.toString())) {
-                return pd;
-            }
-        }
-
-        Bukkit.getLogger().warning("Invalid UUID");
-        return new PlayerData("ERROR", UUID.fromString(""), 0); // @todo cleanup
-    }
-
-    public static void register(String name, UUID uuid, long currentTime) {
-        ALL_DATA.add(new PlayerData(name, uuid, currentTime));
-    }
-
-    public static boolean exists(UUID uuid) {
-        for (PlayerData pd : ALL_DATA) {
-            if (pd.uuid.equals(uuid.toString())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static Object reflectSet(Object object, String fieldName, Object fieldValue) {
-        // by sp00m, source: https://stackoverflow.com/a/14374995/13216113
-
-        Class<?> clazz = object.getClass();
-        while (clazz != null) {
-            try {
-                Field field = clazz.getDeclaredField(fieldName);
-                field.setAccessible(true);
-                field.set(object, fieldValue);
-                return fieldValue;
-            } catch (NoSuchFieldException e) {
-                clazz = clazz.getSuperclass();
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
-            }
-        }
-
-        return null;
     }
 
 }

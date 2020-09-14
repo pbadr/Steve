@@ -1,9 +1,10 @@
-package com.steve;
+package com.steve.game;
 
-import com.steve.commands.TestGame2020;
+import com.steve.Main;
+import com.steve.Util;
 import org.bukkit.Bukkit;
 
-import static com.steve.GameState.*;
+import static com.steve.game.GameState.*;
 import static org.bukkit.ChatColor.*;
 import static org.bukkit.GameMode.*;
 

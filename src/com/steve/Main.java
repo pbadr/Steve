@@ -1,11 +1,13 @@
 package com.steve;
 
-import com.steve.commands.*;
-import com.steve.commands.social.AddFriend;
+import com.steve.command.*;
+import com.steve.command.social.AddFriend;
+import com.steve.game.GameManager;
+import com.steve.game.tiptoe.SpawnPlatform;
+import com.steve.game.tiptoe.Test1Cmd;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Date;
@@ -32,10 +34,6 @@ public class Main extends JavaPlugin {
         pluginFileWatcherTask = new PluginBuildWatcher();
         new Timer().schedule(pluginFileWatcherTask, new Date(), 1000);
 
-        PlayerData.readDisk();
-        GameManager.pluginEnabled();
-        new EventListener(plugin);
-
         commandClasses.forEach((str, executor) -> {
             PluginCommand pluginCommand = getCommand(str);
             if (pluginCommand == null) {
@@ -45,11 +43,14 @@ public class Main extends JavaPlugin {
             }
         });
 
+        PlayerData.readDisk();
+        Bukkit.getServer().getPluginManager().registerEvents(new EventListener(), plugin);
+        GameManager.pluginEnabled();
         Bukkit.getLogger().info("Enabled");
     }
 
     @Override
-    public void onDisable() {
+    public void onDisable() { // @todo cancel running BukkitTasks?
         PlayerData.writeDisk();
         pluginFileWatcherTask.cancel();
 

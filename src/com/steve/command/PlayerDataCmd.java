@@ -1,6 +1,5 @@
-package com.steve.commands;
+package com.steve.command;
 
-import com.steve.Util;
 import com.steve.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

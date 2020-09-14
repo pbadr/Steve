@@ -1,4 +1,4 @@
-package com.steve;
+package com.steve.game;
 
 public enum GameState {
     WAITING,

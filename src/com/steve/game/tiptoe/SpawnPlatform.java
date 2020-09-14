@@ -1,6 +1,5 @@
-package com.steve.commands;
+package com.steve.game.tiptoe;
 
-import com.steve.Platform;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,7 +18,6 @@ public class SpawnPlatform implements CommandExecutor {
                 new Platform(4, 4, player.getLocation(), Material.GOLD_BLOCK, false).placeBlocks();
             }
         }
-
 
         return true;
     }

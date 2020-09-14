@@ -1,6 +1,6 @@
-package com.steve.commands;
+package com.steve.command;
 
-import com.steve.Maze;
+import com.steve.game.tiptoe.Maze;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

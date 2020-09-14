@@ -1,6 +1,7 @@
-package com.steve.commands;
+package com.steve.command;
 
-import com.steve.Util;
+import com.steve.game.GameManager;
+import com.steve.game.TntTagGame;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,7 +15,7 @@ public class TntHelmet implements CommandExecutor {
         int index = ThreadLocalRandom.current().nextInt(Bukkit.getOnlinePlayers().size());
         Object[] players = Bukkit.getOnlinePlayers().toArray();
         Player p = (Player) players[index];
-        Util.explodePlayerTask(p);
+        GameManager.game.explodePlayerTask(p); // @todo get to work non-static-y
 
         return true;
     }
