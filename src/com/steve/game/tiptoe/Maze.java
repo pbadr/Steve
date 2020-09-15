@@ -159,7 +159,7 @@ public class Maze {
                 closestVector = i;
                 continue;
             }
-            if(i.length() - v.length() < closestVector.length() - v.length()){
+            if(i.length() - v.length() > closestVector.length() - v.length()){
                 closestVector = i;
             }
         }
