@@ -127,14 +127,27 @@ public class Maze {
         for (int i = 0; i < entrances; i++) {
             //Get closest waypoint to route it towards
             destination = nearestVector(entranceList.get(i),waypointList);
-            Bukkit.getLogger().info("" + (int) destination.getX() + " , " + (int) destination.getY());
+
+            Vector entrance = entranceList.get(i).setY(entranceList.get(i).getY()+1);
+
             //Insert pathfinding function
-            routePathFinding(entranceList.get(i), destination);
+
+            routePathFinding(entrance, destination);
+
             usedWaypoints.add(destination);
         }
+
+        //removing potential waypoints
         for(Vector v: usedWaypoints){
             waypointList.remove(v);
         }
+
+        for (int i = 0; i < usedWaypoints.size(); i++) {
+            destination = nearestVector(usedWaypoints.get(i), waypointList);
+
+            routePathFinding(entranceList.get(i), destination);
+        }
+
     }
 
     private Vector nearestVector(Vector v, ArrayList<Vector> vectors){
