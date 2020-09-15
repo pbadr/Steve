@@ -17,14 +17,14 @@ public class Maze {
         EMPTY
     }
 
-    private int width;
-    private int length;
-    private int waypoints;
-    private int deadends;
-    private int entrances;
-    private int exits;
+    private final int width;
+    private final int length;
+    private final int waypoints;
+    private final int deadends;
+    private final int entrances;
+    private final int exits;
 
-    private ArrayList<ArrayList<TILEROLE>> generatedMaze;
+    private final ArrayList<ArrayList<TILEROLE>> generatedMaze;
 
     public Maze(int width, int length, int waypoints, int deadends,int entrances, int exits){
         this.width = width;
@@ -177,10 +177,10 @@ public class Maze {
                 }
                 return;
             }
-            if(ThreadLocalRandom.current().nextInt(2) == 0 && level != (int)b.getY()){
+            if(ThreadLocalRandom.current().nextInt(2) == 0 && level != (int)b.getY()-1){
                 level++;
             }
-            generatedMaze.get(i).set(level-1, TILEROLE.PATH);
+            generatedMaze.get(i).set(level, TILEROLE.PATH);
         }
     }
 
