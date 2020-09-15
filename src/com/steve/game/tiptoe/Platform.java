@@ -1,10 +1,12 @@
-package com.steve;
+package com.steve.game.tiptoe;
 
+import com.steve.Main;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 

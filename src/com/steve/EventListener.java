@@ -1,28 +1,21 @@
 package com.steve;
 
+import com.steve.game.GameManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static com.steve.game.GameState.*;
+import static org.bukkit.ChatColor.*;
+import static org.bukkit.GameMode.*;
 
 public class EventListener implements Listener {
-    public EventListener(Main main) {
-        Bukkit.getServer().getPluginManager().registerEvents(this, main);
-    }
-
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
@@ -30,18 +23,17 @@ public class EventListener implements Listener {
         String n = p.getName();
         String m = e.getMessage();
         GameMode gm = p.getGameMode();
-        e.setCancelled(true);
 
         int gamesWon = PlayerData.get(uuid).gamesWon;
         ChatColor winsColor = Util.getWinsColor(gamesWon);
 
         String msg = "";
-        if (gm == GameMode.SPECTATOR) {
-            msg += "&o[DEAD]";
+        if (gm == SPECTATOR) {
+            msg += GRAY + "[DEAD]";
         }
 
-        msg += String.format("%s[%s] %s &o> &w%s", winsColor, gamesWon, n, m);
-        Util.broadcast(msg);
+        msg += String.format("%s[%s] %s " + GRAY + "> " + WHITE + m, winsColor, gamesWon, n);
+        e.setMessage(msg);
     }
 
     @EventHandler
@@ -53,10 +45,17 @@ public class EventListener implements Listener {
 
         if (PlayerData.exists(uuid)) {
             PlayerData.get(uuid).lastOnlineTimestamp = currentTime;
-            e.setJoinMessage(Util.format("&g" + n + " joined"));
         } else {
-            PlayerData.addNew(n, uuid, currentTime);
-            e.setJoinMessage(Util.format("&g" + n + " joined for the first time!"));
+            PlayerData.register(n, uuid, currentTime);
+        }
+
+        e.setJoinMessage(GREEN + n + " joined");
+
+        if (GameManager.state == WAITING) {
+            GameManager.travellingTimer();
+        } else if (GameManager.state  == RUNNING) {
+            p.setGameMode(SPECTATOR);
+            p.sendMessage(RED + "Waiting for the next game to start");
         }
     }
 
@@ -67,60 +66,12 @@ public class EventListener implements Listener {
         String n = p.getName();
 
         PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
-        e.setQuitMessage(Util.format("&r" + n + " left"));
-    }
+        e.setQuitMessage(RED + n + " left");
 
-
-    @EventHandler
-    public void onPlayerHitByEntity(EntityDamageByEntityEvent e) {
-
-        if(e.getEntity() instanceof Player) {
-            Player p = (Player) e.getEntity();
-            ItemStack itemTnt = new ItemStack(Material.TNT);
-
-            BukkitScheduler scheduler = p.getServer().getScheduler();
-
-            if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
-                p.getInventory().setHelmet(new ItemStack(Material.AIR));
-
-            } else {
-
-                scheduler.scheduleSyncDelayedTask(Main.main, () -> {
-                    if(Objects.equals(p.getInventory().getHelmet(), itemTnt)) {
-
-                        p.damage(p.getHealth());
-
-                        p.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 50);
-                        p.getWorld().createExplosion(p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), 4F);
-                    }
-                }, 100);
-
-                p.getInventory().setHelmet(itemTnt);
-            }
-
+        if (GameManager.state == RUNNING && Bukkit.getOnlinePlayers().size() < GameManager.game.getMinPlayers()) {
+            GameManager.game.end();
+            GameManager.state = ENDED;
         }
-
-        if(e.getDamager() instanceof Player) {
-            Player pHit = (Player) e.getEntity();
-            Player pDamage = (Player) e.getDamager();
-
-            String pHitName = pHit.getName();
-            String pDamageName = pDamage.getName();
-
-            Util.broadcast(String.format("&r%s&t got hit by %s", pHitName, pDamageName));
-
-        }
-    }
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e) {
-        // Location pos = e.getTo();
-        // Player p = e.getPlayer();
-
-        // if(pos == null) return;
-
-        // Block b = pos.clone().subtract(0,1,0).getBlock();
-        //p.sendMessage("Block = " + b.getBlockData().getAsString());
     }
 
 }

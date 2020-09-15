@@ -4,14 +4,14 @@ author: "lord steve"
 main: com.steve.Main
 commands:
   playerdata:
-    description: modify playerdata manually
-    usage: /<command>
-  spawnplatform:
-    description: ok
-    usage: /<command>
-  generatemaze:
-    description: ok
-    usage: /<command>
+    description: modify playerdata
+    usage: /playerdata set [name] <field> <value>
+  tiptoe:
+    description: tiptoe
+    usage: /tiptoe 1/2/3
   friend:
     description: friend parent command
-    usage: /<command>
+    usage: /friend list, /friend add <name>
+  tnttag:
+    description: boom
+    usage: /tnttag

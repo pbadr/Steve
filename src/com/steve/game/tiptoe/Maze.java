@@ -1,4 +1,4 @@
-package com.steve;
+package com.steve.game.tiptoe;
 
 import org.bukkit.Bukkit;
 import org.bukkit.util.Vector;

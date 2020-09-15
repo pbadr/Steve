@@ -1,4 +1,4 @@
-package com.steve.commands.social;
+package com.steve.command.social;
 import com.steve.PlayerData;
 
 import org.bukkit.Bukkit;
