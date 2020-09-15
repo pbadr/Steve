@@ -68,7 +68,7 @@ public class Maze {
                 entranceList.add(new Vector().setX(0).setY(randomInt));
             }else{
                 row.set((randomInt+width/2)%width, TILEROLE.ENTRANCE);
-                entranceList.add(new Vector().setX(0).setY((randomInt+(width-1)/2)%width-1));
+                entranceList.add(new Vector().setX(0).setY((randomInt+(width)/2)%width));
             }
         }
 
@@ -85,7 +85,7 @@ public class Maze {
                 exitList.add(new Vector().setX(width).setY(randomInt));
             }else{
                 row.set((randomInt+width/2)%width, TILEROLE.EXIT);
-                exitList.add(new Vector().setX(width).setY((randomInt+(width-1)/2)%width-1));
+                exitList.add(new Vector().setX(width).setY((randomInt+(width)/2)%width));
             }
         }
 
@@ -168,19 +168,23 @@ public class Maze {
     }
 
     private void routePathFinding(Vector a, Vector b){
-
+        //starting height
         int level = (int)a.getY();
+        //loop through the width between the 2 vectors
         for (int i = (int) a.getX(); i < (int)b.getX(); i++) {
+            //if it reached maximum width
             if(i == (int)b.getX()){
                 for (int j = level; j < (int)b.getY(); j++) {
                     generatedMaze.get(i).set(level, TILEROLE.PATH);
                 }
                 return;
             }
-            if(ThreadLocalRandom.current().nextInt(2) == 0 && level != (int)b.getY()-1){
+            if(ThreadLocalRandom.current().nextInt(2) == 0 && level < (int)b.getY()){
                 level++;
             }
-            generatedMaze.get(i).set(level, TILEROLE.PATH);
+            if(level < generatedMaze.get(i).size()){
+                generatedMaze.get(i).set(level, TILEROLE.PATH);
+            }
         }
     }
 
