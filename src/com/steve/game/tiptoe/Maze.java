@@ -180,7 +180,7 @@ public class Maze {
             if(ThreadLocalRandom.current().nextInt(2) == 0 && level != (int)b.getY()){
                 level++;
             }
-            generatedMaze.get(i).set(level, TILEROLE.PATH);
+            generatedMaze.get(i).set(level-1, TILEROLE.PATH);
         }
     }
 
