@@ -4,8 +4,9 @@ import com.steve.Main;
 import com.steve.Util;
 import com.steve.game.tiptoe.TipToeGame;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.event.player.PlayerQuitEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,12 +24,21 @@ public class GameManager {
     static int travellingTask;
     static int startingTask;
 
-    public static List<BaseGame> getAllGames() {
-        List<BaseGame> allGames = new ArrayList<>();
-        // @todo set static class variable with Xgame.class instead of instancing new games every time
-        allGames.add(new TipToeGame());
+    public static boolean canAdvanceToState(GameState advanceTo) {
+        switch (advanceTo) { // inspired by oc.tc source code
+            case IDLE:
+                return false;
+            case TRAVELLING:
+                return state == IDLE || state == ENDING;
+            case STARTING:
+                return state == TRAVELLING;
+            case RUNNING:
+                return state == STARTING;
+            case ENDING:
+                return state == TRAVELLING || state == STARTING || state == RUNNING;
+        }
 
-        return allGames;
+        return false;
     }
 
     public static boolean setNewRandomGame() {
@@ -53,64 +63,94 @@ public class GameManager {
         return true;
     }
 
+    public static List<BaseGame> getAllGames() {
+        List<BaseGame> allGames = new ArrayList<>();
+        // @todo set static class variable with Xgame.class instead of instancing new games every time
+        allGames.add(new TipToeGame());
+
+        return allGames;
+    }
+
+    public static void handleDisconnect(PlayerQuitEvent e) {
+        if (state == RUNNING) {
+            game.handleDisconnect(e);
+        }
+    }
+
     public static boolean playerCountInvalid() {
         int onlinePlayers = Bukkit.getOnlinePlayers().size();
 
         return game == null || onlinePlayers < game.getMinPlayers() || game.getMaxPlayers() < onlinePlayers;
     }
 
-    public static void attemptTravellingTimer() {
-        if (Bukkit.getScheduler().isCurrentlyRunning(travellingTask)) {
-            Util.broadcast(RED + "Failed to travel: task already running");
-            return;
-        }
+    // TRAVEL METHODS
 
-        if (!setNewRandomGame()) {
-            Util.broadcast(RED + "Failed to travel: no available games (none set or too many/few players)");
+    public static void startTravellingTimer() {
+        if (canAdvanceToState(TRAVELLING)) {
+            Util.broadcast(
+                    RED + "Failed to start travel: can't advance from state " + state + " to " + TRAVELLING
+            );
             return;
         }
 
         state = TRAVELLING;
+
+        if (!setNewRandomGame()) {
+            Util.broadcast(RED + "Failed to start travel: no games set or too many/few players");
+            return;
+        }
 
         travellingTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
             int t = travellingSeconds;
 
             @Override
             public void run() {
-
                 if (playerCountInvalid()) {
+                    state = IDLE;
                     Bukkit.getScheduler().cancelTask(travellingTask);
-                    Util.broadcast(RED + "Travel cancelled - too many players left/joined");
-                    return;
+                    Util.broadcast(RED + "Travelling cancelled: too many players left/joined");
+                    return; // @todo start a new call of startTravellingTimer() in an attempt to retry
                 }
 
                 if (t == 0) {
                     Bukkit.getScheduler().cancelTask(travellingTask);
-                    Bukkit.getServer().getPluginManager().registerEvents(game.getEventListener(), Main.plugin);
-
-                    String parentCommand = game.getParentCommand();
-                    PluginCommand pluginCommand = Main.plugin.getCommand(parentCommand);
-                    if (pluginCommand == null) {
-                        Util.broadcast("Failed to set command executor for /" + parentCommand);
-                    } else {
-                        pluginCommand.setExecutor(game.getCommandExecutor());
-                        Bukkit.getLogger().info("Set command executor for /" + parentCommand);
-                    }
-
-                    game.travelledTo();
-                    startingTimer();
+                    travel();
                     return;
                 }
 
-                Util.broadcast(BLUE + "Travelling... " + t);
+                Util.broadcast(
+                        BLUE + "Travelling in  " + t + " (" + Bukkit.getOnlinePlayers().size() + " players)"
+                );
                 t -= 1;
             }
 
         }, 0, 20);
     }
 
-    public static void startingTimer() {
+    public static void travel() {
+        if (canAdvanceToState(STARTING)) {
+            Util.broadcast(
+                    RED + "Failed to finish travel: can't advance from state " + state + " to " + TRAVELLING
+            );
+            return;
+        }
+
+        // register game-specific listener
+        Bukkit.getServer().getPluginManager().registerEvents(game.getEventListener(), Main.plugin);
+
+        // register game-specific command
+        String commandString = game.getCommandString();
+        PluginCommand pluginCommand = Main.plugin.getCommand(commandString);
+        if (pluginCommand == null) {
+            Util.broadcast("Failed to set command executor for /" + commandString);
+        } else {
+            pluginCommand.setExecutor(game.getCommandExecutor());
+            Bukkit.getLogger().info("Set command executor for /" + commandString);
+        }
+
         state = STARTING;
+        game.travelled();
+        Util.broadcast("Travelled!");
 
         startingTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
             int t = startingSeconds;
@@ -125,21 +165,46 @@ public class GameManager {
 
                 if (t == 0) {
                     Bukkit.getScheduler().cancelTask(startingTask);
-                    Util.broadcast(GREEN + "STARTED");
-                    state = RUNNING;
-                    game.start();
+                    start();
                     return;
                 }
 
-                Util.broadcast(AQUA + "Starting... " + t);
+                Util.broadcast(AQUA + "Starting in " + t);
                 t -= 1;
             }
 
         }, 0, 20);
     }
 
+    public static void start() {
+        if (canAdvanceToState(RUNNING)) {
+            Util.broadcast(
+                    RED + "Failed to start: can't advance from state " + state + " to " + RUNNING
+            );
+            return;
+        }
+
+        state = RUNNING;
+        game.started();
+        Util.broadcast(GREEN + "STARTED");
+    }
+
+    public static void end() {
+        if (canAdvanceToState(ENDING)) {
+            Util.broadcast(
+                    RED + "Failed to start: can't advance from state " + state + " to " + ENDING
+            );
+            return;
+        }
+
+        state = ENDING;
+        game.ended();
+        Util.broadcast(GREEN + "ENDED");
+        startTravellingTimer();
+    }
+
     public static void pluginEnabled() {
-        state = WAITING;
-        attemptTravellingTimer();
+        state = IDLE;
+        startTravellingTimer();
     }
 }

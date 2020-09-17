@@ -16,11 +16,11 @@ import java.util.TimerTask;
 public class Main extends JavaPlugin {
     public static Main plugin;
     TimerTask pluginFileWatcherTask;
-    static HashMap<String, Object> commandClasses = new HashMap<>();
+    static HashMap<String, CommandExecutor> commandExecutors = new HashMap<>();
     static { // add new commands here AND in plugin.yml
-        commandClasses.put("friend", new AddFriend());
-        commandClasses.put("playerdata", new PlayerDataCmd());
-        commandClasses.put("game", new GameCmd());
+        commandExecutors.put("friend", new AddFriend());
+        commandExecutors.put("playerdata", new PlayerDataCmd());
+        commandExecutors.put("game", new GameCmd());
     }
 
     @Override
@@ -29,22 +29,20 @@ public class Main extends JavaPlugin {
         pluginFileWatcherTask = new PluginBuildWatcher();
         new Timer().schedule(pluginFileWatcherTask, new Date(), 1000);
 
-        commandClasses.forEach((str, executor) -> {
+        commandExecutors.forEach((str, executor) -> {
             PluginCommand pluginCommand = getCommand(str);
             if (pluginCommand == null) {
                 Bukkit.getLogger().severe("Failed to set command executor for /" + str);
             } else {
-                pluginCommand.setExecutor((CommandExecutor) executor);
+                pluginCommand.setExecutor(executor);
                 Bukkit.getLogger().info("Set command executor for /" + str);
             }
         });
 
         PlayerData.readDisk();
         Bukkit.getServer().getPluginManager().registerEvents(new EventListener(), plugin);
-        GameManager.pluginEnabled();
         Bukkit.getLogger().info("Enabled");
-
-        GameManager.attemptTravellingTimer(); // temp
+        GameManager.pluginEnabled();
     }
 
     @Override

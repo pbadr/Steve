@@ -12,14 +12,13 @@ import static org.bukkit.ChatColor.*;
 public class GameCmd implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if (args.length >= 1 && args[0].equals("start")) {
-            if (GameManager.state == WAITING) {
-                GameManager.attemptTravellingTimer();
-                return true;
-            } else if (args.length >= 2 && args[1].equals("force")) {
+            if (args.length >= 2 && args[1].equals("force")) {
                 Util.broadcast("to implement"); // @todo implement force start
             } else {
-                Util.broadcast(RED + "Current game state doesn't allow this right now");
+                GameManager.startTravellingTimer();
             }
+
+            return true;
         }
 
         return false;

@@ -1,10 +1,12 @@
 package com.steve.game.tiptoe;
 
 import com.steve.game.BaseGame;
+import com.steve.game.GameManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 
@@ -26,23 +28,27 @@ public class TipToeGame extends BaseGame {
     }
 
     @Override
-    public String getParentCommand() {
+    public String getCommandString() {
         return "tiptoe";
     }
 
     @Override
-    public void travelledTo() {
+    public void travelled() {
 
     }
 
     @Override
-    public void start() {
+    public void handleDisconnect(PlayerQuitEvent e) {
+        GameManager.end(); // @todo temp
+    }
+
+    @Override
+    public void started() {
 
     }
 
     @Override
-    public void end() {
-
+    public void ended() {
     }
 
     @Override
@@ -75,7 +81,7 @@ public class TipToeGame extends BaseGame {
         }
 
         World w = pos.getWorld();
-        if (w != null) {
+        if (w != null) { // should always result in true
             w.spawnParticle(Particle.EXPLOSION_NORMAL,
                     pos.getX() + (size / 2.0), pos.getY(), pos.getZ() + (size / 2.0), 5);
         }

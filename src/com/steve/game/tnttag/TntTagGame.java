@@ -7,6 +7,7 @@ import org.bukkit.*;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -25,22 +26,27 @@ public class TntTagGame extends BaseGame {
     }
 
     @Override
-    public String getParentCommand() {
+    public String getCommandString() {
         return "tnttag";
     }
 
     @Override
-    public void travelledTo() {
+    public void travelled() {
 
     }
 
     @Override
-    public void start() {
+    public void handleDisconnect(PlayerQuitEvent e) {
 
     }
 
     @Override
-    public void end() {
+    public void started() {
+
+    }
+
+    @Override
+    public void ended() {
 
     }
 
@@ -65,7 +71,7 @@ public class TntTagGame extends BaseGame {
             Location pos = p.getLocation();
 
             w.spawnParticle(Particle.CLOUD, pos, 10);
-            end();
+            ended();
             // w.createExplosion(pos, 4f);
 
         }, 100);

@@ -20,12 +20,13 @@ public class EventListener implements Listener {
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         UUID uuid = p.getUniqueId();
+        PlayerData pd = PlayerData.get(uuid);
         String n = p.getName();
         String m = e.getMessage();
         GameMode gm = p.getGameMode();
         e.setCancelled(true);
 
-        int gamesWon = PlayerData.get(uuid).gamesWon;
+        int gamesWon = pd.gamesWon;
         ChatColor winsColor = Util.getWinsColor(gamesWon);
 
         String msg = "";
@@ -34,8 +35,8 @@ public class EventListener implements Listener {
         }
 
         msg += String.format("%s[%s] %s " + GRAY + "> " + WHITE + m, winsColor, gamesWon, n);
-        PlayerData.get(uuid).messagesSent += 1;
         Util.broadcast(msg);
+        pd.messagesSent += 1;
     }
 
     @EventHandler
@@ -52,13 +53,13 @@ public class EventListener implements Listener {
         }
 
         e.setJoinMessage(GREEN + n + " joined");
-        PlayerData.get(p.getUniqueId()).serverJoins += 1;
+        PlayerData.get(uuid).serverJoins += 1;
 
-        if (GameManager.state == WAITING) {
-            GameManager.attemptTravellingTimer();
-        } else if (GameManager.state  == RUNNING) {
+        if (GameManager.state  == RUNNING) {
             p.setGameMode(SPECTATOR);
             p.sendMessage(RED + "Waiting for the next game to start");
+        } else {
+            GameManager.startTravellingTimer();
         }
     }
 
@@ -70,11 +71,7 @@ public class EventListener implements Listener {
 
         PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
         e.setQuitMessage(RED + n + " left");
-
-        if (GameManager.state == RUNNING && Bukkit.getOnlinePlayers().size() < GameManager.game.getMinPlayers()) {
-            GameManager.game.end();
-            GameManager.state = ENDED;
-        }
+        GameManager.handleDisconnect(e);
     }
 
 }
