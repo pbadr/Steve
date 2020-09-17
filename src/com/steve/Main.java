@@ -40,7 +40,7 @@ public class Main extends JavaPlugin {
         });
 
         PlayerData.readDisk();
-        Bukkit.getServer().getPluginManager().registerEvents(new EventListener(), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new MainListener(), plugin);
         Bukkit.getLogger().info("Enabled");
         GameManager.pluginEnabled();
     }

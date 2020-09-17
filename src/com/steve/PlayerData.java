@@ -72,6 +72,7 @@ public class PlayerData {
 
     public static void register(String name, UUID uuid, long currentTime) {
         ALL_DATA.add(new PlayerData(name, uuid, currentTime));
+        Bukkit.getLogger().info("Registered PlayerData for " + name + " (" + uuid + ")");
     }
 
     public static boolean exists(UUID uuid) {

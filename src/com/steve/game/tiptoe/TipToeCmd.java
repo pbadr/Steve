@@ -8,10 +8,10 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public class TipToeCommandExecutor implements CommandExecutor {
+public class TipToeCmd implements CommandExecutor {
     TipToeGame parent;
 
-    public TipToeCommandExecutor(TipToeGame parent) {
+    public TipToeCmd(TipToeGame parent) {
         this.parent = parent;
     }
 

@@ -10,10 +10,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class TntTagEventListener implements Listener {
+public class TntTagListener implements Listener {
     TntTagGame parent;
 
-    public TntTagEventListener(TntTagGame parent) {
+    public TntTagListener(TntTagGame parent) {
         this.parent = parent;
     }
 

@@ -5,11 +5,13 @@ import com.steve.game.GameManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 
+import static org.bukkit.GameMode.ADVENTURE;
 import static org.bukkit.Material.GOLD_BLOCK;
 import static org.bukkit.Material.YELLOW_WOOL;
 
@@ -34,12 +36,15 @@ public class TipToeGame extends BaseGame {
 
     @Override
     public void travelled() {
-
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.sendTitle("Get ready kid", null, 5, 10, 5);
+        }
+        // @todo spawn platforms here (both real and fake)
     }
 
     @Override
     public void handleDisconnect(PlayerQuitEvent e) {
-        GameManager.end(); // @todo temp
+
     }
 
     @Override
@@ -53,12 +58,17 @@ public class TipToeGame extends BaseGame {
 
     @Override
     public Listener getEventListener() {
-        return new TipToeEventListener(this);
+        return new TipToeListener(this);
     }
 
     @Override
     public CommandExecutor getCommandExecutor() {
-        return new TipToeCommandExecutor(this);
+        return new TipToeCmd(this);
+    }
+
+    @Override
+    public Location getSpawnLocation() {
+        return new Location(Bukkit.getWorld("world"), 0, 65, 0);
     }
 
     public void createFakePlatform(Location pos) {

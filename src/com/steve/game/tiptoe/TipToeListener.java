@@ -13,10 +13,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.ArrayList;
 
-public class TipToeEventListener implements Listener {
+public class TipToeListener implements Listener {
     TipToeGame parent;
 
-    public TipToeEventListener(TipToeGame parent) {
+    public TipToeListener(TipToeGame parent) {
         this.parent = parent;
     }
 

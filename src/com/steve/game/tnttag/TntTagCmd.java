@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class TntTagCommandExecutor implements CommandExecutor {
+public class TntTagCmd implements CommandExecutor {
     TntTagGame parent;
-    public TntTagCommandExecutor(TntTagGame parent) {
+    public TntTagCmd(TntTagGame parent) {
         this.parent = parent;
     }
 

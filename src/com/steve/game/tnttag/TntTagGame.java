@@ -52,12 +52,17 @@ public class TntTagGame extends BaseGame {
 
     @Override
     public Listener getEventListener() {
-        return new TntTagEventListener(this);
+        return new TntTagListener(this);
     }
 
     @Override
     public CommandExecutor getCommandExecutor() {
-        return new TntTagCommandExecutor(this);
+        return new TntTagCmd(this);
+    }
+
+    @Override
+    public Location getSpawnLocation() {
+        return null;
     }
 
     public final HashMap<Player, Integer> playerExplodeTasks = new HashMap<>();
