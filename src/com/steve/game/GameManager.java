@@ -6,80 +6,133 @@ import com.steve.game.tiptoe.TipToeGame;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.event.Listener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.steve.game.GameState.*;
 import static org.bukkit.ChatColor.*;
-import static org.bukkit.GameMode.*;
 
 public class GameManager {
     public static BaseGame game;
     public static GameState state;
 
+    private static final int travellingSeconds = 1;
+    private static final int startingSeconds = 1;
+
     static int travellingTask;
     static int startingTask;
 
-    public static void travellingTimer() {
-        if (Bukkit.getOnlinePlayers().size() >= 2) {
-            if (Bukkit.getScheduler().isCurrentlyRunning(travellingTask)) {
-                return;
+    public static List<BaseGame> getAllGames() {
+        List<BaseGame> allGames = new ArrayList<>();
+        // @todo set static class variable with Xgame.class instead of instancing new games every time
+        allGames.add(new TipToeGame());
+
+        return allGames;
+    }
+
+    public static boolean setNewRandomGame() {
+        // get all games valid for the current amount of players online
+        List<BaseGame> availableGames = new ArrayList<>();
+        for (BaseGame g : getAllGames()) {
+            int onlinePlayers = Bukkit.getOnlinePlayers().size();
+            if (g.getMinPlayers() <= onlinePlayers && onlinePlayers <= g.getMaxPlayers()) {
+                availableGames.add(g);
             }
+        }
 
-            state = TRAVELLING;
-            game = new TipToeGame();
+        // are there available games?
+        int size = availableGames.size();
+        if (size == 0) {
+            return false;
+        }
 
-            travellingTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
-                int t = 3;
+        // pick random game
+        int index = ThreadLocalRandom.current().nextInt(size);
+        game = availableGames.get(index);
+        return true;
+    }
 
-                @Override
-                public void run() {
-                    if (Bukkit.getOnlinePlayers().size() < 2) {
-                        Bukkit.getScheduler().cancelTask(travellingTask);
-                        Util.broadcast(RED + "Not enough players!");
-                    } else if (Bukkit.getOnlinePlayers().size() > game.getMaxPlayers()) {
-                        Bukkit.getScheduler().cancelTask(travellingTask);
-                        Util.broadcast(RED + "Too many players!");
-                    } else if (t == 0) {
-                        Bukkit.getScheduler().cancelTask(travellingTask);
-                        Bukkit.getServer().getPluginManager().registerEvents((Listener) game, Main.plugin);
-                        game.travelledTo();
-                        startingTimer();
-                        PluginCommand pluginCommand = Main.plugin.getCommand(game.getParentCommand());
-                        if (pluginCommand == null) {
-                            Bukkit.getLogger().severe("Failed to set command executor for /game");
-                        } else {
-                            pluginCommand.setExecutor((CommandExecutor) game);
-                        }
-                    } else {
-                        Util.broadcast(BLUE + "Preparing... " + t);
-                        t -= 1;
-                    }
+    public static boolean playerCountInvalid() {
+        int onlinePlayers = Bukkit.getOnlinePlayers().size();
+
+        return game == null || onlinePlayers < game.getMinPlayers() || game.getMaxPlayers() < onlinePlayers;
+    }
+
+    public static void attemptTravellingTimer() {
+        if (Bukkit.getScheduler().isCurrentlyRunning(travellingTask)) {
+            Util.broadcast(RED + "Failed to travel: task already running");
+            return;
+        }
+
+        if (!setNewRandomGame()) {
+            Util.broadcast(RED + "Failed to travel: no available games (none set or too many/few players)");
+            return;
+        }
+
+        state = TRAVELLING;
+
+        travellingTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+            int t = travellingSeconds;
+
+            @Override
+            public void run() {
+
+                if (playerCountInvalid()) {
+                    Bukkit.getScheduler().cancelTask(travellingTask);
+                    Util.broadcast(RED + "Travel cancelled - too many players left/joined");
+                    return;
                 }
 
-            }, 0, 20);
-        }
+                if (t == 0) {
+                    Bukkit.getScheduler().cancelTask(travellingTask);
+                    Bukkit.getServer().getPluginManager().registerEvents(game.getEventListener(), Main.plugin);
+
+                    String parentCommand = game.getParentCommand();
+                    PluginCommand pluginCommand = Main.plugin.getCommand(parentCommand);
+                    if (pluginCommand == null) {
+                        Util.broadcast("Failed to set command executor for /" + parentCommand);
+                    } else {
+                        pluginCommand.setExecutor(game.getCommandExecutor());
+                        Bukkit.getLogger().info("Set command executor for /" + parentCommand);
+                    }
+
+                    game.travelledTo();
+                    startingTimer();
+                    return;
+                }
+
+                Util.broadcast(BLUE + "Travelling... " + t);
+                t -= 1;
+            }
+
+        }, 0, 20);
     }
 
     public static void startingTimer() {
         state = STARTING;
 
         startingTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
-            int t = 3;
+            int t = startingSeconds;
 
             @Override
             public void run() {
-                if (Bukkit.getOnlinePlayers().size() < 2) {
+                if (playerCountInvalid()) {
                     Bukkit.getScheduler().cancelTask(startingTask);
-                    Util.broadcast(RED + "Not enough players!");
-                } else if (t == 0) {
+                    Util.broadcast(RED + "Start cancelled - too many players left/joined");
+                    return;
+                }
+
+                if (t == 0) {
                     Bukkit.getScheduler().cancelTask(startingTask);
                     Util.broadcast(GREEN + "STARTED");
                     state = RUNNING;
                     game.start();
-                } else {
-                    Util.broadcast(AQUA + "Starting... " + t);
-                    t -= 1;
+                    return;
                 }
+
+                Util.broadcast(AQUA + "Starting... " + t);
+                t -= 1;
             }
 
         }, 0, 20);
@@ -87,9 +140,6 @@ public class GameManager {
 
     public static void pluginEnabled() {
         state = WAITING;
-        Bukkit.getOnlinePlayers().forEach(p -> {
-            p.setGameMode(SURVIVAL);
-            // tp all players to lobby, etc
-        });
+        attemptTravellingTimer();
     }
 }

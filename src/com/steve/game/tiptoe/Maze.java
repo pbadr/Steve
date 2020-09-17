@@ -1,5 +1,6 @@
 package com.steve.game.tiptoe;
 
+import com.steve.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.util.Vector;
 
@@ -49,6 +50,7 @@ public class Maze {
     }
 
     public void generateMaze(){
+        Util.broadcast("test");
 
         ArrayList<Vector> entranceList  = new ArrayList<>(),
                 exitList  = new ArrayList<>(),

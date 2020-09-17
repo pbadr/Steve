@@ -1,17 +1,23 @@
+main: com.steve.Main
 name: Steve
 version: "1.0"
+description: "Steve description"
+api-version: "1.16"
 author: "lord steve"
-main: com.steve.Main
 commands:
   playerdata:
+    aliases: pd
     description: modify playerdata
-    usage: /playerdata set [name] <field> <value>
+    usage: /<command> set [name] <field> <value>
   tiptoe:
     description: tiptoe
-    usage: /tiptoe 1/2/3
+    usage: /<command> 1/2/3
   friend:
     description: friend parent command
-    usage: /friend list, /friend add <name>
+    usage: /<command> list, /friend add <name>
   tnttag:
     description: boom
-    usage: /tnttag
+    usage: /<command>
+  game:
+    description: game management
+    usage: /<command> start

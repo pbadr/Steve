@@ -1,6 +1,8 @@
 package com.steve;
 
 import org.bukkit.*;
+
+import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
 import static org.bukkit.ChatColor.*;
@@ -43,8 +45,8 @@ public class Util {
         Bukkit.broadcastMessage(msg.toString());
     }
 
-    public static void pluginIsBuilt() {
-        broadcast(GREEN +""+ BOLD + "PLUGIN REBUILT - /reload :)");
+    public static void pluginIsBuilt(Timestamp timestamp) {
+        broadcast(GREEN + timestamp.toLocalDateTime().toString() + BOLD + " PLUGIN REBUILT - /reload :)");
     }
 
 }

@@ -20,6 +20,7 @@ public class Main extends JavaPlugin {
     static { // add new commands here AND in plugin.yml
         commandClasses.put("friend", new AddFriend());
         commandClasses.put("playerdata", new PlayerDataCmd());
+        commandClasses.put("game", new GameCmd());
     }
 
     @Override
@@ -34,6 +35,7 @@ public class Main extends JavaPlugin {
                 Bukkit.getLogger().severe("Failed to set command executor for /" + str);
             } else {
                 pluginCommand.setExecutor((CommandExecutor) executor);
+                Bukkit.getLogger().info("Set command executor for /" + str);
             }
         });
 
@@ -41,6 +43,8 @@ public class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new EventListener(), plugin);
         GameManager.pluginEnabled();
         Bukkit.getLogger().info("Enabled");
+
+        GameManager.attemptTravellingTimer(); // temp
     }
 
     @Override

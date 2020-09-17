@@ -23,36 +23,40 @@ public class PlayerData {
 
     public String name;
     public String uuid;
-    public int serverJoins;
-    public long firstJoinTimestamp;
-    public long lastOnlineTimestamp;
-    public int kills;
+
     public int deaths;
-    public int gamesWon;
+    public long firstJoinTimestamp;
+    public List<String> friendsAdded;
     public int gamesLost;
     public int gamesPlayed;
-    public List<String> friendsAdded;
-    public List<String> playersBlocked;
-    public HashMap<String, Integer> gameTypesWon;
+    public int gamesWon;
     public HashMap<String, Integer> gameTypesLost;
     public HashMap<String, Integer> gameTypesPlayed;
+    public HashMap<String, Integer> gameTypesWon;
+    public int kills;
+    public long lastOnlineTimestamp;
+    public int messagesSent;
+    public List<String> playersBlocked;
+    public int serverJoins;
 
     public PlayerData(String name, UUID uuid, long currentTime) {
         this.name = name;
         this.uuid = uuid.toString();
-        this.serverJoins = 0;
-        this.firstJoinTimestamp = currentTime;
-        this.lastOnlineTimestamp = currentTime;
-        this.kills = 0;
+
         this.deaths = 0;
-        this.gamesWon = 0;
+        this.firstJoinTimestamp = currentTime;
+        this.friendsAdded = new ArrayList<>();
         this.gamesLost = 0;
         this.gamesPlayed = 0;
-        this.friendsAdded = new ArrayList<>();
-        this.playersBlocked = new ArrayList<>();
-        this.gameTypesWon = new HashMap<>();
+        this.gamesWon = 0;
         this.gameTypesLost = new HashMap<>();
         this.gameTypesPlayed = new HashMap<>();
+        this.gameTypesWon = new HashMap<>();
+        this.kills = 0;
+        this.lastOnlineTimestamp = currentTime;
+        this.messagesSent = 0;
+        this.playersBlocked = new ArrayList<>();
+        this.serverJoins = 0;
     }
 
     public static PlayerData get(UUID uuid) {
@@ -62,8 +66,8 @@ public class PlayerData {
             }
         }
 
-        Bukkit.getLogger().warning("Invalid UUID");
-        return new PlayerData("ERROR", UUID.fromString(""), 0); // @todo cleanup
+        Bukkit.getLogger().severe("Invalid UUID passed to PlayerData.get(): " + uuid);
+        return new PlayerData(null, UUID.fromString(""), 0); // @todo check if this prevents crash
     }
 
     public static void register(String name, UUID uuid, long currentTime) {

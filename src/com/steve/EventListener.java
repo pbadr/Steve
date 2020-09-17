@@ -23,6 +23,7 @@ public class EventListener implements Listener {
         String n = p.getName();
         String m = e.getMessage();
         GameMode gm = p.getGameMode();
+        e.setCancelled(true);
 
         int gamesWon = PlayerData.get(uuid).gamesWon;
         ChatColor winsColor = Util.getWinsColor(gamesWon);
@@ -33,7 +34,8 @@ public class EventListener implements Listener {
         }
 
         msg += String.format("%s[%s] %s " + GRAY + "> " + WHITE + m, winsColor, gamesWon, n);
-        e.setMessage(msg);
+        PlayerData.get(uuid).messagesSent += 1;
+        Util.broadcast(msg);
     }
 
     @EventHandler
@@ -50,9 +52,10 @@ public class EventListener implements Listener {
         }
 
         e.setJoinMessage(GREEN + n + " joined");
+        PlayerData.get(p.getUniqueId()).serverJoins += 1;
 
         if (GameManager.state == WAITING) {
-            GameManager.travellingTimer();
+            GameManager.attemptTravellingTimer();
         } else if (GameManager.state  == RUNNING) {
             p.setGameMode(SPECTATOR);
             p.sendMessage(RED + "Waiting for the next game to start");
