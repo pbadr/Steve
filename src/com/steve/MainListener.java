@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -15,7 +16,7 @@ import static com.steve.game.GameState.*;
 import static org.bukkit.ChatColor.*;
 import static org.bukkit.GameMode.*;
 
-public class EventListener implements Listener {
+public class MainListener implements Listener {
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
@@ -40,20 +41,36 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent e) {
+        e.setCancelled(true);
+    }
+
+    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         UUID uuid = p.getUniqueId();
         String n = p.getName();
         long currentTime = System.currentTimeMillis();
 
-        if (PlayerData.exists(uuid)) {
-            PlayerData.get(uuid).lastOnlineTimestamp = currentTime;
-        } else {
+        if (!PlayerData.exists(uuid)) {
             PlayerData.register(n, uuid, currentTime);
         }
 
+        PlayerData pd = PlayerData.get(uuid);
+        pd.lastOnlineTimestamp = currentTime;
+        pd.serverJoins += 1;
+
+        // player properties for in the lobby
+        p.setGameMode(ADVENTURE);
+        p.setAllowFlight(true);
+        p.setInvulnerable(true);
+        p.setLevel(pd.gamesWon);
+        p.setExp(0);
+        p.setHealth(20);
+        p.setFoodLevel(20);
+        p.setSaturation(20);
+
         e.setJoinMessage(GREEN + n + " joined");
-        PlayerData.get(uuid).serverJoins += 1;
 
         if (GameManager.state  == RUNNING) {
             p.setGameMode(SPECTATOR);

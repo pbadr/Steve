@@ -4,7 +4,9 @@ import com.steve.Main;
 import com.steve.Util;
 import com.steve.game.tiptoe.TipToeGame;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static com.steve.game.GameState.*;
 import static org.bukkit.ChatColor.*;
+import static org.bukkit.GameMode.ADVENTURE;
 
 public class GameManager {
     public static BaseGame game;
@@ -146,6 +149,17 @@ public class GameManager {
         } else {
             pluginCommand.setExecutor(game.getCommandExecutor());
             Bukkit.getLogger().info("Set command executor for /" + commandString);
+        }
+
+        // @todo also set to custom world
+        Location destination = game.getSpawnLocation();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.setGameMode(ADVENTURE); // @todo probably unnecessary?
+            p.setAllowFlight(false);
+            p.setInvulnerable(true);
+            p.setLevel(0);
+            p.setExp(0); // @todo probably unnecessary?
+            p.teleport(destination);
         }
 
         state = STARTING;
