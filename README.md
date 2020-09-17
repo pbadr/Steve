@@ -1,5 +1,5 @@
 # Steve
-Minecraft all-in-one plugin
+Wipeout-esque game 🕺 ⛏
 
 ## Dependencies
 - [Spigot-API](https://www.spigotmc.org/wiki/buildtools/)
