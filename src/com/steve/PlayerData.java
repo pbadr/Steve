@@ -70,6 +70,18 @@ public class PlayerData {
         return new PlayerData(null, UUID.fromString(""), 0); // @todo check if this prevents crash
     }
 
+    public Integer incrementGameType(String game, String what) {
+        switch (what) {
+            case "lost":
+                return gameTypesLost.put(game, gameTypesLost.get(game) + 1);
+            case "played":
+                return gameTypesPlayed.put(game, gameTypesPlayed.get(game) + 1);
+            case "won":
+                return gameTypesWon.put(game, gameTypesWon.get(game) + 1);
+        }
+        return null;
+    }
+
     public static void register(String name, UUID uuid, long currentTime) {
         ALL_DATA.add(new PlayerData(name, uuid, currentTime));
         Bukkit.getLogger().info("Registered PlayerData for " + name + " (" + uuid + ")");

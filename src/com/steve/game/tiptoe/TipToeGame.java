@@ -1,22 +1,19 @@
 package com.steve.game.tiptoe;
 
 import com.steve.game.BaseGame;
-import com.steve.game.GameManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 
-import static org.bukkit.GameMode.ADVENTURE;
 import static org.bukkit.Material.GOLD_BLOCK;
 import static org.bukkit.Material.YELLOW_WOOL;
 
 public class TipToeGame extends BaseGame {
-    ArrayList<ArrayList<Block>> platformList = new ArrayList<>();
+    final ArrayList<ArrayList<Block>> platformList = new ArrayList<>();
     boolean useSecondaryMaterial = true;
 
     @Override
@@ -30,7 +27,7 @@ public class TipToeGame extends BaseGame {
     }
 
     @Override
-    public String getCommandString() {
+    public String getName() {
         return "tiptoe";
     }
 
@@ -43,7 +40,7 @@ public class TipToeGame extends BaseGame {
     }
 
     @Override
-    public void handleDisconnect(PlayerQuitEvent e) {
+    public void handleDisconnect(Player p) {
 
     }
 

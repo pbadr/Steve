@@ -88,7 +88,7 @@ public class MainListener implements Listener {
 
         PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
         e.setQuitMessage(RED + n + " left");
-        GameManager.handleDisconnect(e);
+        GameManager.handleDisconnect(p);
     }
 
 }

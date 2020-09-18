@@ -6,9 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import static com.steve.game.GameState.*;
-import static org.bukkit.ChatColor.*;
-
 public class GameCmd implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if (args.length >= 1 && args[0].equals("start")) {

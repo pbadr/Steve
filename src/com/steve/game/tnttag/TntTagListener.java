@@ -11,10 +11,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class TntTagListener implements Listener {
-    TntTagGame parent;
+    final TntTagGame game;
 
-    public TntTagListener(TntTagGame parent) {
-        this.parent = parent;
+    public TntTagListener(TntTagGame game) {
+        this.game = game;
     }
 
     @EventHandler
@@ -24,13 +24,13 @@ public class TntTagListener implements Listener {
             Player p = (Player) e.getEntity();
             Player pDamager = (Player) e.getDamager();
 
-            if (!parent.playerExplodeTasks.containsKey(p) &&
-                    parent.playerExplodeTasks.containsKey(pDamager)) {
+            if (!game.playerExplodeTasks.containsKey(p) &&
+                    game.playerExplodeTasks.containsKey(pDamager)) {
                 // player hit by tnt bearer
 
-                Bukkit.getScheduler().cancelTask(parent.playerExplodeTasks.get(pDamager));
-                parent.explodePlayerTask(p);
-                parent.playerExplodeTasks.remove(pDamager);
+                Bukkit.getScheduler().cancelTask(game.playerExplodeTasks.get(pDamager));
+                game.explodePlayerTask(p);
+                game.playerExplodeTasks.remove(pDamager);
 
                 pDamager.removePotionEffect(PotionEffectType.SPEED);
                 pDamager.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 0));

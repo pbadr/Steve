@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TntTagCmd implements CommandExecutor {
-    TntTagGame parent;
-    public TntTagCmd(TntTagGame parent) {
-        this.parent = parent;
+    final TntTagGame game;
+    public TntTagCmd(TntTagGame game) {
+        this.game = game;
     }
 
     @Override
@@ -19,7 +19,7 @@ public class TntTagCmd implements CommandExecutor {
         int index = ThreadLocalRandom.current().nextInt(Bukkit.getOnlinePlayers().size());
         Object[] players = Bukkit.getOnlinePlayers().toArray();
         Player p = (Player) players[index];
-        parent.explodePlayerTask(p); // @todo get to work non-static-y
+        game.explodePlayerTask(p); // @todo get to work non-static-y
 
         return true;
     }

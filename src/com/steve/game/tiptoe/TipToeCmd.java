@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 
 public class TipToeCmd implements CommandExecutor {
-    TipToeGame parent;
+    final TipToeGame game;
 
-    public TipToeCmd(TipToeGame parent) {
-        this.parent = parent;
+    public TipToeCmd(TipToeGame game) {
+        this.game = game;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class TipToeCmd implements CommandExecutor {
         if (args.length == 1) {
             switch (args[0]) {
                 case "1":
-                    parent.createFakePlatform(((Player) commandSender).getLocation());
+                    game.createFakePlatform(((Player) commandSender).getLocation());
                     return true;
 
                 case "3": {

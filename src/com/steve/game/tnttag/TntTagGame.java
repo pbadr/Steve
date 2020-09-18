@@ -7,7 +7,6 @@ import org.bukkit.*;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -22,11 +21,11 @@ public class TntTagGame extends BaseGame {
 
     @Override
     public int getMaxPlayers() {
-        return 10;
+        return 20;
     }
 
     @Override
-    public String getCommandString() {
+    public String getName() {
         return "tnttag";
     }
 
@@ -36,7 +35,7 @@ public class TntTagGame extends BaseGame {
     }
 
     @Override
-    public void handleDisconnect(PlayerQuitEvent e) {
+    public void handleDisconnect(Player p) {
 
     }
 

@@ -14,7 +14,6 @@ public class PlayerDataCmd implements CommandExecutor {
         if (args.length >= 3 && args[0].equals("set")) {
             if (args.length == 3 || args.length == 4) {
                 Player p;
-
                 PlayerData target;
                 String property;
                 int value;

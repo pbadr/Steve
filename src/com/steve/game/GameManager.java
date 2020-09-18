@@ -1,16 +1,17 @@
 package com.steve.game;
 
 import com.steve.Main;
+import com.steve.PlayerData;
 import com.steve.Util;
 import com.steve.game.tiptoe.TipToeGame;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.steve.game.GameState.*;
@@ -21,8 +22,9 @@ public class GameManager {
     public static BaseGame game;
     public static GameState state;
 
-    private static final int travellingSeconds = 1;
-    private static final int startingSeconds = 1;
+    private static final int travellingSeconds = 2;
+    private static final int startingSeconds = 2;
+    private static final int endingSeconds = 5;
 
     static int travellingTask;
     static int startingTask;
@@ -74,9 +76,9 @@ public class GameManager {
         return allGames;
     }
 
-    public static void handleDisconnect(PlayerQuitEvent e) {
+    public static void handleDisconnect(Player p) {
         if (state == RUNNING) {
-            game.handleDisconnect(e);
+            game.handleDisconnect(p);
         }
     }
 
@@ -133,7 +135,7 @@ public class GameManager {
     public static void travel() {
         if (canAdvanceToState(STARTING)) {
             Util.broadcast(
-                    RED + "Failed to finish travel: can't advance from state " + state + " to " + TRAVELLING
+                    RED + "Failed to travel: can't advance from state " + state + " to " + STARTING
             );
             return;
         }
@@ -142,13 +144,13 @@ public class GameManager {
         Bukkit.getServer().getPluginManager().registerEvents(game.getEventListener(), Main.plugin);
 
         // register game-specific command
-        String commandString = game.getCommandString();
-        PluginCommand pluginCommand = Main.plugin.getCommand(commandString);
+        String gameName = game.getName();
+        PluginCommand pluginCommand = Main.plugin.getCommand(gameName);
         if (pluginCommand == null) {
-            Util.broadcast("Failed to set command executor for /" + commandString);
+            Util.broadcast("Failed to set command executor for /" + gameName);
         } else {
             pluginCommand.setExecutor(game.getCommandExecutor());
-            Bukkit.getLogger().info("Set command executor for /" + commandString);
+            Bukkit.getLogger().info("Set command executor for /" + gameName);
         }
 
         // @todo also set to custom world
@@ -198,6 +200,13 @@ public class GameManager {
             return;
         }
 
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            UUID uuid = p.getUniqueId();
+            PlayerData pd = PlayerData.get(uuid);
+            pd.gamesPlayed += 1;
+            pd.incrementGameType(game.getName(), "played");
+        }
+
         state = RUNNING;
         game.started();
         Util.broadcast(GREEN + "STARTED");
@@ -206,15 +215,17 @@ public class GameManager {
     public static void end() {
         if (canAdvanceToState(ENDING)) {
             Util.broadcast(
-                    RED + "Failed to start: can't advance from state " + state + " to " + ENDING
+                    RED + "Failed to end: can't advance from state " + state + " to " + ENDING
             );
             return;
         }
 
         state = ENDING;
         game.ended();
-        Util.broadcast(GREEN + "ENDED");
-        startTravellingTimer();
+        Util.broadcast(YELLOW + "ENDED, travelling again in " + endingSeconds);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                Main.plugin, GameManager::startTravellingTimer, 20 * endingSeconds
+        );
     }
 
     public static void pluginEnabled() {

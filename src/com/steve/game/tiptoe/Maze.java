@@ -1,7 +1,6 @@
 package com.steve.game.tiptoe;
 
 import com.steve.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;

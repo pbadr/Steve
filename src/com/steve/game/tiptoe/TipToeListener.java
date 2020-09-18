@@ -14,10 +14,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.util.ArrayList;
 
 public class TipToeListener implements Listener {
-    TipToeGame parent;
+    final TipToeGame game;
 
-    public TipToeListener(TipToeGame parent) {
-        this.parent = parent;
+    public TipToeListener(TipToeGame game) {
+        this.game = game;
     }
 
     @EventHandler
@@ -28,7 +28,7 @@ public class TipToeListener implements Listener {
         pos = pos.clone();
         Block b = pos.subtract(0,1,0).getBlock();
 
-        for (ArrayList<Block> platform : parent.platformList) {
+        for (ArrayList<Block> platform : game.platformList) {
             if (platform.contains(b)) { // if true, remove entire platform
                 for (Block fakeBlock : platform) {
                     Material blockMaterial = fakeBlock.getType();
@@ -40,7 +40,7 @@ public class TipToeListener implements Listener {
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, fallingBlock::remove, 20);
                 }
-                parent.platformList.remove(platform);
+                game.platformList.remove(platform);
                 break;
             }
 
