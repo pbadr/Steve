@@ -96,12 +96,12 @@ public class GameManager {
             return;
         }
 
-        state = TRAVELLING;
-
         if (!setNewRandomGame()) {
             Util.broadcast(RED + "Failed to start travel: no games set or too many/few players");
             return;
         }
+
+        state = TRAVELLING;
 
         travellingTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
             int t = travellingSeconds;
