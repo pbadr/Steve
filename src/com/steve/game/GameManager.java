@@ -33,29 +33,34 @@ public class GameManager {
     static int startingTask;
     static int returnToLobbyTask;
 
-    private static boolean cantAdvanceToState(GameState advanceTo) {
-        boolean cantAdvance = true;
+    private static boolean cantChangeState(GameState advanceTo) {
+        boolean canChange = false;
 
         switch (advanceTo) { // inspired by oc.tc PGM source code
             case LOBBY:
-                cantAdvance = !(state == ENDED);
+                canChange = state == ENDED;
                 break;
             case TRAVELLING:
-                cantAdvance = !(state == LOBBY);
+                canChange = state == LOBBY;
                 break;
             case STARTING:
-                cantAdvance = !(state == TRAVELLING);
+                canChange = state == TRAVELLING;
                 break;
             case STARTED:
-                cantAdvance = !(state == STARTING);
+                canChange = state == STARTING;
                 break;
             case ENDED:
-                cantAdvance = !(state == TRAVELLING || state == STARTING || state == STARTED);
+                canChange = state == TRAVELLING || state == STARTING || state == STARTED;
                 break;
         }
 
-        if (cantAdvance) Util.broadcast(RED + "Can't advance from state " + state + " to " + advanceTo);
-        return cantAdvance;
+        if (canChange) {
+            state = advanceTo;
+        } else {
+            Util.broadcast(RED + "Can't change state from " + state + " to " + advanceTo);
+        }
+
+        return !canChange;
     }
 
     private static List<BaseGame> getAllGames() {
@@ -112,11 +117,9 @@ public class GameManager {
         pd.deaths += 1;
 
         if (alivePlayers.size() == 0) {
-            Util.broadcast(GOLD + "No winners here!");
             end(null);
         } else if (alivePlayers.size() == 1) {
             Player pWinner = alivePlayers.get(0);
-            Util.broadcast(GOLD + "" + pWinner.getName() + " won!");
             end(pWinner);
         } else {
             Util.broadcast(p.getName() + " died, " + alivePlayers.size() + " remain");
@@ -145,17 +148,20 @@ public class GameManager {
         }
     }
 
-    // TASK METHODS
+    public static void pluginEnabled() {
+        state = LOBBY;
+        attemptTravellingTimer();
+    }
+
+    // GAME PROCESSION METHODS
 
     public static void attemptTravellingTimer() {
-        if (cantAdvanceToState(TRAVELLING)) return;
+        if (cantChangeState(TRAVELLING)) return;
 
         if (!setNewRandomGame()) {
             Util.broadcast(RED + "Failed to start travel: no games available (for this amount of players)");
             return;
         }
-
-        state = TRAVELLING;
 
         cancelGameTimerTasks();
         travellingTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
@@ -186,34 +192,34 @@ public class GameManager {
     }
 
     public static void travel() {
-        if (cantAdvanceToState(STARTING)) return;
+        if (cantChangeState(STARTING)) return;
 
         String[] worlds = game.getSupportedWorlds();
         int index = new Random().nextInt(worlds.length);
-        if (!WorldManager.setupGameWorld(worlds[index])) {
+        if (WorldManager.setupGameWorld(worlds[index])) {
+            // register game-specific listener
+            // @todo make event handler only work in the game world
+            Bukkit.getServer().getPluginManager().registerEvents(game.getEventListener(), Main.plugin);
+            Bukkit.getLogger().info("Registered game listener");
+
+            // register game-specific command
+            String gameName = game.getShortName();
+            PluginCommand pluginCommand = Main.plugin.getCommand(gameName);
+            if (pluginCommand == null) {
+                Util.broadcast("Failed to set command executor for /" + gameName);
+            } else {
+                pluginCommand.setExecutor(game.getCommandExecutor());
+                Bukkit.getLogger().info("Set command executor for /" + gameName);
+            }
+
+        } else {
             Util.broadcast(
                     RED + "Failed to travel: game world load failed"
             );
         }
     }
 
-    public static void gameWorldLoaded() {
-        // register game-specific listener
-        Bukkit.getServer().getPluginManager().registerEvents(game.getEventListener(), Main.plugin);
-        Bukkit.getLogger().info("Registered game listener");
-
-        // register game-specific command
-        String gameName = game.getShortName();
-        PluginCommand pluginCommand = Main.plugin.getCommand(gameName);
-        if (pluginCommand == null) {
-            Util.broadcast("Failed to set command executor for /" + gameName);
-        } else {
-            pluginCommand.setExecutor(game.getCommandExecutor());
-            Bukkit.getLogger().info("Set command executor for /" + gameName);
-        }
-
-        state = STARTING;
-
+    public static void onGameWorldLoad() {
         for (Player p : Bukkit.getOnlinePlayers()) {
             Util.sendToGame(p, false);
         }
@@ -247,7 +253,7 @@ public class GameManager {
     }
 
     public static void start() {
-        if (cantAdvanceToState(STARTED)) return;
+        if (cantChangeState(STARTED)) return;
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerData pd = PlayerData.get(p);
@@ -255,13 +261,18 @@ public class GameManager {
             pd.incrementGameType(game.getShortName(), "played");
         }
 
-        state = STARTED;
         game.started();
         Util.broadcast(GREEN + "STARTED");
     }
 
-    public static void end(Player pWinner) { // @todo support multiple players & teams
-        if (cantAdvanceToState(ENDED)) return;
+    public static void end(Player pWinner) { // @todo support teams (multiple players too?)
+        if (cantChangeState(ENDED)) return;
+
+        if (pWinner == null) {
+            Util.broadcast(GOLD + "ENDED: No winners!");
+        } else {
+            Util.broadcast(GOLD + "ENDED: " + pWinner.getName() + " won!");
+        }
 
         for (Player pOnline : Bukkit.getOnlinePlayers()) {
             PlayerData pd;
@@ -279,7 +290,6 @@ public class GameManager {
             }
         }
 
-        state = ENDED;
         game.ended();
 
         // unregister game-specific listener
@@ -306,15 +316,10 @@ public class GameManager {
     }
 
     public static void returnToLobby() {
-        if (cantAdvanceToState(LOBBY)) return;
+        if (cantChangeState(LOBBY)) return;
 
         WorldManager.deleteGameWorld();
 
-        state = LOBBY;
-        attemptTravellingTimer();
-    }
-
-    public static void pluginEnabled() {
         state = LOBBY;
         attemptTravellingTimer();
     }

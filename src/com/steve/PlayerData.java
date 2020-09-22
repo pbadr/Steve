@@ -138,6 +138,7 @@ public class PlayerData {
                 String json = new String(Files.readAllBytes(Paths.get(filename)), StandardCharsets.UTF_8);
                 Gson gson = new Gson();
 
+                // @todo if playerdata json file is outdated, properties could be null, causing NPEs
                 ALL_DATA.add(gson.fromJson(json, PlayerData.class));
             }
 

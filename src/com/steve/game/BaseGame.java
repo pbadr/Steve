@@ -10,7 +10,7 @@ public abstract class BaseGame {
     public abstract int getMaxPlayers();
     public abstract String getName(); // the actual, stylized name
     public abstract String getShortName(); // should be /command-able (no spaces etc.)
-    public abstract Listener getEventListener(); // shouldn't create a new instance of a Listener!
+    public abstract Listener getEventListener(); // shouldn't create a new instance of a Listener! All EventHandlers should have priority set to >=LOW
     public abstract CommandExecutor getCommandExecutor();
     public abstract String[] getSupportedWorlds();
     public abstract Location getSpawnLocation(); // should clone the location, not send it directly

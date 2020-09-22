@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.sql.Timestamp;
@@ -98,12 +99,37 @@ public class Util {
         }
     }
 
-    public static void broadcast(Object msg) {
-        Bukkit.broadcastMessage(msg.toString());
+    public static void broadcast(@NotNull Object obj) {
+        Bukkit.broadcastMessage(obj.toString());
     }
 
     public static void pluginIsBuilt(Timestamp timestamp) {
         broadcast(GREEN + timestamp.toLocalDateTime().toString() + BOLD + " PLUGIN REBUILT - /reload :)");
+    }
+
+    public static void checkArgument(boolean check, String msg) {
+        if (check) {
+            throw new IllegalArgumentException(msg);
+        }
+    }
+
+    public static boolean isInZone(@NotNull Player p, @NotNull Location loc1, @NotNull Location loc2) {
+        Location pLoc = p.getLocation();
+        int pX = pLoc.getBlockX();
+        int pY = pLoc.getBlockY();
+        int pZ = pLoc.getBlockZ();
+
+        int[] zoneMinMaxX = new int[] {loc1.getBlockX(), loc2.getBlockX()};
+        int[] zoneMinMaxY = new int[] {loc1.getBlockY(), loc2.getBlockY()};
+        int[] zoneMinMaxZ = new int[] {loc1.getBlockZ(), loc2.getBlockZ()};
+
+        Arrays.sort(zoneMinMaxX);
+        Arrays.sort(zoneMinMaxY);
+        Arrays.sort(zoneMinMaxZ);
+
+        return zoneMinMaxX[0] <= pX && pX <= zoneMinMaxX[1] &&
+                zoneMinMaxY[0] <= pY && pY <= zoneMinMaxY[1] &&
+                zoneMinMaxZ[0] <= pZ && pZ <= zoneMinMaxZ[1];
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

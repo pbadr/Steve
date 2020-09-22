@@ -5,8 +5,8 @@ import com.steve.ui.FriendsMenu;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -16,10 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.WorldLoadEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.UUID;
 
 import static com.steve.game.GameState.*;
 import static org.bukkit.ChatColor.*;
@@ -48,7 +45,7 @@ public class MainListener implements Listener {
         pd.messagesSent += 1;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent e) {
         e.setCancelled(true);
     }
@@ -121,7 +118,7 @@ public class MainListener implements Listener {
     public void onWorldLoad(WorldLoadEvent e) {
         if (!e.getWorld().getName().equals("game")) return;
 
-        GameManager.gameWorldLoaded();
+        GameManager.onGameWorldLoad();
     }
 
     @EventHandler
