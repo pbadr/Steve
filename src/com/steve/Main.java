@@ -43,7 +43,7 @@ public class Main extends JavaPlugin {
         PlayerData.readDisk();
         Bukkit.getServer().getPluginManager().registerEvents(new MainListener(), plugin);
         Bukkit.getLogger().info("Enabled");
-        GameManager.pluginEnabled();
+        // GameManager.pluginEnabled();
 
         // for game state debugging
         // Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, () -> Util.broadcast("State: " + GameManager.state), 0, 20);

@@ -5,14 +5,18 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
@@ -66,7 +70,7 @@ public class MainListener implements Listener {
             p.sendMessage(RED + "Waiting for the next game");
         } else {
             Util.sendToLobby(p);
-            GameManager.attemptTravellingTimer();
+//            GameManager.attemptTravellingTimer();
         }
     }
 
@@ -117,6 +121,22 @@ public class MainListener implements Listener {
         if (!e.getWorld().getName().equals("game")) return;
 
         GameManager.gameWorldLoaded();
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent e) {
+
+        ItemStack i = e.getItem();
+
+        if(i == null || !i.hasItemMeta())
+            return;
+
+        if(i.getItemMeta().getDisplayName().endsWith("Friends")) {
+            Inventory inv = Bukkit.createInventory(e.getPlayer(), 9, "Friends");
+            e.getPlayer().openInventory(inv);
+        }
+
+
     }
 
 }

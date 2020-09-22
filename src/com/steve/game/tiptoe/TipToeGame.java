@@ -77,7 +77,7 @@ public class TipToeGame extends BaseGame {
 
     @Override
     public String[] getSupportedWorlds() {
-        return new String[] {"tiptoe", "water", "glhf2"};
+        return new String[] { "tiptoe" };
     }
 
     @Override

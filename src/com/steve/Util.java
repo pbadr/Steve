@@ -3,13 +3,12 @@ package com.steve;
 import com.steve.game.GameManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.steve.game.GameState.*;
 import static org.bukkit.ChatColor.*;
@@ -54,6 +53,7 @@ public class Util {
         PlayerData pd = PlayerData.get(p);
 
         p.getInventory().clear();
+        setLobbyItems(p);
         p.setGameMode(ADVENTURE);
         p.setAllowFlight(true);
         p.setInvulnerable(true);
@@ -128,7 +128,7 @@ public class Util {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void copyFolder(File source, File target){
+    public static void copyFolder(File source, File target) {
         // from: https://bukkit.org/threads/unload-delete-copy-worlds.182814/
 
         try {
@@ -161,5 +161,29 @@ public class Util {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void setLobbyItems(Player p) {
+
+        // 0 ItemSlot
+        ItemStack friendsCompassItem = new ItemStack(Material.COMPASS);
+        ItemMeta friendsCompassItemMeta = friendsCompassItem.getItemMeta();
+
+        assert friendsCompassItemMeta != null;
+        friendsCompassItemMeta.setDisplayName(RESET + "Friends");
+        friendsCompassItemMeta.setLore(Collections.singletonList(BLUE + "Test"));
+
+        friendsCompassItem.setItemMeta(friendsCompassItemMeta);
+
+        p.getInventory().setItem(0, friendsCompassItem);
+    }
+
+    public static boolean nullCheckItem(ItemStack i) {
+
+        if(i == null || i.getItemMeta() == null)
+            return false;
+
+        return true;
+
     }
 }
