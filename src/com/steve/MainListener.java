@@ -1,6 +1,7 @@
 package com.steve;
 
 import com.steve.game.GameManager;
+import com.steve.ui.FriendsMenu;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -132,8 +133,9 @@ public class MainListener implements Listener {
             return;
 
         if(i.getItemMeta().getDisplayName().endsWith("Friends")) {
-            Inventory inv = Bukkit.createInventory(e.getPlayer(), 9, "Friends");
-            e.getPlayer().openInventory(inv);
+
+            new FriendsMenu().openInventory(e.getPlayer());
+
         }
 
 
