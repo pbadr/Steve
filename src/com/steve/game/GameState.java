@@ -1,9 +1,9 @@
 package com.steve.game;
 
 public enum GameState {
-    IDLE,
+    LOBBY,
     TRAVELLING,
     STARTING,
-    RUNNING,
-    ENDING
+    STARTED,
+    ENDED,
 }

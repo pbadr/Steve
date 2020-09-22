@@ -26,6 +26,11 @@ public class TntTagGame extends BaseGame {
 
     @Override
     public String getName() {
+        return null;
+    }
+
+    @Override
+    public String getShortName() {
         return "tnttag";
     }
 
@@ -35,8 +40,8 @@ public class TntTagGame extends BaseGame {
     }
 
     @Override
-    public void handleDisconnect(Player p) {
-
+    public boolean handleDisconnect(Player p) {
+        return false;
     }
 
     @Override
@@ -57,6 +62,11 @@ public class TntTagGame extends BaseGame {
     @Override
     public CommandExecutor getCommandExecutor() {
         return new TntTagCmd(this);
+    }
+
+    @Override
+    public String[] getSupportedWorlds() {
+        return new String[0];
     }
 
     @Override

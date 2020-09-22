@@ -21,6 +21,7 @@ public class Main extends JavaPlugin {
         commandExecutors.put("friend", new AddFriend());
         commandExecutors.put("playerdata", new PlayerDataCmd());
         commandExecutors.put("game", new GameCmd());
+        commandExecutors.put("world", new WorldCmd());
     }
 
     @Override
@@ -43,6 +44,9 @@ public class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new MainListener(), plugin);
         Bukkit.getLogger().info("Enabled");
         GameManager.pluginEnabled();
+
+        // for game state debugging
+        // Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, () -> Util.broadcast("State: " + GameManager.state), 0, 20);
     }
 
     @Override

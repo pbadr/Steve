@@ -3,6 +3,7 @@ package com.steve;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.io.FileWriter;
 import java.lang.reflect.Field;
@@ -25,7 +26,7 @@ public class PlayerData {
     public String uuid;
 
     public int deaths;
-    public long firstJoinTimestamp;
+    public long registerTimestamp;
     public List<String> friendsAdded;
     public int gamesLost;
     public int gamesPlayed;
@@ -34,17 +35,18 @@ public class PlayerData {
     public HashMap<String, Integer> gameTypesPlayed;
     public HashMap<String, Integer> gameTypesWon;
     public int kills;
-    public long lastOnlineTimestamp;
+    public long lastLoginTimestamp;
+    public long lastLogoutTimestamp;
     public int messagesSent;
     public List<String> playersBlocked;
     public int serverJoins;
 
-    public PlayerData(String name, UUID uuid, long currentTime) {
-        this.name = name;
-        this.uuid = uuid.toString();
+    private PlayerData(Player player) {
+        this.name = player.getName();
+        this.uuid = player.getUniqueId().toString();
 
         this.deaths = 0;
-        this.firstJoinTimestamp = currentTime;
+        this.registerTimestamp = System.currentTimeMillis();
         this.friendsAdded = new ArrayList<>();
         this.gamesLost = 0;
         this.gamesPlayed = 0;
@@ -53,43 +55,53 @@ public class PlayerData {
         this.gameTypesPlayed = new HashMap<>();
         this.gameTypesWon = new HashMap<>();
         this.kills = 0;
-        this.lastOnlineTimestamp = currentTime;
+        this.lastLoginTimestamp = 0;
+        this.lastLogoutTimestamp = 0;
         this.messagesSent = 0;
         this.playersBlocked = new ArrayList<>();
         this.serverJoins = 0;
+
+        for (String gameName : new String[] {"tiptoe"}) {
+            gameTypesLost.put(gameName, 0);
+            gameTypesPlayed.put(gameName, 0);
+            gameTypesWon.put(gameName, 0);
+        }
     }
 
-    public static PlayerData get(UUID uuid) {
+    public static PlayerData get(Player player) {
         for (PlayerData pd : ALL_DATA) {
-            if (pd.uuid.equals(uuid.toString())) {
+            if (pd.uuid.equals(player.getUniqueId().toString())) {
                 return pd;
             }
         }
 
-        Bukkit.getLogger().severe("Invalid UUID passed to PlayerData.get(): " + uuid);
-        return new PlayerData(null, UUID.fromString(""), 0); // @todo check if this prevents crash
+        Bukkit.getLogger().severe("Invalid UUID passed to PlayerData.get(): " + player.getUniqueId());
+        return new PlayerData(player); // @todo check if this prevents crash
     }
 
-    public Integer incrementGameType(String game, String what) {
-        switch (what) {
+    public void incrementGameType(String game, String incrementWhat) {
+        switch (incrementWhat) {
             case "lost":
-                return gameTypesLost.put(game, gameTypesLost.get(game) + 1);
+                gameTypesLost.put(game, gameTypesLost.get(game) + 1);
+                return;
             case "played":
-                return gameTypesPlayed.put(game, gameTypesPlayed.get(game) + 1);
+                gameTypesPlayed.put(game, gameTypesPlayed.get(game) + 1);
+                return;
             case "won":
-                return gameTypesWon.put(game, gameTypesWon.get(game) + 1);
+                gameTypesWon.put(game, gameTypesWon.get(game) + 1);
         }
-        return null;
     }
 
-    public static void register(String name, UUID uuid, long currentTime) {
-        ALL_DATA.add(new PlayerData(name, uuid, currentTime));
-        Bukkit.getLogger().info("Registered PlayerData for " + name + " (" + uuid + ")");
+    public static void registerIfNotExisting(Player player) {
+        if (exists(player)) return;
+
+        ALL_DATA.add(new PlayerData(player));
+        Bukkit.getLogger().info("Registered PlayerData for " + player.getName());
     }
 
-    public static boolean exists(UUID uuid) {
+    public static boolean exists(Player player) {
         for (PlayerData pd : ALL_DATA) {
-            if (pd.uuid.equals(uuid.toString())) {
+            if (pd.uuid.equals(player.getUniqueId().toString())) {
                 return true;
             }
         }

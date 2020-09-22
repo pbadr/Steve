@@ -5,10 +5,14 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 
 import java.util.UUID;
 
@@ -20,8 +24,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-        UUID uuid = p.getUniqueId();
-        PlayerData pd = PlayerData.get(uuid);
+        PlayerData pd = PlayerData.get(p);
         String n = p.getName();
         String m = e.getMessage();
         GameMode gm = p.getGameMode();
@@ -48,47 +51,72 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        UUID uuid = p.getUniqueId();
         String n = p.getName();
-        long currentTime = System.currentTimeMillis();
-
-        if (!PlayerData.exists(uuid)) {
-            PlayerData.register(n, uuid, currentTime);
-        }
-
-        PlayerData pd = PlayerData.get(uuid);
-        pd.lastOnlineTimestamp = currentTime;
-        pd.serverJoins += 1;
-
-        // player properties for in the lobby
-        p.setGameMode(ADVENTURE);
-        p.setAllowFlight(true);
-        p.setInvulnerable(true);
-        p.setLevel(pd.gamesWon);
-        p.setExp(0);
-        p.setHealth(20);
-        p.setFoodLevel(20);
-        p.setSaturation(20);
-
         e.setJoinMessage(GREEN + n + " joined");
 
-        if (GameManager.state  == RUNNING) {
-            p.setGameMode(SPECTATOR);
-            p.sendMessage(RED + "Waiting for the next game to start");
+        PlayerData.registerIfNotExisting(p);
+
+        PlayerData pd = PlayerData.get(p);
+        pd.lastLoginTimestamp = System.currentTimeMillis();
+        pd.serverJoins += 1;
+
+        if (GameManager.state == STARTING || GameManager.state == STARTED || GameManager.state == ENDED) {
+            Util.sendToGame(p, true);
+            p.teleport(GameManager.game.getSpawnLocation());
+            p.sendMessage(RED + "Waiting for the next game");
         } else {
-            GameManager.startTravellingTimer();
+            Util.sendToLobby(p);
+            GameManager.attemptTravellingTimer();
         }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        UUID uuid = p.getUniqueId();
         String n = p.getName();
 
-        PlayerData.get(uuid).lastOnlineTimestamp = System.currentTimeMillis();
+        PlayerData.get(p).lastLogoutTimestamp = System.currentTimeMillis();
         e.setQuitMessage(RED + n + " left");
         GameManager.handleDisconnect(p);
+    }
+
+    @EventHandler
+    public void onPlayerDeath(EntityDamageEvent e) { // @todo create a custom event for game listener
+        if (!(e.getEntity() instanceof Player)) return;
+        Player p = (Player) e.getEntity();
+        if (e.getFinalDamage() < p.getHealth()) return; // check if hit is fatal
+        e.setCancelled(true);
+
+        GameManager.handleDeath(p);
+    }
+
+    @EventHandler
+    public void onPlayerKilledByPlayer(EntityDamageByEntityEvent e) { // @todo create a custom event for game listener
+        Bukkit.getLogger().info("oPlKiByPl called"); // @todo test does this also call onPlayerDeath(e) ??
+        if (!(e.getEntity() instanceof Player)) return;
+        if (!(e.getDamager() instanceof Player)) return;
+        Player pVictim = (Player) e.getEntity();
+        if (e.getFinalDamage() < pVictim.getHealth()) return; // check if hit is fatal
+        Player pDamager = (Player) e.getEntity();
+        e.setCancelled(true);
+
+        pDamager.sendMessage(GREEN + "You killed " + pVictim.getName());
+        PlayerData pdDamager = PlayerData.get(pDamager);
+        pdDamager.kills += 1;
+    }
+
+    @EventHandler
+    public void onWeatherChange(WeatherChangeEvent e) {
+        if (!e.getWorld().getName().equals("lobby")) return;
+
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent e) {
+        if (!e.getWorld().getName().equals("game")) return;
+
+        GameManager.gameWorldLoaded();
     }
 
 }

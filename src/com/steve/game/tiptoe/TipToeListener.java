@@ -1,17 +1,25 @@
 package com.steve.game.tiptoe;
 
 import com.steve.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import com.steve.PlayerData;
+import com.steve.Util;
+import com.steve.game.GameManager;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static org.bukkit.ChatColor.*;
+import static org.bukkit.GameMode.CREATIVE;
+import static org.bukkit.GameMode.SPECTATOR;
 
 public class TipToeListener implements Listener {
     final TipToeGame game;

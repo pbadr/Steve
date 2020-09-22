@@ -1,5 +1,6 @@
 package com.steve.game.tiptoe;
 
+import com.steve.Util;
 import com.steve.game.BaseGame;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -13,8 +14,13 @@ import static org.bukkit.Material.GOLD_BLOCK;
 import static org.bukkit.Material.YELLOW_WOOL;
 
 public class TipToeGame extends BaseGame {
+    private Listener listener;
     final ArrayList<ArrayList<Block>> platformList = new ArrayList<>();
     boolean useSecondaryMaterial = true;
+
+    public TipToeGame() {
+
+    }
 
     @Override
     public int getMinPlayers() {
@@ -28,20 +34,23 @@ public class TipToeGame extends BaseGame {
 
     @Override
     public String getName() {
+        return "Tip Toe";
+    }
+
+    @Override
+    public String getShortName() {
         return "tiptoe";
     }
 
     @Override
     public void travelled() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            p.sendTitle("Get ready kid", null, 5, 10, 5);
-        }
         // @todo spawn platforms here (both real and fake)
     }
 
     @Override
-    public void handleDisconnect(Player p) {
-
+    public boolean handleDisconnect(Player p) {
+        Util.broadcast(p.getName() + " isn't a tip toe fan");
+        return true;
     }
 
     @Override
@@ -55,7 +64,10 @@ public class TipToeGame extends BaseGame {
 
     @Override
     public Listener getEventListener() {
-        return new TipToeListener(this);
+        if (listener == null) {
+            listener = new TipToeListener(this);
+        }
+        return listener;
     }
 
     @Override
@@ -64,8 +76,13 @@ public class TipToeGame extends BaseGame {
     }
 
     @Override
+    public String[] getSupportedWorlds() {
+        return new String[] {"tiptoe", "water", "glhf2"};
+    }
+
+    @Override
     public Location getSpawnLocation() {
-        return new Location(Bukkit.getWorld("world"), 0, 65, 0);
+        return new Location(Bukkit.getWorld("game"), 0, 65, 0);
     }
 
     public void createFakePlatform(Location pos) {

@@ -20,4 +20,7 @@ commands:
     usage: /<command>
   game:
     description: game management
-    usage: /<command> start
+    usage: /<command> travel
+  world:
+    description: world management
+    usage: /<command> tp <name>, editor, save
