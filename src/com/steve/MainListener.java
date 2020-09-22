@@ -133,9 +133,7 @@ public class MainListener implements Listener {
             return;
 
         if(i.getItemMeta().getDisplayName().endsWith("Friends")) {
-
             new FriendsMenu().openInventory(e.getPlayer());
-
         }
 
 
