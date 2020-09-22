@@ -30,7 +30,7 @@ public class AddFriend implements CommandExecutor {
 
                 if(args[0].toLowerCase().equals("list")) {
 
-                    for(String friend :  PlayerData.get(p.getUniqueId()).friendsAdded) {
+                    for(String friend :  PlayerData.get(p).friendsAdded) {
                         System.out.println(friend);
                         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(friend));
                         friends.add(offlinePlayer.getName());
@@ -50,11 +50,11 @@ public class AddFriend implements CommandExecutor {
                             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
                             System.out.println(offlinePlayer.getUniqueId());
 
-                            if(PlayerData.get(p.getUniqueId()).friendsAdded.contains(offlinePlayer.getUniqueId().toString())) {
+                            if(PlayerData.get(p).friendsAdded.contains(offlinePlayer.getUniqueId().toString())) {
                                 p.sendMessage("Player already added!");
                             } else {
                                 if(offlinePlayer.hasPlayedBefore()) {
-                                    PlayerData.get(p.getUniqueId()).friendsAdded.add(offlinePlayer.getUniqueId().toString());
+                                    PlayerData.get(p).friendsAdded.add(offlinePlayer.getUniqueId().toString());
                                     p.sendMessage(String.format("%s added %s as friend!", n, args[1]));
                                 } else {
                                     p.sendMessage("Player has never played before!");
@@ -76,8 +76,8 @@ public class AddFriend implements CommandExecutor {
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
                     System.out.println(offlinePlayer.getUniqueId());
 
-                    if(PlayerData.get(p.getUniqueId()).friendsAdded.contains(offlinePlayer.getUniqueId().toString())) {
-                        PlayerData.get(p.getUniqueId()).friendsAdded.remove(offlinePlayer.getUniqueId().toString());
+                    if(PlayerData.get(p).friendsAdded.contains(offlinePlayer.getUniqueId().toString())) {
+                        PlayerData.get(p).friendsAdded.remove(offlinePlayer.getUniqueId().toString());
                         p.sendMessage(String.format("%s removed %s as friend!", n, args[1]));
                     } else {
                         p.sendMessage("Person not added as friend!");

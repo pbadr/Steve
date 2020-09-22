@@ -22,14 +22,14 @@ public class PlayerDataCmd implements CommandExecutor {
                     if (!(commandSender instanceof Player)) return false;
                     p = (Player) commandSender;
 
-                    target = PlayerData.get(p.getUniqueId());
+                    target = PlayerData.get(p);
                     property = args[1];
                     value = Integer.parseInt(args[2]);
                 } else {
                     p = Bukkit.getPlayer(args[1]);
                     if (p == null) return false;
 
-                    target = PlayerData.get(p.getUniqueId());
+                    target = PlayerData.get(p);
                     property = args[2];
                     value = Integer.parseInt(args[3]);
                 }
