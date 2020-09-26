@@ -53,7 +53,7 @@ public class TipToeGame extends Game {
 
     @Override
     public void handleDisconnect(Player p) {
-        Util.broadcast(p.getName() + " has had enough of tnt tag");
+        Util.broadcast(p.getName() + " has had enough of Tip Toe!");
     }
 
     @Override
