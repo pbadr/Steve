@@ -123,16 +123,14 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
-
         ItemStack i = e.getItem();
 
-        if(i == null || !i.hasItemMeta())
+        if (i == null || i.getItemMeta() == null)
             return;
 
-        if(i.getItemMeta().getDisplayName().endsWith("Friends")) {
+        if (i.getItemMeta().getDisplayName().contains("Friends")) {
             new FriendsMenu().openInventory(e.getPlayer());
         }
-
 
     }
 
