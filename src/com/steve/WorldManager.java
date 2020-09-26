@@ -23,9 +23,9 @@ public class WorldManager {
     }
 
     public static boolean setupGameWorld(String worldName) {
-        Bukkit.getLogger().info("Setting up world " + worldName);
-        Util.sendTitle(GOLD + "Setting up world (lag)", YELLOW + "Playing " +
-                GameManager.game.getName() + " on " + worldName + "!", 10, 1200, 0);
+        Bukkit.getLogger().info("Setting up game world " + worldName + "...");
+        Util.sendTitle(GOLD + "Setting up world (lag)",
+                YELLOW + GameManager.game.getName() + " @ " + worldName + "!", 10, 1200, 0);
         // duration = 1 minute (est. max load time)
 
         // check if game world is already loaded
@@ -38,16 +38,15 @@ public class WorldManager {
 
         Bukkit.getLogger().info("Copying from worlds folder...");
         Util.copyFolder(worldFile, new File("game")); // @todo check if exception occurred
-        Bukkit.getLogger().info("Copied world!");
+        Bukkit.getLogger().info("Copied game world!");
 
-        Bukkit.getLogger().info("Loading world...");
+        Bukkit.getLogger().info("Loading game world...");
         // @todo prevent lag, even though world creating can't be put on a separate thread?
         World w = Bukkit.createWorld(new WorldCreator("game"));
         if (w == null) {
-            Bukkit.getLogger().info("Failed to load world (is still null)");
+            Bukkit.getLogger().info("Failed to load game world (is still null)");
             return false;
         }
-        Bukkit.getLogger().info("World loaded!");
 
         Util.sendTitle(YELLOW + "Done!", null, 0, 20, 10);
         return true;
@@ -62,11 +61,11 @@ public class WorldManager {
             }
         }
 
-        Bukkit.getLogger().info("Unloading world...");
+        Bukkit.getLogger().info("Unloading world " + worldName + "...");
         if (Bukkit.unloadWorld(worldName, saveToWorlds)) {
-            Bukkit.getLogger().info("Unloaded world");
+            Bukkit.getLogger().info("Unloaded world " + worldName);
         } else {
-            Bukkit.getLogger().severe("Failed to unload world!");
+            Bukkit.getLogger().severe("Failed to unload world " + worldName + "! Was it loaded in the first place?");
         }
 
         File worldFile = new File(worldName);
@@ -75,31 +74,31 @@ public class WorldManager {
             File destFile = new File(Util.WORLDS_PATH + saveName);
 
             if (destFile.exists()) {
-                Bukkit.getLogger().info("World name already exists!");
+                Bukkit.getLogger().severe("World " + worldName + " already exists!");
                 return false;
             }
 
             Bukkit.getLogger().info("Saving to worlds folder...");
             Util.copyFolder(worldFile, destFile);
-            Bukkit.getLogger().info("Saved world!");
+            Bukkit.getLogger().info("Saved world " + worldName);
         }
 
-        Bukkit.getLogger().info("Deleting world folder...");
+        Bukkit.getLogger().info("Deleting world folder " + worldName + "...");
 
         boolean result;
         try {
             result = Util.deleteFolder(worldFile);
         } catch (Exception e) {
-            Bukkit.getLogger().severe("Exception on deleting world folder!");
+            Bukkit.getLogger().severe("Exception caught on deleting world folder " + worldName);
             e.printStackTrace();
             return false;
         }
 
         if (result) {
-            Bukkit.getLogger().info("Deleted world folder");
+            Bukkit.getLogger().info("Deleted world folder " + worldName);
             return true;
         } else {
-            Bukkit.getLogger().severe("Failed to delete world folder!");
+            Bukkit.getLogger().severe("Failed to delete world folder " + worldName);
             return false;
         }
     }
@@ -132,7 +131,7 @@ public class WorldManager {
         Bukkit.getLogger().info("Creating editor world...");
         World w = creator.createWorld();
         if (w == null) {
-            Bukkit.getLogger().info("Failed to create editor world!");
+            Bukkit.getLogger().severe("Failed to create editor world!");
         } else {
             Bukkit.getLogger().info("Created editor world!");
         }

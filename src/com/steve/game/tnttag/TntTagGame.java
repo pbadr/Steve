@@ -2,7 +2,7 @@ package com.steve.game.tnttag;
 
 import com.steve.Main;
 import com.steve.Util;
-import com.steve.game.BaseGame;
+import com.steve.game.Game;
 import org.bukkit.*;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
@@ -12,11 +12,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
+import java.util.Random;
 
-public class TntTagGame extends BaseGame {
+import static org.bukkit.Material.TNT;
+
+public class TntTagGame extends Game {
     @Override // @todo [at]Override needed for Game classes?
     public int getMinPlayers() {
-        return 2;
+        return 1;
     }
 
     @Override
@@ -25,12 +28,17 @@ public class TntTagGame extends BaseGame {
     }
 
     @Override
-    public String getName() {
-        return null;
+    public Material getVoteMaterial() {
+        return TNT;
     }
 
     @Override
-    public String getShortName() {
+    public String getName() {
+        return "TNT Tag";
+    }
+
+    @Override
+    public String getCode() {
         return "tnttag";
     }
 
@@ -40,13 +48,16 @@ public class TntTagGame extends BaseGame {
     }
 
     @Override
-    public boolean handleDisconnect(Player p) {
-        return false;
+    public void handleDisconnect(Player p) {
+        Util.broadcast(p.getName() + " isn't a tip toe fan");
     }
 
     @Override
     public void started() {
-
+        int index = new Random().nextInt(Bukkit.getOnlinePlayers().size());
+        Object[] players = Bukkit.getOnlinePlayers().toArray();
+        Player p = (Player) players[index];
+        explodePlayerTask(p);
     }
 
     @Override
@@ -66,12 +77,12 @@ public class TntTagGame extends BaseGame {
 
     @Override
     public String[] getSupportedWorlds() {
-        return new String[0];
+        return new String[]{"tiptoe"};
     }
 
     @Override
     public Location getSpawnLocation() {
-        return null;
+        return new Location(Bukkit.getWorld("game"), 0, 65, 0);
     }
 
     public final HashMap<Player, Integer> playerExplodeTasks = new HashMap<>();
@@ -93,7 +104,7 @@ public class TntTagGame extends BaseGame {
 
         Util.broadcast(p.getName() + " is about to explode!");
         p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3));
-        p.getInventory().setHelmet(new ItemStack(Material.TNT));
+        p.getInventory().setHelmet(new ItemStack(TNT));
         System.out.println(playerExplodeTasks.keySet().toString());
     }
 }

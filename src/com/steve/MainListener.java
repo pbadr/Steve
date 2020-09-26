@@ -2,6 +2,7 @@ package com.steve;
 
 import com.steve.game.GameManager;
 import com.steve.ui.FriendsMenu;
+import com.steve.ui.VoteGameMenu;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -68,7 +69,7 @@ public class MainListener implements Listener {
             p.sendMessage(RED + "Waiting for the next game");
         } else {
             Util.sendToLobby(p);
-//            GameManager.attemptTravellingTimer();
+            // GameManager.attemptTravellingTimer(true);
         }
     }
 
@@ -118,6 +119,7 @@ public class MainListener implements Listener {
     public void onWorldLoad(WorldLoadEvent e) {
         if (!e.getWorld().getName().equals("game")) return;
 
+        Bukkit.getLogger().info("Game world loaded!");
         GameManager.onGameWorldLoad();
     }
 
@@ -132,6 +134,9 @@ public class MainListener implements Listener {
             new FriendsMenu().openInventory(e.getPlayer());
         }
 
+        if (i.equals(VoteGameMenu.getItem())) {
+            new VoteGameMenu(e.getPlayer());
+        }
     }
 
 }

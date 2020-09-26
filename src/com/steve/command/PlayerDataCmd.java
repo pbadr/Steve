@@ -51,6 +51,9 @@ public class PlayerDataCmd implements CommandExecutor {
             }
         }
 
+        if (args.length == 1 && args[0].equals("clear")) {
+            PlayerData.emptyMemory();
+        }
         return false;
     }
 }

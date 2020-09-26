@@ -12,9 +12,15 @@ public class GameCmd implements CommandExecutor {
             if (args.length >= 2 && args[1].equals("force")) {
                 Util.broadcast("to implement"); // @todo implement force start
             } else {
-                GameManager.attemptTravellingTimer();
+                GameManager.attemptTravellingTimer(true);
             }
 
+            return true;
+        }
+
+        if (args.length == 1 && args[0].startsWith("stoptasks")) {
+            GameManager.cancelGameTasks();
+            commandSender.sendMessage("Stopped any running tasks");
             return true;
         }
 

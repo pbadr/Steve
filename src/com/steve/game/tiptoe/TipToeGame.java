@@ -1,7 +1,7 @@
 package com.steve.game.tiptoe;
 
 import com.steve.Util;
-import com.steve.game.BaseGame;
+import com.steve.game.Game;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
@@ -10,10 +10,9 @@ import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
 
-import static org.bukkit.Material.GOLD_BLOCK;
-import static org.bukkit.Material.YELLOW_WOOL;
+import static org.bukkit.Material.*;
 
-public class TipToeGame extends BaseGame {
+public class TipToeGame extends Game {
     private Listener listener;
     final ArrayList<ArrayList<Block>> platformList = new ArrayList<>();
     boolean useSecondaryMaterial = true;
@@ -33,12 +32,17 @@ public class TipToeGame extends BaseGame {
     }
 
     @Override
+    public Material getVoteMaterial() {
+        return LEATHER_BOOTS;
+    }
+
+    @Override
     public String getName() {
         return "Tip Toe";
     }
 
     @Override
-    public String getShortName() {
+    public String getCode() {
         return "tiptoe";
     }
 
@@ -48,9 +52,8 @@ public class TipToeGame extends BaseGame {
     }
 
     @Override
-    public boolean handleDisconnect(Player p) {
-        Util.broadcast(p.getName() + " isn't a tip toe fan");
-        return true;
+    public void handleDisconnect(Player p) {
+        Util.broadcast(p.getName() + " has had enough of tnt tag");
     }
 
     @Override

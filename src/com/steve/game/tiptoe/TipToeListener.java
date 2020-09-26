@@ -20,8 +20,8 @@ public class TipToeListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
+        if (e.getTo() == null) return;
         Location pos = e.getTo();
-        Util.checkArgument(pos == null, "e.getTo() null");
         Block b = pos.clone().subtract(0,1,0).getBlock();
 
         for (ArrayList<Block> platform : game.platformList) {

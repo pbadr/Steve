@@ -109,6 +109,12 @@ public class PlayerData {
         return false;
     }
 
+    public static void emptyMemory() {
+        // deletes all playerdata in memory (ALL_DATA), and thus wiping all data if writeDisk() gets called!
+        ALL_DATA.clear();
+        Bukkit.getLogger().info("Emptied ALL_DATA! (if the plugin writes to disk, all data will be lost!)");
+    }
+
     public static Object reflectSet(Object object, String fieldName, Object value) {
         // by sp00m, source: https://stackoverflow.com/a/14374995/13216113
 

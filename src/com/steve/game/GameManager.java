@@ -10,33 +10,34 @@ import org.bukkit.GameMode;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
 
 import static com.steve.game.GameState.*;
 import static org.bukkit.ChatColor.*;
 import static org.bukkit.GameMode.*;
 
 public class GameManager {
-    public static BaseGame game;
-    public static GameState state;
+    public static Game game;
+    public static GameState state = LOBBY;
 
-    private static final int travellingSeconds = 3;
-    private static final int startingSeconds = 10;
-    private static final int returningDelaySeconds = 5;
+    private static final HashMap<String, Game> gameCodes = new HashMap<>();
+    private static final HashMap<String, Integer> gameVotes = new HashMap<>();
+    private static final HashMap<String, HashMap<String, Integer>> gameWorldVotes = new HashMap<>();
 
-    static int travellingTask;
-    static int startingTask;
-    static int returnToLobbyTask;
+    public static final int travellingSeconds = 5;
+    public static final int startingSeconds = 10;
+    public static final int returningDelaySeconds = 2;
 
-    private static boolean cantChangeState(GameState advanceTo) {
+    static BukkitTask travellingTask;
+    static BukkitTask startingTask;
+    static BukkitTask returnToLobbyTask;
+
+    private static boolean canChangeState(GameState changeTo) {
         boolean canChange = false;
 
-        switch (advanceTo) { // inspired by oc.tc PGM source code
+        switch (changeTo) { // inspired by oc.tc PGM source code
             case LOBBY:
                 canChange = state == ENDED;
                 break;
@@ -55,57 +56,161 @@ public class GameManager {
         }
 
         if (canChange) {
-            state = advanceTo;
+            state = changeTo;
         } else {
-            Util.broadcast(RED + "Can't change state from " + state + " to " + advanceTo);
+            Util.broadcast(RED + "Can't change state from " + state + " to " + changeTo);
         }
 
-        return !canChange;
+        return canChange;
     }
 
-    private static List<BaseGame> getAllGames() {
-        List<BaseGame> allGames = new ArrayList<>();
+    public static boolean atLeastOneGameSupportsThisAmountOfPlayers() {
+        int onlinePlayers = Bukkit.getOnlinePlayers().size();
+
+        for (String s : gameVotes.keySet()) {
+            Game g = gameCodes.get(s);
+            if (onlinePlayers >= g.getMinPlayers() || onlinePlayers <= g.getMaxPlayers()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean currentGamePlayerCountOk() {
+        int onlinePlayers = Bukkit.getOnlinePlayers().size();
+
+        return game != null && onlinePlayers >= game.getMinPlayers() && onlinePlayers <= game.getMaxPlayers();
+    }
+
+    public static List<Game> getAllGames() {
+        List<Game> allGames = new ArrayList<>();
         // @todo set static class variable with strings as names instead of instancing new games every time
         allGames.add(new TipToeGame());
 
         return allGames;
     }
 
-    private static boolean setNewRandomGame() {
-        // get all games valid for the current amount of players online
-        List<BaseGame> availableGames = new ArrayList<>();
-        for (BaseGame g : getAllGames()) {
+    public static int setupGameVotes() {
+        List<Game> availableGames = new ArrayList<>();
+        for (Game g : getAllGames()) {
             int onlinePlayers = Bukkit.getOnlinePlayers().size();
             if (g.getMinPlayers() <= onlinePlayers && onlinePlayers <= g.getMaxPlayers()) {
                 availableGames.add(g);
             }
         }
 
-        // are there available games?
-        int size = availableGames.size();
-        if (size == 0) {
-            return false;
+        // no available games? don't attempt to travel
+        int availableGameSize = availableGames.size();
+        if (availableGameSize == 0) {
+            return 0;
         }
 
-        // pick random game
-        int index = ThreadLocalRandom.current().nextInt(size);
-        game = availableGames.get(index);
-        Util.broadcast("Coming up: " + game.getName());
-        return true;
+        Collections.shuffle(availableGames); // shuffle the options
+
+        // pick first 3 games of the shuffled list, and put them up for voting
+        for (int i = 0; i < Math.min(3, availableGameSize); i++) {
+            Game pickedGame = availableGames.get(i);
+            String code = pickedGame.getCode();
+            gameVotes.put(code, 0);
+            gameCodes.put(code, pickedGame);
+
+            HashMap<String, Integer> gameWorldVoteEntry = new HashMap<>();
+            for (String supportedWorld : pickedGame.getSupportedWorlds()) {
+                gameWorldVoteEntry.put(supportedWorld, 0);
+            }
+            gameWorldVotes.put(pickedGame.getCode(), gameWorldVoteEntry);
+
+            Util.broadcast("Votable game #" + (i + 1) + ": " + GREEN + pickedGame.getName() + RESET +
+                    ", maps: " + String.join(", ", pickedGame.getSupportedWorlds()));
+        }
+
+        return availableGameSize;
+    }
+
+    public static Game getGame(String gameCode) {
+        return gameCodes.get(gameCode);
+    }
+
+    public static HashMap<String, Integer> getGameVotes() {
+        return new HashMap<>(gameVotes); // clones the hashmap
+    }
+
+    public static HashMap<String, HashMap<String, Integer>> getGameWorldVotes() {
+        return new HashMap<>(gameWorldVotes); // clones the hashmap
+    }
+
+    public static void incrementGameVote(String gameCode) {
+        int old = gameVotes.get(gameCode);
+        gameVotes.put(gameCode, old + 1);
+    }
+
+    public static Game getHighestVotedGame() {
+        int highestVotes = 0;
+        List<String> highestVotedGames = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> entry : gameVotes.entrySet()) {
+            if (entry.getValue() >= highestVotes) {
+                highestVotedGames.add(entry.getKey());
+            }
+        }
+
+        if (highestVotedGames.size() == 1) { // can't be 0, instead it contains every entry
+            Game highestVotedGame = gameCodes.get(highestVotedGames.get(0));
+            Util.broadcast("Most voted game: " + highestVotedGame.getName());
+            return highestVotedGame;
+        }
+
+        int randomIndex = new Random().nextInt(highestVotedGames.size());
+        Game randomlyPickedGame = gameCodes.get(highestVotedGames.get(randomIndex));
+        Util.broadcast("Randomly picked game: " + randomlyPickedGame.getName());
+        return randomlyPickedGame;
+    }
+
+    public static String getHighestVotedGameWorld(String gameCode) {
+        int highestVotes = 0;
+        List<String> highestVotedWorlds = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> entry : gameWorldVotes.get(gameCode).entrySet()) {
+            if (entry.getValue() >= highestVotes) {
+                highestVotedWorlds.add(entry.getKey());
+            }
+        }
+
+        if (highestVotedWorlds.size() == 1) { // can't be 0, instead it contains every entry
+            String highestVotedWorld = highestVotedWorlds.get(0);
+            Util.broadcast("Most voted world: " + highestVotedWorld);
+            return highestVotedWorld;
+        }
+
+        int randomIndex = new Random().nextInt(highestVotedWorlds.size());
+        String highestVotedWorld = highestVotedWorlds.get(randomIndex);
+        Util.broadcast("Randomly picked world: " + highestVotedWorld);
+        return highestVotedWorld;
     }
 
     public static void handleDisconnect(Player p) {
-        GameMode gm = p.getGameMode();
-        if ((state == STARTING || state == STARTED) && (gm == ADVENTURE || gm == SURVIVAL)) {
-            handleDeath(p);
-        }
+        handleDeath(p);
     }
 
     public static void handleDeath(Player p) {
+        if (state != STARTED) {
+            p.sendMessage("Game hasn't started yet, whoops");
+            Bukkit.getLogger().info("Ignoring death of " + p.getName());
+            return;
+        }
+
+        GameMode diedGm = p.getGameMode();
+        if (diedGm != ADVENTURE && diedGm != SURVIVAL) {
+            p.sendMessage("You can't even die, whoops");
+            Bukkit.getLogger().info("Ignoring death of " + p.getName());
+            return;
+        }
+
         List<Player> alivePlayers = new ArrayList<>();
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            GameMode gm = onlinePlayer.getGameMode();
-            if (gm == ADVENTURE || gm == SURVIVAL) {
+            GameMode onlineGm = onlinePlayer.getGameMode();
+            if (onlineGm == ADVENTURE || onlineGm == SURVIVAL) {
                 alivePlayers.add(onlinePlayer);
             }
         }
@@ -126,84 +231,65 @@ public class GameManager {
         }
     }
 
-    public static boolean playerCountInvalid() {
-        int onlinePlayers = Bukkit.getOnlinePlayers().size();
+    public static void cancelGameTasks() {
+        // scheduler.isCurrentlyRunning only returns true if this method is called inside a task's @Override run()
+        // method, so instead it's currently implemented a non-null value means the task is running
 
-        return game == null || onlinePlayers < game.getMinPlayers() || game.getMaxPlayers() < onlinePlayers;
-    }
-
-    public static void cancelGameTimerTasks() {
-        BukkitScheduler scheduler = Bukkit.getScheduler();
-        if (scheduler.isCurrentlyRunning(travellingTask)) {
-            scheduler.cancelTask(travellingTask);
-            Bukkit.getLogger().info("Cancelled travelling task");
+        if (travellingTask != null) {
+            travellingTask.cancel();
+            travellingTask = null;
+            state = LOBBY;
+            Bukkit.getLogger().info("Cancelled travelling task, set state to " + LOBBY);
         }
-        if (scheduler.isCurrentlyRunning(startingTask)) {
-            scheduler.cancelTask(startingTask);
+
+        if (startingTask != null) {
+            startingTask.cancel();
+            startingTask = null;
             Bukkit.getLogger().info("Cancelled starting task");
         }
-        if (scheduler.isCurrentlyRunning(returnToLobbyTask)) {
-            scheduler.cancelTask(returnToLobbyTask);
+
+        if (returnToLobbyTask != null) {
+            returnToLobbyTask.cancel();
+            returnToLobbyTask = null;
             Bukkit.getLogger().info("Cancelled return to lobby task");
         }
     }
 
-    public static void pluginEnabled() {
-        state = LOBBY;
-        attemptTravellingTimer();
-    }
+    // GAME PROGRESSION METHODS
 
-    // GAME PROCESSION METHODS
+    public static void attemptTravellingTimer(boolean checkCanChangeState) {
+        boolean changeStateSuccess = canChangeState(TRAVELLING);
+        if (!changeStateSuccess && checkCanChangeState) return;
 
-    public static void attemptTravellingTimer() {
-        if (cantChangeState(TRAVELLING)) return;
-
-        if (!setNewRandomGame()) {
-            Util.broadcast(RED + "Failed to start travel: no games available (for this amount of players)");
+        int voteOptions = setupGameVotes();
+        if (voteOptions == 0) {
+            Util.broadcast(RED + "Failed to start travel: no games to vote for (for this amount of players)");
             return;
+        } else {
+            Util.broadcast(GREEN + "Vote for one of " + voteOptions + " games!");
         }
 
-        cancelGameTimerTasks();
-        travellingTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
-            int t = travellingSeconds;
-
-            @Override
-            public void run() {
-                if (playerCountInvalid()) {
-                    state = LOBBY;
-                    Bukkit.getScheduler().cancelTask(travellingTask);
-                    Util.broadcast(RED + "Travelling cancelled: too many players left/joined");
-                    return; // @todo start a new call of startTravellingTimer() in an attempt to retry
-                }
-
-                if (t == 0) {
-                    Bukkit.getScheduler().cancelTask(travellingTask);
-                    travel();
-                    return;
-                }
-
-                Util.broadcast(
-                        AQUA + "Travelling in " + t + " (" + Bukkit.getOnlinePlayers().size() + " players)"
-                );
-                t -= 1;
-            }
-
-        }, 0, 20);
+        cancelGameTasks();
+        travellingTask = new TravellingTask(travellingSeconds).runTaskTimer(Main.plugin, 0, 20);
     }
 
     public static void travel() {
-        if (cantChangeState(STARTING)) return;
+        if (!canChangeState(STARTING)) return;
 
-        String[] worlds = game.getSupportedWorlds();
-        int index = new Random().nextInt(worlds.length);
-        if (WorldManager.setupGameWorld(worlds[index])) {
+        cancelGameTasks();
+
+        game = getHighestVotedGame();
+        String worldName = getHighestVotedGameWorld(game.getCode());
+
+        if (WorldManager.setupGameWorld(worldName)) {
+            String gameName = game.getCode();
+
             // register game-specific listener
             // @todo make event handler only work in the game world
             Bukkit.getServer().getPluginManager().registerEvents(game.getEventListener(), Main.plugin);
-            Bukkit.getLogger().info("Registered game listener");
+            Bukkit.getLogger().info("Registered game listener for " + gameName);
 
             // register game-specific command
-            String gameName = game.getShortName();
             PluginCommand pluginCommand = Main.plugin.getCommand(gameName);
             if (pluginCommand == null) {
                 Util.broadcast("Failed to set command executor for /" + gameName);
@@ -213,9 +299,7 @@ public class GameManager {
             }
 
         } else {
-            Util.broadcast(
-                    RED + "Failed to travel: game world load failed"
-            );
+            Util.broadcast( RED + "Failed to travel: game world load failed" );
         }
     }
 
@@ -227,38 +311,18 @@ public class GameManager {
         game.travelled(); // @todo custom events & listeners for cleaner code (e.g. GameTravelEvent)
         Util.broadcast(AQUA + "Travelled!");
 
-        cancelGameTimerTasks();
-        startingTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
-            int t = startingSeconds;
-
-            @Override
-            public void run() {
-                if (playerCountInvalid()) {
-                    Bukkit.getScheduler().cancelTask(startingTask);
-                    Util.broadcast(RED + "Start cancelled - too many players left/joined");
-                    return;
-                }
-
-                if (t == 0) {
-                    Bukkit.getScheduler().cancelTask(startingTask);
-                    start();
-                    return;
-                }
-
-                Util.broadcast(GREEN + "Starting in " + t);
-                t -= 1;
-            }
-
-        }, 0, 20);
+        startingTask = new StartingTask(startingSeconds).runTaskTimer(Main.plugin, 0, 20);
     }
 
     public static void start() {
-        if (cantChangeState(STARTED)) return;
+        if (!canChangeState(STARTED)) return;
+
+        cancelGameTasks();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerData pd = PlayerData.get(p);
             pd.gamesPlayed += 1;
-            pd.incrementGameType(game.getShortName(), "played");
+            pd.incrementGameType(game.getCode(), "played");
         }
 
         game.started();
@@ -266,7 +330,7 @@ public class GameManager {
     }
 
     public static void end(Player pWinner) { // @todo support teams (multiple players too?)
-        if (cantChangeState(ENDED)) return;
+        if (!canChangeState(ENDED)) return;
 
         if (pWinner == null) {
             Util.broadcast(GOLD + "ENDED: No winners!");
@@ -279,25 +343,26 @@ public class GameManager {
             if (pOnline == pWinner) {
                 pd = PlayerData.get(pWinner);
                 pd.gamesWon += 1;
-                pd.incrementGameType(game.getShortName(), "won");
+                pd.incrementGameType(game.getCode(), "won");
 
                 pWinner.setInvulnerable(true);
                 pWinner.setGameMode(ADVENTURE);
             } else {
                 pd = PlayerData.get(pOnline);
                 pd.gamesLost += 1;
-                pd.incrementGameType(game.getShortName(), "lost");
+                pd.incrementGameType(game.getCode(), "lost");
             }
         }
 
         game.ended();
 
+        String gameName = game.getCode();
+
         // unregister game-specific listener
         HandlerList.unregisterAll(game.getEventListener());
-        Bukkit.getLogger().info("Unregistered game listener");
+        Bukkit.getLogger().info("Unregistered game listener for " + gameName);
 
         // unregister game-specific command
-        String gameName = game.getShortName();
         PluginCommand pluginCommand = Main.plugin.getCommand(gameName);
         if (pluginCommand == null) {
             Util.broadcast("Failed to remove command executor for /" + gameName);
@@ -309,18 +374,15 @@ public class GameManager {
         game = null;
 
         Util.broadcast(YELLOW + "Returning to lobby in " + returningDelaySeconds);
-        cancelGameTimerTasks();
-        returnToLobbyTask = Bukkit.getScheduler().scheduleSyncDelayedTask(
-                Main.plugin, GameManager::returnToLobby, 20 * returningDelaySeconds
-        );
+        returnToLobbyTask = new ReturnToLobbyTask().runTaskLater(Main.plugin, 20 * returningDelaySeconds);
     }
 
     public static void returnToLobby() {
-        if (cantChangeState(LOBBY)) return;
+        if (!canChangeState(LOBBY)) return;
 
+        cancelGameTasks();
         WorldManager.deleteGameWorld();
 
-        state = LOBBY;
-        attemptTravellingTimer();
+        attemptTravellingTimer(false);
     }
 }

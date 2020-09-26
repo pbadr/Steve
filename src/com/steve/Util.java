@@ -1,11 +1,11 @@
 package com.steve;
 
 import com.steve.game.GameManager;
+import com.steve.ui.VoteGameMenu;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.sql.Timestamp;
@@ -99,7 +99,7 @@ public class Util {
         }
     }
 
-    public static void broadcast(@NotNull Object obj) {
+    public static void broadcast(Object obj) {
         Bukkit.broadcastMessage(obj.toString());
     }
 
@@ -107,13 +107,7 @@ public class Util {
         broadcast(GREEN + timestamp.toLocalDateTime().toString() + BOLD + " PLUGIN REBUILT - /reload :)");
     }
 
-    public static void checkArgument(boolean check, String msg) {
-        if (check) {
-            throw new IllegalArgumentException(msg);
-        }
-    }
-
-    public static boolean isInZone(@NotNull Player p, @NotNull Location loc1, @NotNull Location loc2) {
+    public static boolean isInZone(Player p, Location loc1, Location loc2) {
         Location pLoc = p.getLocation();
         int pX = pLoc.getBlockX();
         int pY = pLoc.getBlockY();
@@ -189,13 +183,19 @@ public class Util {
         }
     }
 
+    public static void check(boolean what, Object msg) throws Exception {
+        if (what) throw new Exception(msg.toString());
+    }
+
     private static void setLobbyItems(Player p) {
+        p.getInventory().setItem(1, VoteGameMenu.getItem());
+
 
         // 0 ItemSlot
         ItemStack friendsCompassItem = new ItemStack(Material.COMPASS);
         ItemMeta friendsCompassItemMeta = friendsCompassItem.getItemMeta();
 
-        assert friendsCompassItemMeta != null;
+        if (friendsCompassItemMeta == null) return;
         friendsCompassItemMeta.setDisplayName(RESET + "Friends");
         friendsCompassItemMeta.setLore(Collections.singletonList(BLUE + "Test"));
 
@@ -206,10 +206,7 @@ public class Util {
 
     public static boolean nullCheckItem(ItemStack i) {
 
-        if(i == null || i.getItemMeta() == null)
-            return false;
-
-        return true;
+        return i != null && i.getItemMeta() != null;
 
     }
 }
