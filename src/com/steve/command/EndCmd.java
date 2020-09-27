@@ -10,7 +10,7 @@ import static com.steve.game.GameState.*;
 public class EndCmd implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (GameManager.canChangeState(ENDED)) {
+        if (GameManager.state == STARTING || GameManager.state == STARTED) {
             GameManager.end(null);
         }
         return true;

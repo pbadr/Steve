@@ -3,14 +3,16 @@ package com.steve.game;
 import com.steve.Util;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static org.bukkit.ChatColor.GREEN;
-import static org.bukkit.ChatColor.RED;
+import static org.bukkit.ChatColor.*;
 
 public class StartingTask extends BukkitRunnable {
     private int t;
+    private String subtitle;
 
-    public StartingTask(int seconds) {
+    public StartingTask(int seconds, String subtitle) {
         t = seconds;
+        this.subtitle = subtitle;
+        Util.broadcast(GREEN + "Starting in " + t + "s");
     }
 
     @Override
@@ -27,7 +29,7 @@ public class StartingTask extends BukkitRunnable {
             return;
         }
 
-        Util.broadcast(GREEN + "Starting in " + t);
+        Util.sendTitle(GREEN + "" + t + "...", subtitle, 0, 20, 5);
         t -= 1;
     }
 }

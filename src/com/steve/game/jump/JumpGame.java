@@ -2,56 +2,60 @@ package com.steve.game.jump;
 
 import com.steve.game.Game;
 import com.steve.game.GameState;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import static org.bukkit.Material.FIRE;
+
 public class JumpGame extends Game {
     @Override
     public String getCode() {
-        return null;
+        return "jump";
     }
 
     @Override
     public CommandExecutor getNewCommandExecutor() {
-        return null;
+        return (commandSender, command, s, strings) -> false;
     }
 
     @Override
     public Listener getNewEventListener() {
-        return null;
+        return new Listener() {
+        };
     }
 
     @Override
     public int getMaxPlayers() {
-        return 0;
+        return 15;
     }
 
     @Override
     public int getMinPlayers() {
-        return 0;
+        return 1;
     }
 
     @Override
     public String getName() {
-        return null;
+        return "Jump Showdown";
     }
 
     @Override
     public Location getSpawnLocation() {
-        return null;
+        return new Location(Bukkit.getWorld("game"), .5, 65, .5);
     }
 
     @Override
     public String[] getSupportedWorlds() {
-        return new String[0];
+        return new String[] {"tiptoe"};
     }
 
     @Override
     public Material getVoteMaterial() {
-        return null;
+        return FIRE;
     }
 
     @Override

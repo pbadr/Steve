@@ -14,6 +14,7 @@ public class TravellingTask extends BukkitRunnable {
 
     public TravellingTask(int seconds) {
         t = seconds;
+        Util.broadcast(AQUA + "Travelling in " + t + "s (" + Bukkit.getOnlinePlayers().size() + " players)");
     }
 
     @Override
@@ -33,7 +34,8 @@ public class TravellingTask extends BukkitRunnable {
             return;
         }
 
-        Util.broadcast(AQUA + "Travelling in " + t + " (" + Bukkit.getOnlinePlayers().size() + " players)");
+        Util.sendTitle(AQUA +""+ t + "...", AQUA +""+ Bukkit.getOnlinePlayers().size() + " players",
+                0, 20, 5);
         t -= 1;
     }
 }

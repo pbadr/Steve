@@ -186,6 +186,7 @@ public class GameManager {
     public static void attemptTravellingTimer(boolean checkCanChangeState) {
         boolean changeStateSuccess = canChangeState(TRAVELLING);
         if (!changeStateSuccess && checkCanChangeState) return;
+        cancelGameTasks();
 
         int voteOptions = Voting.setupGameVotes();
         if (voteOptions == 0) {
@@ -195,13 +196,11 @@ public class GameManager {
             Util.broadcast(GREEN + "Vote for one of " + voteOptions + " games!");
         }
 
-        cancelGameTasks();
         travellingTask = new TravellingTask(travellingSeconds).runTaskTimer(Main.plugin, 0, 20);
     }
 
     public static void travel() {
         if (!canChangeState(STARTING)) return;
-
         cancelGameTasks();
 
         game = Voting.getHighestVotedGame();
@@ -215,7 +214,7 @@ public class GameManager {
         }
 
         if (!Worlds.setupGameWorld(worldName)) {
-            Util.broadcast( RED + "Failed to travel: game world load failed" );
+            Util.broadcast( RED + "Failed to travel: game world load failed");
         }
     }
 
@@ -227,14 +226,14 @@ public class GameManager {
         }
 
         game.onTravel(); // @todo custom events & listeners for cleaner code (e.g. GameTravelEvent)
-        Util.broadcast(AQUA + "Travelled!");
 
-        startingTask = new StartingTask(startingSeconds).runTaskTimer(Main.plugin, 0, 20);
+        startingTask = new StartingTask(
+                startingSeconds, YELLOW + GameManager.game.getName() + " @ " + Worlds.currentGameWorld).
+                runTaskTimer(Main.plugin, 0, 20);
     }
 
     public static void start() {
         if (!canChangeState(STARTED)) return;
-
         cancelGameTasks();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -244,11 +243,13 @@ public class GameManager {
         }
 
         game.onStart();
-        Util.broadcast(GREEN + "STARTED");
+        Util.sendTitle(GREEN + "START", null, 0, 15, 5);
+        Util.broadcast(GREEN + "START");
     }
 
     public static void end(Player pWinner) { // @todo support teams (multiple players too?)
         if (!canChangeState(ENDED)) return;
+        cancelGameTasks();
 
         if (pWinner == null) {
             Util.broadcast(GOLD + "Game ended!");
@@ -289,8 +290,8 @@ public class GameManager {
 
     public static void returnToLobby() {
         if (!canChangeState(LOBBY)) return;
-
         cancelGameTasks();
+
         game = null;
         Worlds.deleteGameWorld();
 

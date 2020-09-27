@@ -19,6 +19,7 @@ public class Worlds {
     public static final String WORLDS_PATH = "worlds/";
     // static boolean editorWorldLoaded = false;
     private static final Location lobbyLocation = new Location(Bukkit.getWorld("lobby"), 164, 78, -41);
+    public static String currentGameWorld;
 
     public static Location getLobbyLocation() {
         return lobbyLocation.clone();
@@ -42,10 +43,12 @@ public class Worlds {
         Util.copyFolder(worldFile, new File("game")); // @todo check if exception occurred
 
         Bukkit.getLogger().info(logPrefix + "Copied, loading...");
+        currentGameWorld = worldName;
         // @todo prevent lag, even though world creating can't be put on a separate thread?
         World w = Bukkit.createWorld(new WorldCreator("game"));
         if (w == null) {
             Bukkit.getLogger().info(logPrefix + "Failed to load game world (var w is still null)");
+            currentGameWorld = null;
             return false;
         }
 
@@ -107,6 +110,7 @@ public class Worlds {
 
     public static void deleteGameWorld() {
         deleteWorld("game", false, null);
+        currentGameWorld = null;
     }
 
     public static boolean saveAndDeleteEditorWorld(String saveName) {
