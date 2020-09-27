@@ -11,10 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.ItemStack;
@@ -65,8 +62,7 @@ public class MainListener implements Listener {
 
         if (GameManager.state == STARTING || GameManager.state == STARTED || GameManager.state == ENDED) {
             Util.sendToGame(p, true);
-            p.teleport(GameManager.game.getSpawnLocation());
-            p.sendMessage(RED + "Waiting for the next game");
+            p.sendMessage(GRAY + "Waiting for the game to end");
         } else {
             Util.sendToLobby(p);
             // GameManager.attemptTravellingTimer(true);
@@ -90,41 +86,60 @@ public class MainListener implements Listener {
         if (e.getFinalDamage() < p.getHealth()) return; // check if hit is fatal
         e.setCancelled(true);
 
+        Bukkit.getLogger().info("ev oPlDe called");
         GameManager.handleDeath(p);
     }
 
     @EventHandler
     public void onPlayerKilledByPlayer(EntityDamageByEntityEvent e) { // @todo create a custom event for game listener
-        Bukkit.getLogger().info("oPlKiByPl called"); // @todo test does this also call onPlayerDeath(e) ??
-        if (!(e.getEntity() instanceof Player)) return;
-        if (!(e.getDamager() instanceof Player)) return;
+        if (!(e.getEntity() instanceof Player && e.getDamager() instanceof Player)) return;
         Player pVictim = (Player) e.getEntity();
         if (e.getFinalDamage() < pVictim.getHealth()) return; // check if hit is fatal
-        Player pDamager = (Player) e.getEntity();
+        Player pDamager = (Player) e.getDamager();
         e.setCancelled(true);
 
-        pDamager.sendMessage(GREEN + "You killed " + pVictim.getName());
-        PlayerData pdDamager = PlayerData.get(pDamager);
-        pdDamager.kills += 1;
+        Bukkit.getLogger().info("ev oPlKiByPl called"); // @todo test does this also call onPlayerDeath(e) ??
+        GameManager.handleKill(pDamager, pVictim);
     }
 
     @EventHandler
-    public void onWeatherChange(WeatherChangeEvent e) {
+    public void onPlayerReachesVoid(PlayerMoveEvent e) {
+        Player p = e.getPlayer();
+        if (p.getLocation().getBlockY() < 0) {
+            String worldName = p.getWorld().getName();
+            if (worldName.equals("game")) {
+                if (GameManager.state == STARTED) {
+                    GameManager.handleDeath(p);
+                } else if (GameManager.state == STARTING || GameManager.state == ENDED) {
+                    p.teleport(GameManager.game.getSpawnLocation());
+                }
+            } else if (worldName.equals("lobby")) {
+                p.teleport(Worlds.getLobbyLocation());
+            } else {
+                p.teleport(new Location(p.getWorld(), .5, 65, .5));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onLobbyWeatherChange(WeatherChangeEvent e) {
         if (!e.getWorld().getName().equals("lobby")) return;
 
         e.setCancelled(true);
     }
 
     @EventHandler
-    public void onWorldLoad(WorldLoadEvent e) {
+    public void onGameWorldLoad(WorldLoadEvent e) {
         if (!e.getWorld().getName().equals("game")) return;
 
-        Bukkit.getLogger().info("Game world loaded!");
         GameManager.onGameWorldLoad();
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
+        if (!e.getPlayer().getWorld().getName().equals("lobby")) return;
+        // ^ events in game world should be handled by game listener
+
         ItemStack i = e.getItem();
 
         if (i == null || i.getItemMeta() == null)

@@ -9,9 +9,10 @@ public class PluginBuildWatcher extends TimerTask {
 
     private long lastTimeStamp;
     private final File file;
+    private static final String PLUGIN_PATH = "plugins/Steve.jar";
 
     public PluginBuildWatcher() {
-        this.file = new File(Util.PLUGIN_PATH);
+        this.file = new File(PLUGIN_PATH);
         this.lastTimeStamp = file.lastModified();
     }
 

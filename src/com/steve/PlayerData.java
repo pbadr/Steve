@@ -60,7 +60,7 @@ public class PlayerData {
         this.playersBlocked = new ArrayList<>();
         this.serverJoins = 0;
 
-        for (String gameName : new String[] {"tiptoe"}) {
+        for (String gameName : new String[] {"tiptoe", "tnttag"}) {
             gameTypesLost.put(gameName, 0);
             gameTypesPlayed.put(gameName, 0);
             gameTypesWon.put(gameName, 0);
@@ -108,10 +108,20 @@ public class PlayerData {
         return false;
     }
 
+    public static void registerAllOnlinePlayers() {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            registerIfNotExisting(p);
+        }
+
+        Bukkit.getLogger().info(
+                "Registered all online player's data!"
+        );
+    }
+
     public static void emptyMemory() {
         // deletes all playerdata in memory (ALL_DATA), and thus wiping all data if writeDisk() gets called!
         ALL_DATA.clear();
-        Bukkit.getLogger().info("Emptied ALL_DATA! (if the plugin writes to disk, all data will be lost!)");
+        Bukkit.getLogger().info("Emptied ALL player data in memory! (/registerall?)");
     }
 
     public static Object reflectSet(Object object, String fieldName, Object value) {

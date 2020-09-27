@@ -1,6 +1,7 @@
 package com.steve.game;
 
 import com.steve.Util;
+import com.steve.Voting;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -21,7 +22,7 @@ public class TravellingTask extends BukkitRunnable {
             cancel();
             GameManager.travellingTask = null;
 
-            if (GameManager.atLeastOneGameSupportsThisAmountOfPlayers()) {
+            if (Voting.atLeastOneVotableGameSupportsThisAmountOfPlayers()) {
                 GameManager.travel();
             } else {
                 GameManager.state = LOBBY;

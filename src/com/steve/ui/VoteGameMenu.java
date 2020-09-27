@@ -2,8 +2,8 @@ package com.steve.ui;
 
 import com.steve.Main;
 import com.steve.Util;
+import com.steve.Voting;
 import com.steve.game.Game;
-import com.steve.game.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,18 +20,22 @@ import java.util.*;
 import static org.bukkit.ChatColor.RESET;
 
 public class VoteGameMenu implements Listener {
-    Inventory inv;
+    private final Inventory inv;
 
     public VoteGameMenu(Player p) {
-        assert GameManager.getGameVotes().size() == 3;
+        if (Voting.getGameVotes().size() != 3) {
+            Bukkit.getLogger().severe("Game votes size is not equal to 3, instead it's " +
+                    Voting.getGameVotes().size());
+        }
+
         Bukkit.getPluginManager().registerEvents(this, Main.plugin);
 
-        inv = Bukkit.createInventory(null, 9, "Vote");
+        inv = Bukkit.createInventory(null, 9, "Vote for game");
 
         int slot = 3;
-        for (Map.Entry<String, Integer> entry : GameManager.getGameVotes().entrySet()) {
+        for (Map.Entry<String, Integer> entry : Voting.getGameVotes().entrySet()) {
             String gameCode = entry.getKey();
-            Game g = GameManager.getGame(gameCode);
+            Game g = Voting.getGame(gameCode);
             Material m = g.getVoteMaterial();
             ItemStack i = new ItemStack(m);
             ItemMeta itemMeta = i.getItemMeta();
@@ -60,22 +64,26 @@ public class VoteGameMenu implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getInventory() != inv) return;
-        if (e.getCurrentItem() == null) return;
+        if (e.getInventory() != inv) return; // not vote game menu
+        if (e.getCurrentItem() == null) return; // nothing clicked
         e.setCancelled(true);
 
         ItemStack clicked = e.getCurrentItem();
         if (clicked.getItemMeta() == null) return;
         String clickedCode = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
-        Bukkit.getLogger().info(clickedCode);
-        GameManager.incrementGameVote(clickedCode);
-        Game g = GameManager.getGame(clickedCode);
+        Voting.incrementGameVote(clickedCode);
+        Game g = Voting.getGame(clickedCode);
+        Player p = (Player) e.getWhoClicked();
+        String n = p.getName();
 
-        Util.broadcast(e.getWhoClicked().getName() + " voted for " + g.getName());
+        Util.broadcast(n + " voted for game " + g.getName());
 
         // print current vote status in chat
-        for (Map.Entry<String, Integer> entry : GameManager.getGameVotes().entrySet()) {
-            Util.broadcast(entry.getKey() + " has " + entry.getValue() + " votes");
+        for (Map.Entry<String, Integer> entry : Voting.getGameVotes().entrySet()) {
+            Util.broadcast(entry.getKey() + " (game) has " + entry.getValue() + " votes");
         }
+
+        p.closeInventory();
+        new VoteWorldMenu(p, clickedCode); // after voting for game, optionally vote for world as well
     }
 }

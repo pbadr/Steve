@@ -53,7 +53,16 @@ public class PlayerDataCmd implements CommandExecutor {
 
         if (args.length == 1 && args[0].equals("clear")) {
             PlayerData.emptyMemory();
+            commandSender.sendMessage("Success");
+            return true;
         }
+
+        if (args.length == 1 && args[0].equals("registerall")) {
+            PlayerData.registerAllOnlinePlayers();
+            commandSender.sendMessage("Success");
+            return true;
+        }
+
         return false;
     }
 }

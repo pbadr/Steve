@@ -17,9 +17,6 @@ import static org.bukkit.GameMode.ADVENTURE;
 import static org.bukkit.GameMode.SPECTATOR;
 
 public class Util {
-    public static final String PLUGIN_PATH = "plugins/Steve.jar";
-    public static final String WORLDS_PATH = "worlds/";
-
     private static final LinkedHashMap<Integer, ChatColor> winsColors;
     static {
         winsColors = new LinkedHashMap<>();
@@ -64,7 +61,7 @@ public class Util {
         p.setFoodLevel(20);
         p.setSaturation(20);
 
-        p.teleport(WorldManager.getLobbyLocation());
+        p.teleport(Worlds.getLobbyLocation());
     }
 
     public static void sendToGame(Player p, boolean spectator) {
@@ -154,7 +151,7 @@ public class Util {
         try {
             // @todo what is uid.dat and why ignore?
             List<String> ignore = new ArrayList<>(Arrays.asList(
-                    "advancements", "playerdata", "stats", "session.lock", "uid.dat"
+                    "advancements", "playerdata", "stats", "session.lock", "uid.dat", "level.dat_old"
             ));
 
             if (!ignore.contains(source.getName())) {

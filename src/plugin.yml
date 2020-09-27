@@ -9,18 +9,30 @@ commands:
     aliases: pd
     description: modify playerdata
     usage: /<command> set [name] <field> <value>
-  tiptoe:
-    description: tiptoe
-    usage: /<command> 1/2/3
   friend:
     description: friend parent command
     usage: /<command> list, /friend add <name>
+  travel:
+    description: travel
+    usage: /<command> [force]
+  editor:
+    description: editor world
+    usage: /<command> [save]
+  game:
+    description: game world
+    usage: /<command>
+  lobby:
+    description: lobby world
+    usage: /<command>
+  end:
+    description: end game
+    usage: /<command>
+  stoptasks:
+    description: stop game tasks
+    usage: /<command>
   tnttag:
     description: boom
     usage: /<command>
-  game:
-    description: game management
-    usage: /<command> travel
-  world:
-    description: world management
-    usage: /<command> tp <name>, editor, save
+  tiptoe:
+    description: tiptoe
+    usage: /<command> 1/2/3

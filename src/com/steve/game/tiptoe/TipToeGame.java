@@ -1,26 +1,23 @@
 package com.steve.game.tiptoe;
 
-import com.steve.Util;
 import com.steve.game.Game;
+import com.steve.game.GameManager;
+import com.steve.game.GameState;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import static com.steve.game.GameState.STARTED;
+import static com.steve.game.GameState.STARTING;
 import static org.bukkit.Material.*;
 
 public class TipToeGame extends Game {
-    private Listener listener;
-    final ArrayList<ArrayList<Block>> platformList = new ArrayList<>();
-    boolean useSecondaryMaterial = true;
-
-    public TipToeGame() {
-
-    }
-
     @Override
     public int getMinPlayers() {
         return 1;
@@ -47,34 +44,47 @@ public class TipToeGame extends Game {
     }
 
     @Override
-    public void travelled() {
+    public void onTravel() {
         // @todo spawn platforms here (both real and fake)
     }
 
     @Override
-    public void handleDisconnect(Player p) {
-        Util.broadcast(p.getName() + " has had enough of Tip Toe!");
-    }
-
-    @Override
-    public void started() {
-
-    }
-
-    @Override
-    public void ended() {
-    }
-
-    @Override
-    public Listener getEventListener() {
-        if (listener == null) {
-            listener = new TipToeListener(this);
+    public void onDisconnect(Player p, GameState state) {
+        List<Player> alivePlayers = GameManager.getAlivePlayers();
+        if (state == STARTING) {
+            if (alivePlayers.size() <= 1) {
+                GameManager.end(null);
+            }
+        } else if (state == STARTED) {
+            if (alivePlayers.size() == 1) {
+                GameManager.end(alivePlayers.get(0));
+            } else if (alivePlayers.size() == 0) {
+                GameManager.end(null);
+            }
         }
-        return listener;
     }
 
     @Override
-    public CommandExecutor getCommandExecutor() {
+    public void onDeath(Player p) {
+        p.setVelocity(new Vector());
+        p.teleport(getSpawnLocation());
+    }
+
+    @Override
+    public void onStart() {
+    }
+
+    @Override
+    public void onEnd() {
+    }
+
+    @Override
+    public Listener getNewEventListener() {
+        return new TipToeListener(this);
+    }
+
+    @Override
+    public CommandExecutor getNewCommandExecutor() {
         return new TipToeCmd(this);
     }
 
@@ -87,6 +97,9 @@ public class TipToeGame extends Game {
     public Location getSpawnLocation() {
         return new Location(Bukkit.getWorld("game"), 0, 65, 0);
     }
+
+    final ArrayList<ArrayList<Block>> platformList = new ArrayList<>();
+    boolean useSecondaryMaterial = true;
 
     public void createFakePlatform(Location pos) {
         int size = 5;

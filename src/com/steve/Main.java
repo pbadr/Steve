@@ -2,7 +2,6 @@ package com.steve;
 
 import com.steve.command.*;
 import com.steve.command.social.AddFriend;
-import com.steve.game.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
@@ -18,10 +17,14 @@ public class Main extends JavaPlugin {
     TimerTask pluginFileWatcherTask;
     static HashMap<String, CommandExecutor> commandExecutors = new HashMap<>();
     static { // add new commands here AND in plugin.yml
-        commandExecutors.put("friend", new AddFriend());
         commandExecutors.put("playerdata", new PlayerDataCmd());
+        commandExecutors.put("friend", new AddFriend());
+        commandExecutors.put("travel", new TravelCmd());
+        commandExecutors.put("editor", new EditorCmd());
+        commandExecutors.put("end", new EndCmd());
         commandExecutors.put("game", new GameCmd());
-        commandExecutors.put("world", new WorldCmd());
+        commandExecutors.put("lobby", new LobbyCmd());
+        commandExecutors.put("stoptasks", new StoptasksCmd());
     }
 
     @Override
@@ -42,11 +45,8 @@ public class Main extends JavaPlugin {
 
         PlayerData.readDisk();
         Bukkit.getServer().getPluginManager().registerEvents(new MainListener(), plugin);
-        Bukkit.getLogger().info("Enabled");
+        Bukkit.getLogger().info("[Steve] Enabled");
         // GameManager.attemptTravellingTimer(false);
-
-        // for game state debugging
-        // Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, () -> Util.broadcast("State: " + GameManager.state), 0, 20);
     }
 
     @Override
@@ -54,6 +54,6 @@ public class Main extends JavaPlugin {
         PlayerData.writeDisk();
         pluginFileWatcherTask.cancel();
 
-        Bukkit.getLogger().info("Disabled");
+        Bukkit.getLogger().info("[Steve] Disabled");
     }
 }

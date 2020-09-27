@@ -1,8 +1,11 @@
 package com.steve.game.tnttag;
 
 import com.steve.Main;
+import com.steve.PlayerData;
 import com.steve.Util;
 import com.steve.game.Game;
+import com.steve.game.GameManager;
+import com.steve.game.GameState;
 import org.bukkit.*;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
@@ -11,9 +14,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
+import static com.steve.game.GameState.STARTED;
+import static com.steve.game.GameState.STARTING;
+import static org.bukkit.ChatColor.RED;
+import static org.bukkit.GameMode.SPECTATOR;
 import static org.bukkit.Material.TNT;
 
 public class TntTagGame extends Game {
@@ -43,35 +49,70 @@ public class TntTagGame extends Game {
     }
 
     @Override
-    public void travelled() {
+    public void onTravel() {
 
     }
 
     @Override
-    public void handleDisconnect(Player p) {
-        Util.broadcast(p.getName() + " isn't a tip toe fan");
+    public void onDisconnect(Player p, GameState state) {
+        List<Player> alivePlayers = GameManager.getAlivePlayers();
+        if (state == STARTING) {
+            if (alivePlayers.size() <= 1) {
+                GameManager.end(null);
+            }
+        } else if (state == STARTED) {
+            if (alivePlayers.size() == 1) {
+                GameManager.end(alivePlayers.get(0));
+            } else if (alivePlayers.size() == 0) {
+                GameManager.end(null);
+            } else if (playerFuseTicks.containsKey(p)) {
+                playerFuseTicks.remove(p);
+                newTntTask();
+            }
+        }
     }
 
     @Override
-    public void started() {
-        int index = new Random().nextInt(Bukkit.getOnlinePlayers().size());
-        Object[] players = Bukkit.getOnlinePlayers().toArray();
-        Player p = (Player) players[index];
-        explodePlayerTask(p);
+    public void onDeath(Player p) {
+        World w = p.getWorld();
+        Location pos = p.getLocation();
+        PlayerData pd = PlayerData.get(p);
+
+        pd.deaths += 1;
+        // w.createExplosion(pos, 4f);
+        w.spawnParticle(Particle.CLOUD, pos, 10);
+        Util.sendTitle(RED + "Boom!", null, 10, 40, 10);
+        Util.broadcast(RED + p.getName() + " exploded!");
+        p.setGameMode(SPECTATOR);
+
+        List<Player> alivePlayers = GameManager.getAlivePlayers();
+        if (alivePlayers.size() == 1) {
+            GameManager.end(alivePlayers.get(0));
+        } else if (alivePlayers.size() == 0) {
+            GameManager.end(null);
+        } else {
+            newTntTask();
+        }
     }
 
     @Override
-    public void ended() {
+    public void onStart() {
+        new UpdateTntFuseTask(this).runTaskTimer(Main.plugin, 0, 1);
+        newTntTask();
+    }
+
+    @Override
+    public void onEnd() {
 
     }
 
     @Override
-    public Listener getEventListener() {
+    public Listener getNewEventListener() {
         return new TntTagListener(this);
     }
 
     @Override
-    public CommandExecutor getCommandExecutor() {
+    public CommandExecutor getNewCommandExecutor() {
         return new TntTagCmd(this);
     }
 
@@ -85,26 +126,35 @@ public class TntTagGame extends Game {
         return new Location(Bukkit.getWorld("game"), 0, 65, 0);
     }
 
-    public final HashMap<Player, Integer> playerExplodeTasks = new HashMap<>();
+    public HashMap<Player, Integer> playerFuseTicks = new HashMap<>();
+    public int ticksBeforeExplosion = 20;
 
-    public void explodePlayerTask(Player p) {
-        int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
-            playerExplodeTasks.remove(p);
-            p.damage(20);
+    public void newTntTask() {
+        int index = new Random().nextInt(GameManager.getAlivePlayers().size());
+        Object[] players = GameManager.getAlivePlayers().toArray();
+        Player p = (Player) players[index];
+        playerFuseTicks.put(p, ticksBeforeExplosion);
+        Util.broadcast(RED + p.getName() + " is about to explode!");
+    }
 
-            World w = p.getWorld();
-            Location pos = p.getLocation();
+    public void switchToPlayer(Player pDamager, Player pDamaged) {
+        for (Map.Entry<Player, Integer> entry : playerFuseTicks.entrySet()) {
+            Player p = entry.getKey();
+            int fuseTicks = entry.getValue();
 
-            w.spawnParticle(Particle.CLOUD, pos, 10);
-            ended();
-            // w.createExplosion(pos, 4f);
+            if (p.equals(pDamager)) { // found pDamager, has an ongoing fuse
+                playerFuseTicks.remove(p);
+                playerFuseTicks.put(pDamaged, fuseTicks); // copy over current fuse ticks
 
-        }, 100);
-        playerExplodeTasks.put(p, task);
+                Util.broadcast(RED + pDamager.getName() + " is about to explode!");
+                pDamager.removePotionEffect(PotionEffectType.SPEED);
+                pDamager.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 9999, 0));
+                pDamager.getInventory().setHelmet(new ItemStack(Material.AIR));
+                pDamaged.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 9999, 3));
+                pDamaged.getInventory().setHelmet(new ItemStack(TNT));
 
-        Util.broadcast(p.getName() + " is about to explode!");
-        p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3));
-        p.getInventory().setHelmet(new ItemStack(TNT));
-        System.out.println(playerExplodeTasks.keySet().toString());
+                break;
+            }
+        }
     }
 }
