@@ -1,6 +1,7 @@
 package com.steve.game;
 
 import com.steve.*;
+import com.steve.game.jump.JumpGame;
 import com.steve.game.tiptoe.TipToeGame;
 import com.steve.game.tnttag.TntTagGame;
 import org.bukkit.Bukkit;
@@ -34,6 +35,7 @@ public class GameManager {
         // @todo set static class variable with strings as names instead of instancing new games every time
         allGames.add(new TipToeGame());
         allGames.add(new TntTagGame());
+        allGames.add(new JumpGame());
 
         return allGames;
     }
@@ -108,7 +110,7 @@ public class GameManager {
         // register game-specific command
         PluginCommand pluginCommand = Main.plugin.getCommand(gameName);
         if (pluginCommand == null) {
-            Util.broadcast("Failed to set command executor for /" + gameName);
+            Bukkit.getLogger().severe("Failed to set command executor for /" + gameName);
             return false;
         }
 
@@ -219,8 +221,6 @@ public class GameManager {
     }
 
     public static void onGameWorldLoad() {
-        Bukkit.getLogger().info("Game world loaded!");
-
         for (Player p : Bukkit.getOnlinePlayers()) {
             Util.sendToGame(p, false);
         }

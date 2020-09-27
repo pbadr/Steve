@@ -31,8 +31,11 @@ commands:
     description: stop game tasks
     usage: /<command>
   tnttag:
-    description: boom
+    description: tnt tag
     usage: /<command>
   tiptoe:
-    description: tiptoe
+    description: tip toe
     usage: /<command> 1/2/3
+  jump:
+    description: jump showdown
+    usage: /<command> <speed multiplier>

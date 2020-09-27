@@ -2,6 +2,8 @@ package com.steve;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.steve.game.Game;
+import com.steve.game.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -60,10 +62,10 @@ public class PlayerData {
         this.playersBlocked = new ArrayList<>();
         this.serverJoins = 0;
 
-        for (String gameName : new String[] {"tiptoe", "tnttag"}) {
-            gameTypesLost.put(gameName, 0);
-            gameTypesPlayed.put(gameName, 0);
-            gameTypesWon.put(gameName, 0);
+        for (Game g : GameManager.getAllGames()) {
+            gameTypesLost.put(g.getCode(), 0);
+            gameTypesPlayed.put(g.getCode(), 0);
+            gameTypesWon.put(g.getCode(), 0);
         }
     }
 
@@ -78,16 +80,16 @@ public class PlayerData {
         return new PlayerData(player); // @todo check if this prevents crash
     }
 
-    public void incrementGameStat(String game, String incrementWhat) {
+    public void incrementGameStat(String gameCode, String incrementWhat) {
         switch (incrementWhat) {
             case "lost":
-                gameTypesLost.put(game, gameTypesLost.get(game) + 1);
+                gameTypesLost.put(gameCode, gameTypesLost.get(gameCode) + 1);
                 return;
             case "played":
-                gameTypesPlayed.put(game, gameTypesPlayed.get(game) + 1);
+                gameTypesPlayed.put(gameCode, gameTypesPlayed.get(gameCode) + 1);
                 return;
             case "won":
-                gameTypesWon.put(game, gameTypesWon.get(game) + 1);
+                gameTypesWon.put(gameCode, gameTypesWon.get(gameCode) + 1);
         }
     }
 

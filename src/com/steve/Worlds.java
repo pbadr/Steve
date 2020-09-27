@@ -15,7 +15,7 @@ import static org.bukkit.ChatColor.*;
 import static org.bukkit.Material.BEDROCK;
 
 public class Worlds {
-    private static final String logPrefix = "[Worlds] ";
+    public static final String LOG_PREFIX = "[Worlds] ";
     public static final String WORLDS_PATH = "worlds/";
     // static boolean editorWorldLoaded = false;
     private static final Location lobbyLocation = new Location(Bukkit.getWorld("lobby"), 164, 78, -41);
@@ -26,28 +26,28 @@ public class Worlds {
     }
 
     public static boolean setupGameWorld(String worldName) {
-        Bukkit.getLogger().info(logPrefix + "SETTING UP GAME WORLD " + worldName + "...");
+        Bukkit.getLogger().info(LOG_PREFIX + "SETTING UP GAME WORLD " + worldName + "...");
         Util.sendTitle(GOLD + "Setting up world (lag)",
                 YELLOW + GameManager.game.getName() + " @ " + worldName, 10, 1200, 0);
         // duration = 1 minute (est. max load time)
 
         // check if game world is already loaded
         if (new File("game").exists()) {
-            Bukkit.getLogger().info(logPrefix + "Game world folder apparently already exists, deleting...");
+            Bukkit.getLogger().info(LOG_PREFIX + "Game world folder exists, deleting");
             deleteGameWorld();
         }
 
         File worldFile = new File(WORLDS_PATH + worldName);
 
-        Bukkit.getLogger().info(logPrefix + "Copying from worlds folder...");
+        Bukkit.getLogger().info(LOG_PREFIX + "Copying from worlds folder");
         Util.copyFolder(worldFile, new File("game")); // @todo check if exception occurred
 
-        Bukkit.getLogger().info(logPrefix + "Copied, loading...");
+        Bukkit.getLogger().info(LOG_PREFIX + "Copied, loading world");
         currentGameWorld = worldName;
         // @todo prevent lag, even though world creating can't be put on a separate thread?
         World w = Bukkit.createWorld(new WorldCreator("game"));
         if (w == null) {
-            Bukkit.getLogger().info(logPrefix + "Failed to load game world (var w is still null)");
+            Bukkit.getLogger().info(LOG_PREFIX + "Failed to load game world (var w is still null)");
             currentGameWorld = null;
             return false;
         }
@@ -63,14 +63,14 @@ public class Worlds {
                 Util.sendToLobby(p);
                 p.sendMessage(GRAY + "Returned to lobby");
             }
-            Bukkit.getLogger().info(logPrefix + "Returned all players in game world to lobby");
+            Bukkit.getLogger().info(LOG_PREFIX + "Returned all players in game world to lobby");
         }
 
-        Bukkit.getLogger().info(logPrefix + "Unloading world " + worldName + "...");
+        Bukkit.getLogger().info(LOG_PREFIX + "Unloading world " + worldName);
         if (Bukkit.unloadWorld(worldName, saveToWorlds)) {
-            Bukkit.getLogger().info(logPrefix + "Unloaded world " + worldName);
+            Bukkit.getLogger().info(LOG_PREFIX + "Unloaded world " + worldName);
         } else {
-            Bukkit.getLogger().severe(logPrefix + "Failed to unload world " + worldName + "! Was it loaded in the first place?");
+            Bukkit.getLogger().severe(LOG_PREFIX + "Failed to unload world " + worldName + ". Was it loaded in the first place?");
         }
 
         File worldFile = new File(worldName);
@@ -79,31 +79,31 @@ public class Worlds {
             File destFile = new File(WORLDS_PATH + saveName);
 
             if (destFile.exists()) {
-                Bukkit.getLogger().severe(logPrefix + "Folder with name " + worldName + " already exists!");
+                Bukkit.getLogger().severe(LOG_PREFIX + "Folder with name " + worldName + " already exists");
                 return false;
             }
 
-            Bukkit.getLogger().info(logPrefix + "Saving to worlds folder...");
+            Bukkit.getLogger().info(LOG_PREFIX + "Saving to " + WORLDS_PATH);
             Util.copyFolder(worldFile, destFile);
-            Bukkit.getLogger().info(logPrefix + "Saved world as " + worldName);
+            Bukkit.getLogger().info(LOG_PREFIX + "Saved world as " + worldName);
         }
 
-        Bukkit.getLogger().info(logPrefix + "Deleting world folder " + worldName + "...");
+        Bukkit.getLogger().info(LOG_PREFIX + "Deleting folder " + worldName);
 
         boolean result;
         try {
             result = Util.deleteFolder(worldFile);
         } catch (Exception e) {
-            Bukkit.getLogger().severe(logPrefix + "Exception caught on deleting world folder " + worldName);
+            Bukkit.getLogger().severe(LOG_PREFIX + "Exception caught on deleting world folder " + worldName);
             e.printStackTrace();
             return false;
         }
 
         if (result) {
-            Bukkit.getLogger().info(logPrefix + "Deleted world folder " + worldName);
+            Bukkit.getLogger().info(LOG_PREFIX + "Deleted folder " + worldName);
             return true;
         } else {
-            Bukkit.getLogger().severe(logPrefix + "Failed to delete world folder " + worldName);
+            Bukkit.getLogger().severe(LOG_PREFIX + "Failed to delete folder " + worldName);
             return false;
         }
     }
@@ -134,12 +134,12 @@ public class Worlds {
             }
         });
 
-        Bukkit.getLogger().info(logPrefix + "Creating editor world...");
+        Bukkit.getLogger().info(LOG_PREFIX + "Creating editor world");
         World w = creator.createWorld();
         if (w == null) {
-            Bukkit.getLogger().severe(logPrefix + "Failed to create editor world!");
+            Bukkit.getLogger().severe(LOG_PREFIX + "Failed to create editor world");
         } else {
-            Bukkit.getLogger().info(logPrefix + "Created editor world!");
+            Bukkit.getLogger().info(LOG_PREFIX + "Created editor world");
         }
 
         return w;

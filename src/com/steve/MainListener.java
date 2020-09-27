@@ -132,6 +132,7 @@ public class MainListener implements Listener {
     public void onGameWorldLoad(WorldLoadEvent e) {
         if (!e.getWorld().getName().equals("game")) return;
 
+        Bukkit.getLogger().info(Worlds.LOG_PREFIX + "Game world loaded");
         GameManager.onGameWorldLoad();
     }
 

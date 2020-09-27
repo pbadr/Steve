@@ -24,7 +24,7 @@ public class VoteWorldMenu implements Listener {
     public VoteWorldMenu(Player p, String gameCode) {
         if (Voting.getGameWorldVotes().get(gameCode).size() != 3) {
             Bukkit.getLogger().severe("Game (" + gameCode + ") world votes size is not equal to 3, instead it's " +
-                    Voting.getGameWorldVotes().size());
+                    Voting.getGameWorldVotes().get(gameCode).size());
         }
 
         Bukkit.getPluginManager().registerEvents(this, Main.plugin);
