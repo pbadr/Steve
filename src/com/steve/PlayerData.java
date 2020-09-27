@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -79,7 +78,7 @@ public class PlayerData {
         return new PlayerData(player); // @todo check if this prevents crash
     }
 
-    public void incrementGameType(String game, String incrementWhat) {
+    public void incrementGameStat(String game, String incrementWhat) {
         switch (incrementWhat) {
             case "lost":
                 gameTypesLost.put(game, gameTypesLost.get(game) + 1);
