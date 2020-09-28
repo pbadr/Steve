@@ -7,7 +7,7 @@ import static org.bukkit.ChatColor.*;
 
 public class StartingTask extends BukkitRunnable {
     private int t;
-    private String subtitle;
+    private final String subtitle;
 
     public StartingTask(int seconds, String subtitle) {
         t = seconds;
@@ -29,7 +29,7 @@ public class StartingTask extends BukkitRunnable {
             return;
         }
 
-        Util.sendTitle(GREEN + "" + t + "...", subtitle, 0, 20, 5);
+        Util.sendTitle(GREEN + "" + t + "...", subtitle, 0, 20, 0);
         t -= 1;
     }
 }

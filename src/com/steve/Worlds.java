@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
 import static org.bukkit.ChatColor.*;
@@ -40,7 +41,13 @@ public class Worlds {
         File worldFile = new File(WORLDS_PATH + worldName);
 
         Bukkit.getLogger().info(LOG_PREFIX + "Copying from worlds folder");
-        Util.copyFolder(worldFile, new File("game")); // @todo check if exception occurred
+        try {
+            Util.copyFolder(worldFile, new File("game"));
+        } catch (Exception e) {
+            Bukkit.getLogger().severe(LOG_PREFIX + "Failed to copy folder");
+            e.printStackTrace();
+            return false;
+        }
 
         Bukkit.getLogger().info(LOG_PREFIX + "Copied, loading world");
         currentGameWorld = worldName;
@@ -84,7 +91,13 @@ public class Worlds {
             }
 
             Bukkit.getLogger().info(LOG_PREFIX + "Saving to " + WORLDS_PATH);
-            Util.copyFolder(worldFile, destFile);
+            try {
+                Util.copyFolder(worldFile, destFile);
+            } catch (IOException e) {
+                Bukkit.getLogger().severe(LOG_PREFIX + "Failed to save world as " + worldName);
+                e.printStackTrace();
+                return false;
+            }
             Bukkit.getLogger().info(LOG_PREFIX + "Saved world as " + worldName);
         }
 
@@ -127,7 +140,7 @@ public class Worlds {
                 ChunkData chunk = createChunkData(world);
 
                 if (chunkX == 0 && chunkZ == 0) {
-                    chunk.setBlock(0, 64, 0, BEDROCK);
+                    chunk.setBlock(0, 63, 0, BEDROCK);
                 }
 
                 return chunk;

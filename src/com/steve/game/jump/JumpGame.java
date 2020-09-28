@@ -7,18 +7,18 @@ import com.steve.game.Game;
 import com.steve.game.GameManager;
 import com.steve.game.GameState;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.bukkit.ChatColor.RED;
 import static org.bukkit.GameMode.SPECTATOR;
 import static org.bukkit.Material.BEDROCK;
-import static org.bukkit.Material.FIRE;
 
 public class JumpGame extends Game {
     @Override
@@ -28,7 +28,22 @@ public class JumpGame extends Game {
 
     @Override
     public CommandExecutor getNewCommandExecutor() {
-        return (commandSender, command, s, strings) -> false;
+        return (commandSender, command, s, args) -> {
+            if (args.length == 2 && args[0].equals("speed")) {
+                double newSpeed;
+                try {
+                    newSpeed = Double.parseDouble(args[1]);
+                } catch (NumberFormatException e) {
+                    commandSender.sendMessage("Not a valid number!");
+                    return false;
+                }
+
+                BarTask.speedModifier = newSpeed;
+                commandSender.sendMessage("Set bar speed to " + newSpeed);
+                return true;
+            }
+            return false;
+        };
     }
 
     @Override
@@ -60,7 +75,7 @@ public class JumpGame extends Game {
 
     @Override
     public String[] getSupportedWorlds() {
-        return new String[] {"tiptoe"};
+        return new String[] {"circle1"};
     }
 
     @Override
@@ -98,15 +113,15 @@ public class JumpGame extends Game {
     @Override
     public void onEnd() {
         barTask.cancel();
-        for (BukkitTask task : removeBlockTasks) {
+        for (BukkitTask task : removeBlockTasks.values()) {
             task.cancel();
         }
     }
 
     @Override
     public void onStart() {
-        barTask = new BarTask(this, new Location(Bukkit.getWorld("game"), 0, 65, 0),
-                4, 1, 20).runTaskTimer(Main.plugin, 0, 1);
+        barTask = new BarTask(this, Bukkit.getWorld("game"), 63, 5, 1,
+                20, 4).runTaskTimer(Main.plugin, 0, 1);
     }
 
     @Override
@@ -115,5 +130,5 @@ public class JumpGame extends Game {
     }
 
     private BukkitTask barTask;
-    List<BukkitTask> removeBlockTasks = new ArrayList<>();
+    HashMap<Block, BukkitTask> removeBlockTasks = new HashMap<>();
 }

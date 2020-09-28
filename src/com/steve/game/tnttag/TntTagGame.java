@@ -118,12 +118,12 @@ public class TntTagGame extends Game {
 
     @Override
     public String[] getSupportedWorlds() {
-        return new String[]{"tiptoe"};
+        return new String[]{"circle1"};
     }
 
     @Override
     public Location getSpawnLocation() {
-        return new Location(Bukkit.getWorld("game"), 0, 65, 0);
+        return new Location(Bukkit.getWorld("game"), 0, 64, 0);
     }
 
     public HashMap<Player, Integer> playerFuseTicks = new HashMap<>();

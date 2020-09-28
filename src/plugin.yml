@@ -38,4 +38,4 @@ commands:
     usage: /<command> 1/2/3
   jump:
     description: jump showdown
-    usage: /<command> <speed multiplier>
+    usage: /<command> speed <number>

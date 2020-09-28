@@ -145,43 +145,35 @@ public class Util {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void copyFolder(File source, File target) {
+    public static void copyFolder(File source, File target) throws IOException {
         // from: https://bukkit.org/threads/unload-delete-copy-worlds.182814/
 
-        try {
-            // @todo what is uid.dat and why ignore?
-            List<String> ignore = new ArrayList<>(Arrays.asList(
-                    "advancements", "playerdata", "stats", "session.lock", "uid.dat", "level.dat_old"
-            ));
+        // @todo what is uid.dat and why ignore?
+        List<String> ignore = new ArrayList<>(Arrays.asList(
+                "advancements", "playerdata", "stats", "session.lock", "uid.dat", "level.dat_old"
+        ));
 
-            if (!ignore.contains(source.getName())) {
-                if (source.isDirectory()) {
-                    if (!target.exists()) target.mkdirs();
-                    String[] files = source.list();
-                    if (files == null) return;
+        if (!ignore.contains(source.getName())) {
+            if (source.isDirectory()) {
+                if (!target.exists()) target.mkdirs();
+                String[] files = source.list();
+                if (files == null) return;
 
-                    for (String file : files) {
-                        File srcFile = new File(source, file);
-                        File destFile = new File(target, file);
-                        copyFolder(srcFile, destFile);
-                    }
-                } else {
-                    InputStream in = new FileInputStream(source);
-                    OutputStream out = new FileOutputStream(target);
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = in.read(buffer)) > 0) out.write(buffer, 0, length);
-                    in.close();
-                    out.close();
+                for (String file : files) {
+                    File srcFile = new File(source, file);
+                    File destFile = new File(target, file);
+                    copyFolder(srcFile, destFile);
                 }
+            } else {
+                InputStream in = new FileInputStream(source);
+                OutputStream out = new FileOutputStream(target);
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = in.read(buffer)) > 0) out.write(buffer, 0, length);
+                in.close();
+                out.close();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-    }
-
-    public static void check(boolean what, Object msg) throws Exception {
-        if (what) throw new Exception(msg.toString());
     }
 
     private static void setLobbyItems(Player p) {

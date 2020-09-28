@@ -35,7 +35,7 @@ public class TravellingTask extends BukkitRunnable {
         }
 
         Util.sendTitle(AQUA +""+ t + "...", AQUA +""+ Bukkit.getOnlinePlayers().size() + " players",
-                0, 20, 5);
+                0, 20, 0);
         t -= 1;
     }
 }

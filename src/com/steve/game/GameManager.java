@@ -19,7 +19,7 @@ import static org.bukkit.GameMode.*;
 
 public class GameManager {
     public static Game game;
-    public static GameState state = LOBBY;
+    public static GameState state = LOBBY; // @todo create .setState method instead of assigning to soon-to-be private variable GM.state
 
     protected static BukkitTask travellingTask;
     protected static BukkitTask startingTask;
@@ -243,7 +243,7 @@ public class GameManager {
         }
 
         game.onStart();
-        Util.sendTitle(GREEN + "START", null, 0, 15, 5);
+        Util.sendTitle(GREEN + "START", null, 0, 20, 0);
         Util.broadcast(GREEN + "START");
     }
 

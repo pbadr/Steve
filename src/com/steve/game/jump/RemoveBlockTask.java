@@ -3,7 +3,7 @@ package com.steve.game.jump;
 import org.bukkit.block.Block;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static org.bukkit.Material.AIR;
+import static org.bukkit.Material.STONE;
 
 public class RemoveBlockTask extends BukkitRunnable {
     private final Block block;
@@ -14,6 +14,6 @@ public class RemoveBlockTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        block.setType(AIR);
+        block.setType(STONE);
     }
 }
