@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import static org.bukkit.ChatColor.RED;
 
 
-public class GameCmd implements CommandExecutor {
+public class SpectateCmd implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if (!(commandSender instanceof Player)) {

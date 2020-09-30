@@ -22,12 +22,12 @@ import static org.bukkit.Material.BEDROCK;
 
 public class JumpGame extends Game {
     @Override
-    public String getCode() {
+    public String code() {
         return "jump";
     }
 
     @Override
-    public CommandExecutor getNewCommandExecutor() {
+    public CommandExecutor newCommandExecutor() {
         return (commandSender, command, s, args) -> {
             if (args.length == 2 && args[0].equals("speed")) {
                 double newSpeed;
@@ -38,7 +38,7 @@ public class JumpGame extends Game {
                     return false;
                 }
 
-                BarTask.speedModifier = newSpeed;
+                BarTask.speedFactor = newSpeed;
                 commandSender.sendMessage("Set bar speed to " + newSpeed);
                 return true;
             }
@@ -47,39 +47,39 @@ public class JumpGame extends Game {
     }
 
     @Override
-    public Listener getNewEventListener() {
+    public Listener newListener() {
         return new Listener() {
 
         };
     }
 
     @Override
-    public int getMaxPlayers() {
+    public int maxPlayers() {
         return 15;
     }
 
     @Override
-    public int getMinPlayers() {
+    public int minPlayers() {
         return 1;
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return "Jump Showdown";
     }
 
     @Override
-    public Location getSpawnLocation() {
-        return new Location(Bukkit.getWorld("game"), .5, 65, .5);
+    public Location spawnLocation() {
+        return new Location(Bukkit.getWorld("game"), .5, 64, .5);
     }
 
     @Override
-    public String[] getSupportedWorlds() {
+    public String[] worlds() {
         return new String[] {"circle1"};
     }
 
     @Override
-    public Material getVoteMaterial() {
+    public Material voteMaterial() {
         return BEDROCK;
     }
 
@@ -120,7 +120,7 @@ public class JumpGame extends Game {
 
     @Override
     public void onStart() {
-        barTask = new BarTask(this, Bukkit.getWorld("game"), 63, 5, 1,
+        barTask = new BarTask(this, Bukkit.getWorld("game"), 63, 6, 1,
                 20, 4).runTaskTimer(Main.plugin, 0, 1);
     }
 

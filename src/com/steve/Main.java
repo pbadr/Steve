@@ -22,7 +22,7 @@ public class Main extends JavaPlugin {
         commandExecutors.put("travel", new TravelCmd());
         commandExecutors.put("editor", new EditorCmd());
         commandExecutors.put("end", new EndCmd());
-        commandExecutors.put("game", new GameCmd());
+        commandExecutors.put("spectate", new SpectateCmd());
         commandExecutors.put("lobby", new LobbyCmd());
         commandExecutors.put("stoptasks", new StoptasksCmd());
     }

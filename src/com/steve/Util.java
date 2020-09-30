@@ -70,7 +70,11 @@ public class Util {
             return;
         }
 
-        Location destination = GameManager.game.getSpawnLocation();
+        if (GameManager.game == null) {
+            Bukkit.getLogger().severe("Sending player to game while it's null");
+        }
+
+        Location destination = GameManager.game.spawnLocation();
 
         if (spectator) {
             p.setGameMode(SPECTATOR);

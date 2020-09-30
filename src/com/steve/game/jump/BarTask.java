@@ -5,9 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.util.Map;
 
 import static org.bukkit.Material.AIR;
 
@@ -18,28 +15,28 @@ public class BarTask extends BukkitRunnable {
     private final World world;
     private final int centreY;
     private final int radius;
-    private final long circlePeriod;
+    private final long circlePeriodTicks;
     private final int removeBlockTicks;
 
-    public static double speedModifier;
+    public static double speedFactor;
 
-    public BarTask(JumpGame game, World world, int centreY, int radius, double initialSpeedModifier, long circlePeriod,
-                   int removeBlockTicks) { // RUNS EVERY TICK
+    public BarTask(JumpGame game, World world, int centreY, int radius, double initialSpeedFactor,
+                   long circlePeriodTicks, int removeBlockTicks) { // RUNS EVERY TICK
         this.game = game;
         this.world = world;
         this.centreY = centreY;
-        this.radius = 10;
-        this.circlePeriod = circlePeriod;
+        this.radius = radius;
+        this.circlePeriodTicks = circlePeriodTicks;
         this.removeBlockTicks = removeBlockTicks;
-        speedModifier = initialSpeedModifier;
+        speedFactor = initialSpeedFactor;
     }
 
     @Override
     public void run() {
         double x, z;
         for (int currentRadius = 1; currentRadius <= radius; currentRadius++) {
-            x = currentRadius * Math.cos(t * speedModifier * 6.283 / circlePeriod);
-            z = currentRadius * Math.sin(t * speedModifier * 6.283 / circlePeriod);
+            x = currentRadius * Math.cos(t * speedFactor * 6.283 / circlePeriodTicks);
+            z = currentRadius * Math.sin(t * speedFactor * 6.283 / circlePeriodTicks);
             Location pos = new Location(world, x, centreY, z);
             Block b = pos.getBlock();
             b.setType(AIR);

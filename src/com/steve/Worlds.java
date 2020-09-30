@@ -29,7 +29,7 @@ public class Worlds {
     public static boolean setupGameWorld(String worldName) {
         Bukkit.getLogger().info(LOG_PREFIX + "SETTING UP GAME WORLD " + worldName + "...");
         Util.sendTitle(GOLD + "Setting up world (lag)",
-                YELLOW + GameManager.game.getName() + " @ " + worldName, 10, 1200, 0);
+                YELLOW + GameManager.game.name() + " @ " + worldName, 10, 1200, 0);
         // duration = 1 minute (est. max load time)
 
         // check if game world is already loaded

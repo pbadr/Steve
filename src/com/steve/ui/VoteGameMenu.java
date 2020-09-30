@@ -36,13 +36,13 @@ public class VoteGameMenu implements Listener {
         for (Map.Entry<String, Integer> entry : Voting.getGameVotes().entrySet()) {
             String gameCode = entry.getKey();
             Game g = Voting.getGame(gameCode);
-            Material m = g.getVoteMaterial();
+            Material m = g.voteMaterial();
             ItemStack i = new ItemStack(m);
             ItemMeta itemMeta = i.getItemMeta();
             if (itemMeta == null) return;
             itemMeta.setDisplayName(RESET + gameCode);
             itemMeta.setLore(Collections.singletonList(
-                    g.getMinPlayers() + "-" + g.getMaxPlayers() + " players")
+                    g.minPlayers() + "-" + g.maxPlayers() + " players")
             );
             i.setItemMeta(itemMeta);
             inv.setItem(slot, i);
@@ -76,7 +76,7 @@ public class VoteGameMenu implements Listener {
         Player p = (Player) e.getWhoClicked();
         String n = p.getName();
 
-        Util.broadcast(n + " voted for game " + g.getName());
+        Util.broadcast(n + " voted for game " + g.name());
 
         // print current vote status in chat
         for (Map.Entry<String, Integer> entry : Voting.getGameVotes().entrySet()) {

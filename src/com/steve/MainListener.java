@@ -111,7 +111,7 @@ public class MainListener implements Listener {
                 if (GameManager.state == STARTED) {
                     GameManager.handleDeath(p);
                 } else if (GameManager.state == STARTING || GameManager.state == ENDED) {
-                    p.teleport(GameManager.game.getSpawnLocation());
+                    p.teleport(GameManager.game.spawnLocation());
                 }
             } else if (worldName.equals("lobby")) {
                 p.teleport(Worlds.getLobbyLocation());

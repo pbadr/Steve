@@ -63,9 +63,9 @@ public class PlayerData {
         this.serverJoins = 0;
 
         for (Game g : GameManager.getAllGames()) {
-            gameTypesLost.put(g.getCode(), 0);
-            gameTypesPlayed.put(g.getCode(), 0);
-            gameTypesWon.put(g.getCode(), 0);
+            gameTypesLost.put(g.code(), 0);
+            gameTypesPlayed.put(g.code(), 0);
+            gameTypesWon.put(g.code(), 0);
         }
     }
 

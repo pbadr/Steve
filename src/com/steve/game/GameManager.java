@@ -73,7 +73,7 @@ public class GameManager {
     public static boolean currentGamePlayerCountOk() {
         int onlinePlayers = Bukkit.getOnlinePlayers().size();
 
-        return game != null && onlinePlayers >= game.getMinPlayers() && onlinePlayers <= game.getMaxPlayers();
+        return game != null && onlinePlayers >= game.minPlayers() && onlinePlayers <= game.maxPlayers();
     }
 
     public static List<Player> getAlivePlayers() {
@@ -94,12 +94,12 @@ public class GameManager {
             return false;
         }
 
-        String gameName = game.getCode();
+        String gameName = game.code();
 
         // register game-specific listener
         // @todo make event handler only work in the game world
         try {
-            Bukkit.getPluginManager().registerEvents(game.getNewEventListener(), Main.plugin);
+            Bukkit.getPluginManager().registerEvents(game.newListener(), Main.plugin);
         } catch (NullPointerException e) {
             Bukkit.getLogger().severe("Failed to register game listener for " + gameName);
             e.printStackTrace();
@@ -108,14 +108,14 @@ public class GameManager {
         Bukkit.getLogger().info("Registered game listener for " + gameName);
 
         // register game-specific command
-        PluginCommand pluginCommand = Main.plugin.getCommand(gameName);
+        PluginCommand pluginCommand = Main.plugin.getCommand("game");
         if (pluginCommand == null) {
-            Bukkit.getLogger().severe("Failed to set command executor for /" + gameName);
+            Bukkit.getLogger().severe("Failed to set command executor for game, /" + gameName);
             return false;
         }
 
-        pluginCommand.setExecutor(game.getNewCommandExecutor());
-        Bukkit.getLogger().info("Set command executor for /" + gameName);
+        pluginCommand.setExecutor(game.newCommandExecutor());
+        Bukkit.getLogger().info("Set command executor for game, /" + gameName);
         return true;
     }
 
@@ -125,20 +125,20 @@ public class GameManager {
             return false;
         }
 
-        String gameName = game.getCode();
+        String gameName = game.code();
 
         // unregister game-specific listener
-        HandlerList.unregisterAll(game.getNewEventListener());
+        HandlerList.unregisterAll(game.newListener());
         Bukkit.getLogger().info("Unregistered game listener for " + gameName);
 
         // unregister game-specific command
-        PluginCommand pluginCommand = Main.plugin.getCommand(gameName);
+        PluginCommand pluginCommand = Main.plugin.getCommand("game");
         if (pluginCommand == null) {
-            Util.broadcast("Failed to remove command executor for /" + gameName);
+            Bukkit.getLogger().severe("Failed to remove command executor for game, /" + gameName);
             return false;
         } else {
             pluginCommand.setExecutor(null); // @todo test
-            Bukkit.getLogger().info("Removed command executor for /" + gameName);
+            Bukkit.getLogger().info("Removed command executor for game, /" + gameName);
             return true;
         }
     }
@@ -207,7 +207,7 @@ public class GameManager {
 
         game = Voting.getHighestVotedGame();
         assert game != null; // @todo this probably does nothing
-        String worldName = Voting.getHighestVotedGameWorld(game.getCode());
+        String worldName = Voting.getHighestVotedGameWorld(game.code());
         Voting.clearVotes();
 
         if (!registerGameComponents()) {
@@ -228,7 +228,7 @@ public class GameManager {
         game.onTravel(); // @todo custom events & listeners for cleaner code (e.g. GameTravelEvent)
 
         startingTask = new StartingTask(
-                startingSeconds, YELLOW + GameManager.game.getName() + " @ " + Worlds.currentGameWorld).
+                startingSeconds, YELLOW + GameManager.game.name() + " @ " + Worlds.currentGameWorld).
                 runTaskTimer(Main.plugin, 0, 20);
     }
 
@@ -239,7 +239,7 @@ public class GameManager {
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerData pd = PlayerData.get(p);
             pd.gamesPlayed += 1;
-            pd.incrementGameStat(game.getCode(), "played");
+            pd.incrementGameStat(game.code(), "played");
         }
 
         game.onStart();
@@ -264,14 +264,14 @@ public class GameManager {
             if (pOnline == pWinner) {
                 pd = PlayerData.get(pWinner);
                 pd.gamesWon += 1;
-                pd.incrementGameStat(game.getCode(), "won");
+                pd.incrementGameStat(game.code(), "won");
 
                 pWinner.sendMessage(GOLD + "You won!");
                 pWinner.sendTitle(GOLD + "You won!", null, 10, 40, 10);
             } else if (pWinner != null) {
                 pd = PlayerData.get(pOnline);
                 pd.gamesLost += 1;
-                pd.incrementGameStat(game.getCode(), "lost");
+                pd.incrementGameStat(game.code(), "lost");
 
                 pWinner.sendMessage(RED + "You lost!");
                 pWinner.sendTitle(RED + "You lost!", null, 10, 40, 10);

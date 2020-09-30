@@ -10,32 +10,33 @@ commands:
     description: modify playerdata
     usage: /<command> set [name] <field> <value>
   friend:
+    aliases: f
     description: friend parent command
     usage: /<command> list, /friend add <name>
   travel:
+    aliases: t
     description: travel
     usage: /<command> [force]
   editor:
+    aliases: edit
     description: editor world
     usage: /<command> [save]
-  game:
-    description: game world
+  spectate:
+    aliases: spec
+    description: spectate ongoing game
     usage: /<command>
+  game:
+    aliases: g
+    description: game-specific commands
+    usage: /<command> (usage varies)
   lobby:
+    aliases: l
     description: lobby world
     usage: /<command>
   end:
+    aliases: e
     description: end game
     usage: /<command>
   stoptasks:
     description: stop game tasks
     usage: /<command>
-  tnttag:
-    description: tnt tag
-    usage: /<command>
-  tiptoe:
-    description: tip toe
-    usage: /<command> 1/2/3
-  jump:
-    description: jump showdown
-    usage: /<command> speed <number>

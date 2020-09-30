@@ -19,27 +19,27 @@ import static org.bukkit.Material.*;
 
 public class TipToeGame extends Game {
     @Override
-    public int getMinPlayers() {
+    public int minPlayers() {
         return 1;
     }
 
     @Override
-    public int getMaxPlayers() {
+    public int maxPlayers() {
         return 10;
     }
 
     @Override
-    public Material getVoteMaterial() {
+    public Material voteMaterial() {
         return LEATHER_BOOTS;
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return "Tip Toe";
     }
 
     @Override
-    public String getCode() {
+    public String code() {
         return "tiptoe";
     }
 
@@ -67,7 +67,7 @@ public class TipToeGame extends Game {
     @Override
     public void onDeath(Player p) {
         p.setVelocity(new Vector());
-        p.teleport(getSpawnLocation());
+        p.teleport(spawnLocation());
     }
 
     @Override
@@ -79,23 +79,23 @@ public class TipToeGame extends Game {
     }
 
     @Override
-    public Listener getNewEventListener() {
+    public Listener newListener() {
         return new TipToeListener(this);
     }
 
     @Override
-    public CommandExecutor getNewCommandExecutor() {
+    public CommandExecutor newCommandExecutor() {
         return new TipToeCmd(this);
     }
 
     @Override
-    public String[] getSupportedWorlds() {
+    public String[] worlds() {
         return new String[] { "circle1" };
     }
 
     @Override
-    public Location getSpawnLocation() {
-        return new Location(Bukkit.getWorld("game"), 0, 64, 0);
+    public Location spawnLocation() {
+        return new Location(Bukkit.getWorld("game"), 0.5, 64, 0.5);
     }
 
     final ArrayList<ArrayList<Block>> platformList = new ArrayList<>();

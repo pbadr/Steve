@@ -24,27 +24,27 @@ import static org.bukkit.Material.TNT;
 
 public class TntTagGame extends Game {
     @Override // @todo [at]Override needed for Game classes?
-    public int getMinPlayers() {
+    public int minPlayers() {
         return 1;
     }
 
     @Override
-    public int getMaxPlayers() {
+    public int maxPlayers() {
         return 20;
     }
 
     @Override
-    public Material getVoteMaterial() {
+    public Material voteMaterial() {
         return TNT;
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return "TNT Tag";
     }
 
     @Override
-    public String getCode() {
+    public String code() {
         return "tnttag";
     }
 
@@ -107,23 +107,23 @@ public class TntTagGame extends Game {
     }
 
     @Override
-    public Listener getNewEventListener() {
+    public Listener newListener() {
         return new TntTagListener(this);
     }
 
     @Override
-    public CommandExecutor getNewCommandExecutor() {
+    public CommandExecutor newCommandExecutor() {
         return new TntTagCmd(this);
     }
 
     @Override
-    public String[] getSupportedWorlds() {
+    public String[] worlds() {
         return new String[]{"circle1"};
     }
 
     @Override
-    public Location getSpawnLocation() {
-        return new Location(Bukkit.getWorld("game"), 0, 64, 0);
+    public Location spawnLocation() {
+        return new Location(Bukkit.getWorld("game"), 0.5, 64, 0.5);
     }
 
     public HashMap<Player, Integer> playerFuseTicks = new HashMap<>();
