@@ -45,9 +45,8 @@ public class FriendsMenu implements Listener {
         if(e.getSlot() == 0) {
             List<String> friends = new ArrayList<>();
 
-            friends.add("Friend1");
-            friends.add("Friend2");
-
+            friends.add("Example1");
+            friends.add("Example2");
 
             for (int i = 0; i < friends.size(); i++) {
                 ItemStack itemStack = new ItemStack(Material.DIRT);
