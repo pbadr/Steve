@@ -1,7 +1,6 @@
 package com.steve.ui;
 
 import com.steve.Main;
-import com.steve.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -14,7 +13,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,31 +54,6 @@ public class FriendsListMenu implements Listener {
 
         e.setCancelled(true);
 
-//        if(e.getSlot() == 0) {
-//            Player player = (Player) e.getWhoClicked();
-//
-//            player.closeInventory();
-//
-//            new FriendsListMenu(player, PlayerData.get((Player) e.getWhoClicked()).friendsAdded);
-//        }
-
     }
-//
-//    List<String> friends = new ArrayList<>();
-//
-//            friends.add("Example1");
-//            friends.add("Example2");
-//
-//            for (int i = 0; i < friends.size(); i++) {
-//        ItemStack itemStack = new ItemStack(Material.DIRT);
-//        ItemMeta itemMeta = itemStack.getItemMeta();
-//
-//        itemMeta.setDisplayName(ChatColor.RESET + friends.get(i));
-//        itemStack.setItemMeta(itemMeta);
-//
-//        inv.setItem(i, itemStack);
-//    }
-
-
 
 }
