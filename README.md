@@ -1,5 +1,5 @@
 # Steve
-Wipeout-esque game 🕺 ⛏
+Wipeout-esque Minecraft game 🕺 ⛏
 
 ## Dependencies
 - [Spigot-API](https://www.spigotmc.org/wiki/buildtools/)
